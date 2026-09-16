@@ -37,7 +37,6 @@ class Ui_MainWindow(object):
         self.menu = QWidget()
         self.menu.setObjectName(u"menu")
         self.menu.setStyleSheet(u"QWidget#menu{\n"
-"	background-color: rgb(217, 217, 217);\n"
 "	border: 3px solid #333333;\n"
 "	border-radius: 10px\n"
 "}")
@@ -88,7 +87,6 @@ class Ui_MainWindow(object):
         self.movimientos = QWidget()
         self.movimientos.setObjectName(u"movimientos")
         self.movimientos.setStyleSheet(u"QWidget#movimientos{\n"
-"	background-color: rgb(217, 217, 217);\n"
 "	border: 3px solid #333333;\n"
 "	border-radius: 10px\n"
 "}")

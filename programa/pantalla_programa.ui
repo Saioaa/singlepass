@@ -36,7 +36,6 @@
     <widget class="QWidget" name="menu">
      <property name="styleSheet">
       <string notr="true">QWidget#menu{
-	background-color: rgb(217, 217, 217);
 	border: 3px solid #333333;
 	border-radius: 10px
 }</string>
@@ -126,7 +125,6 @@ QPushButton:pressed {
     <widget class="QWidget" name="movimientos">
      <property name="styleSheet">
       <string notr="true">QWidget#movimientos{
-	background-color: rgb(217, 217, 217);
 	border: 3px solid #333333;
 	border-radius: 10px
 }</string>
