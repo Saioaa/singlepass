@@ -28,3 +28,7 @@ POSICION_REPOSO_MM = 50
 FINAL_RECORRIDO_MM = 1200   # borde trasero al final del recorrido 1900
 BARRA_MM           = 2200   # longitud fisica de la barra
 MODULO_MM          = 125    # ancho de cada modulo
+
+# ===== MESA DE IMPRESION (A4 apaisado: X = direccion del movimiento) =====
+MESA_ANCHO_MM = 297
+MESA_ALTO_MM  = 210

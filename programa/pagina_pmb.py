@@ -5,26 +5,33 @@ Recibe el objeto ui ya construido, el ClientePMB y una funcion que devuelve
 la posicion del primer cabezal (la conoce la pagina de programa).
 Todo lo que falta por programar del PMB va aqui.
 
+El recuadro de imagen (labelImage en el .ui) se sustituye en tiempo de
+ejecucion por una MesaImpresion (mesa.py) con la misma geometria y estilo.
+
 Widgets de la pagina sin funcion todavia:
-    pos_x_target, pos_y_target, pos_x_real, pos_y_real, load_previews
+    load_previews, rip1..rip4
 """
 
 import os
 import re
 
-from PySide6.QtCore import QObject, Qt
-from PySide6.QtGui import QPixmap, QTransform
+from PySide6.QtCore import QLocale, QObject, Qt
+from PySide6.QtGui import QDoubleValidator, QPixmap, QTransform
 from PySide6.QtWidgets import QFileDialog
 
+import config
 import vpi
+from mesa import MesaImpresion
 
 # ===== IMAGEN A IMPRIMIR =====
 FILTRO_IMAGENES = "Imagenes (*.tif *.tiff *.bmp *.jpg *.jpeg *.png)"
 MM_POR_PULGADA  = 25.4
 GRADOS_POR_GIRO = 90
 GRADOS_VUELTA   = 360
-POSICION_Y_MM   = 0.0   # la hoja va siempre a la misma altura
 PATRON_DPI      = r"(\d+)\s*dpi"
+DECIMALES_POSICION = 2
+POSICION_INICIAL_X_MM = 0.0   # donde aparece una imagen recien cargada
+POSICION_INICIAL_Y_MM = 0.0
 
 
 class PaginaPMB(QObject):
@@ -46,6 +53,21 @@ class PaginaPMB(QObject):
         self.render_pendiente = None
 
         self.ui.txtMessage.setReadOnly(True)
+
+        # mesa de impresion en lugar del QLabel del disenador
+        self.mesa = MesaImpresion(config.MESA_ANCHO_MM, config.MESA_ALTO_MM, self.ui.PMB8)
+        self.mesa.setGeometry(self.ui.labelImage.geometry())
+        self.mesa.setStyleSheet(self.ui.labelImage.styleSheet())
+        self.ui.labelImage.hide()
+        self.mesa.posicion_cambiada.connect(self.actualizar_posicion)
+
+        # posicion objetivo escrita a mano
+        validador = QDoubleValidator()
+        validador.setLocale(QLocale(QLocale.English))
+        self.ui.pos_x_target.setValidator(validador)
+        self.ui.pos_y_target.setValidator(validador)
+        self.ui.pos_x_target.editingFinished.connect(self.ir_a_posicion)
+        self.ui.pos_y_target.editingFinished.connect(self.ir_a_posicion)
 
         # senales del cliente PMB
         self.pmb.mensaje.connect(self.registrar)
@@ -100,14 +122,33 @@ class PaginaPMB(QObject):
         self.dpi_actual = (dpi_x, dpi_y)
         self.registrar(f"[PMB] Modo activo: {dpi_x} x {dpi_y} dpi")
 
+    # ===== posicion en la mesa =====
+    def actualizar_posicion(self, x_mm, y_mm):
+        """La mesa avisa cada vez que la imagen se mueve."""
+        self.ui.pos_x_real.setText(f"{x_mm:.{DECIMALES_POSICION}f}")
+        self.ui.pos_y_real.setText(f"{y_mm:.{DECIMALES_POSICION}f}")
+
+    def ir_a_posicion(self):
+        """Mueve la imagen a la posicion escrita en los campos objetivo."""
+        posicion = self.mesa.posicion_imagen_mm()
+        if posicion is None:
+            return
+        x_mm, y_mm = posicion
+        try:
+            if self.ui.pos_x_target.text():
+                x_mm = float(self.ui.pos_x_target.text())
+            if self.ui.pos_y_target.text():
+                y_mm = float(self.ui.pos_y_target.text())
+        except ValueError:
+            return
+        self.mesa.mover_imagen(x_mm, y_mm)
+
     # ===== imagen =====
-    def _mostrar_pixmap(self, pixmap):
+    def _mostrar_pixmap(self, pixmap, x_mm=None, y_mm=None):
         dpi_x, dpi_y = self.dpi_actual
         self.ancho_imagen_mm = pixmap.width() * MM_POR_PULGADA / dpi_x
         self.alto_imagen_mm = pixmap.height() * MM_POR_PULGADA / dpi_y
-        self.ui.labelImage.setPixmap(pixmap.scaled(
-            self.ui.labelImage.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        self.ui.labelImage.setAlignment(Qt.AlignCenter)
+        self.mesa.mostrar_imagen(pixmap, self.ancho_imagen_mm, self.alto_imagen_mm, x_mm, y_mm)
         self.ui.lblSizeValue.setText(
             f"{self.ancho_imagen_mm:.2f} mm x\n{self.alto_imagen_mm:.2f} mm")
 
@@ -117,7 +158,7 @@ class PaginaPMB(QObject):
             self.registrar("[PMB] Selecciona antes un modo de sistema")
             return
 
-        ruta, _ = QFileDialog.getOpenFileName(self.ui.labelImage.window(),
+        ruta, _ = QFileDialog.getOpenFileName(self.mesa.window(),
                                               "Seleccionar imagen", "", FILTRO_IMAGENES)
         if not ruta:
             return
@@ -131,7 +172,7 @@ class PaginaPMB(QObject):
         self.rotacion_imagen = 0
         self.espejo_x = False
         self.espejo_y = False
-        self._mostrar_pixmap(pixmap)
+        self._mostrar_pixmap(pixmap, POSICION_INICIAL_X_MM, POSICION_INICIAL_Y_MM)
         self.registrar(
             f"[PMB] Imagen: {pixmap.width()} x {pixmap.height()} px "
             f"({self.ancho_imagen_mm:.2f} x {self.alto_imagen_mm:.2f} mm)")
@@ -166,8 +207,10 @@ class PaginaPMB(QObject):
         self.rotacion_imagen = 0
         self.espejo_x = False
         self.espejo_y = False
-        self.ui.labelImage.clear()
+        self.mesa.limpiar()
         self.ui.lblSizeValue.clear()
+        self.ui.pos_x_real.clear()
+        self.ui.pos_y_real.clear()
         self.registrar("[PMB] Imagen descartada")
 
     # ===== trabajo (ripeo e impresion) =====
@@ -182,13 +225,18 @@ class PaginaPMB(QObject):
             self.registrar("[PMB] No hay ningun cabezal configurado en la pagina de programa")
             return
 
+        x_mesa_mm, y_mesa_mm = self.mesa.posicion_imagen_mm()
+        # TODO: decidir como combinar x_mesa_mm con posicion_x (cabezal) para el XOffset
+        self.registrar(f"[PMB] Imagen en mesa: X={x_mesa_mm:.{DECIMALES_POSICION}f} mm, "
+                       f"Y={y_mesa_mm:.{DECIMALES_POSICION}f} mm")
+
         try:
             ruta_vpi = vpi.generar_vpi(
                 ruta_imagen=self.ruta_imagen,
                 ancho_mm=self.ancho_imagen_mm,
                 alto_mm=self.alto_imagen_mm,
                 pos_x_mm=posicion_x,
-                pos_y_mm=POSICION_Y_MM,
+                pos_y_mm=y_mesa_mm,
                 rotacion=self.rotacion_imagen,
                 espejo_x=self.espejo_x,
                 espejo_y=self.espejo_y)
@@ -210,7 +258,7 @@ class PaginaPMB(QObject):
         self.pmb.renderizar(ruta)
 
     def seleccionar_trabajo(self):
-        carpeta = QFileDialog.getExistingDirectory(self.ui.labelImage.window(),
+        carpeta = QFileDialog.getExistingDirectory(self.mesa.window(),
                                                    "Seleccionar carpeta de trabajo")
         if not carpeta:
             return
