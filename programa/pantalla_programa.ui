@@ -1,0 +1,2348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1960</width>
+    <height>1072</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: #62CBC9</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QStackedWidget" name="stackedWidget">
+    <property name="geometry">
+     <rect>
+      <x>129</x>
+      <y>-1</y>
+      <width>1831</width>
+      <height>1061</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: #3F4D4C
+</string>
+    </property>
+    <property name="currentIndex">
+     <number>2</number>
+    </property>
+    <widget class="QWidget" name="menu">
+     <property name="styleSheet">
+      <string notr="true">QWidget#menu{
+	backgroun-color: rgb(217, 217, 217);
+	border: 3px solid #333333;
+	border-radius: 10px
+}</string>
+     </property>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>760</x>
+        <y>60</y>
+        <width>301</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;
+font-size: 48px;
+font-weiht: bold;
+font-family: nunito;
+text-align: center;</string>
+      </property>
+      <property name="text">
+       <string>materialight</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="bt_pg_movimientos2">
+      <property name="geometry">
+       <rect>
+        <x>580</x>
+        <y>340</y>
+        <width>121</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>Movimientos</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="bt_pg_programa_2">
+      <property name="geometry">
+       <rect>
+        <x>850</x>
+        <y>340</y>
+        <width>121</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>Programa</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="movimientos">
+     <property name="styleSheet">
+      <string notr="true">QWidget#movimientos{
+	backgroun-color: rgb(217, 217, 217);
+	border: 3px solid #333333;
+	border-radius: 10px
+}</string>
+     </property>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>80</y>
+        <width>221</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;
+font-size: 36px;
+font-weiht: bold;
+font-family: nunito;
+text-align: center;</string>
+      </property>
+      <property name="text">
+       <string>Movimientos</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>690</x>
+        <y>550</y>
+        <width>451</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QPushButton" name="bt_mov_izquierda_rapido">
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding-top: 10px;
+	padding-bottom: 10px;
+	padding_right: 1px;
+	padding_left: 1px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>../imagenes/doble_flecha_izquierda.png</normaloff>../imagenes/doble_flecha_izquierda.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>36</width>
+           <height>36</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="bt_mov_izquierda">
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>../imagenes/play_redondeado_izquierda.png</normaloff>../imagenes/play_redondeado_izquierda.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>36</width>
+           <height>36</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="bt_mov_derecha">
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>../imagenes/play_redondeado_derecha.png</normaloff>../imagenes/play_redondeado_derecha.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>36</width>
+           <height>36</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="bt_mov_derecha_rapido">
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>../imagenes/doble_flecha_derecha.png</normaloff>../imagenes/doble_flecha_derecha.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>36</width>
+           <height>36</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="verticalLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>580</x>
+        <y>310</y>
+        <width>160</width>
+        <height>191</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QPushButton" name="bt_mov_reposo">
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+         </property>
+         <property name="text">
+          <string>Reposo</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="bt_home">
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+         </property>
+         <property name="text">
+          <string>Home</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="gridLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>770</x>
+        <y>310</y>
+        <width>281</width>
+        <height>191</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+	font-size: 16px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Posición</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="posicion">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="objetivo">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Objetivo</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QPushButton" name="bt_ir_objetivo">
+      <property name="geometry">
+       <rect>
+        <x>1080</x>
+        <y>340</y>
+        <width>151</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>Ir a objetivo</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_5">
+      <property name="geometry">
+       <rect>
+        <x>840</x>
+        <y>520</y>
+        <width>151</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>Movimiento manual</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QWidget" name="formLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>1390</x>
+        <y>340</y>
+        <width>271</width>
+        <height>179</height>
+       </rect>
+      </property>
+      <layout class="QFormLayout" name="formLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_7">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+	font-size: 16px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Velocidad objetivo</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="vel_objetivo">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_8">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+	font-size: 16px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Aceleración</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="aceleracion">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_9">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+	font-size: 16px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Deceleración</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="deceleracion">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>1410</x>
+        <y>300</y>
+        <width>231</width>
+        <height>19</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+font-weight: bold;</string>
+      </property>
+      <property name="text">
+       <string>Parametros de movimiento</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="PMB8">
+     <widget class="QLabel" name="lab_printarea">
+      <property name="geometry">
+       <rect>
+        <x>950</x>
+        <y>10</y>
+        <width>420</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_28">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>640</y>
+        <width>25</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>Y:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_29">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>590</y>
+        <width>25</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>X:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblCoordsText">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>440</y>
+        <width>130</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>Position:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnMirrorY">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>210</y>
+        <width>111</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>Mirror Y</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="systemode">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>9</y>
+        <width>370</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"> background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="rip2">
+      <property name="geometry">
+       <rect>
+        <x>1510</x>
+        <y>290</y>
+        <width>300</width>
+        <height>210</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 255, 255);
+border: 2px solid #62CBC9;
+border-radius: 5px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="pos_x_target">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>580</y>
+        <width>161</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);
+border: 2px solid #62CBC9;
+border-radius: 5px;
+padding: 10px;
+font-size: 24px;
+font-family: nunito;</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnPrint">
+      <property name="geometry">
+       <rect>
+        <x>1400</x>
+        <y>690</y>
+        <width>100</width>
+        <height>100</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>PRINT</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_30">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>480</y>
+        <width>25</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>X:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnSelect">
+      <property name="geometry">
+       <rect>
+        <x>1400</x>
+        <y>230</y>
+        <width>100</width>
+        <height>100</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>nunito</family>
+        <pointsize>-1</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>Select
+job</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_clear">
+      <property name="geometry">
+       <rect>
+        <x>1400</x>
+        <y>910</y>
+        <width>100</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+	background-color: rgb(227, 0, 0);
+	border: 2px solid #333333;
+	border-radius: 5px;
+	padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+	background-color: rgb(255, 0, 0)
+}
+QPushButton:pressed {rgb(229, 13, 35)
+}</string>
+      </property>
+      <property name="text">
+       <string>Clear</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="labelImage">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>60</y>
+        <width>1131</width>
+        <height>800</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: white;
+border: 2px solid #62CBC9;
+border-radius: 5px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="scaledContents">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="rip4">
+      <property name="geometry">
+       <rect>
+        <x>1510</x>
+        <y>750</y>
+        <width>300</width>
+        <height>210</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 255, 255);
+border: 2px solid #62CBC9;
+border-radius: 5px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnRotate">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>70</y>
+        <width>111</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>Rotate</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="pos_y_target">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>630</y>
+        <width>161</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);
+border: 2px solid #62CBC9;
+border-radius: 5px;
+padding: 10px;
+font-size: 24px;
+font-family: nunito;</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="rip1">
+      <property name="geometry">
+       <rect>
+        <x>1510</x>
+        <y>60</y>
+        <width>300</width>
+        <height>210</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 255, 255);
+border: 2px solid #62CBC9;
+border-radius: 5px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblSizeValue">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>340</y>
+        <width>191</width>
+        <height>50</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="rip3">
+      <property name="geometry">
+       <rect>
+        <x>1510</x>
+        <y>520</y>
+        <width>300</width>
+        <height>210</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 255, 255);
+border: 2px solid #62CBC9;
+border-radius: 5px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="pos_x_real">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>474</y>
+        <width>161</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnUpdateMode">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>10</y>
+        <width>130</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>Load mode</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnNewjob">
+      <property name="geometry">
+       <rect>
+        <x>1400</x>
+        <y>90</y>
+        <width>100</width>
+        <height>100</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>New
+image</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnRip">
+      <property name="geometry">
+       <rect>
+        <x>1400</x>
+        <y>540</y>
+        <width>100</width>
+        <height>100</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>Render</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="txtMessage">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>870</y>
+        <width>1131</width>
+        <height>151</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(174, 199, 232);
+color: rgb(0, 0, 0);
+border: 2px solid #62CBC9;
+border-radius: 5px;</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="load_previews">
+      <property name="geometry">
+       <rect>
+        <x>1570</x>
+        <y>10</y>
+        <width>170</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>Load previews</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="pos_y_real">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>524</y>
+        <width>161</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnMirrorX">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>140</y>
+        <width>111</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>Mirror X</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblSizeText">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>300</y>
+        <width>130</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>Size (mm):</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_31">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>530</y>
+        <width>25</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>Y:</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="programa">
+     <widget class="QLabel" name="label_10">
+      <property name="geometry">
+       <rect>
+        <x>750</x>
+        <y>100</y>
+        <width>221</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;
+font-size: 36px;
+font-weiht: bold;
+font-family: nunito;
+text-align: center;</string>
+      </property>
+      <property name="text">
+       <string>Programa</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QWidget" name="formLayoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>1370</x>
+        <y>280</y>
+        <width>311</width>
+        <height>509</height>
+       </rect>
+      </property>
+      <layout class="QFormLayout" name="formLayout_2">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_11">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+	font-size: 16px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Velocidad impresión</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="pg_prog_vel_impresion">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_12">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+	font-size: 16px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Aceleracion impresión</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="pg_prog_acel_impresion">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_14">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+	font-size: 16px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Deceleración impresion</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="pg_prog_decel_impresion">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_13">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+	font-size: 16px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Velocidad curado</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="pg_prog_vel_curado">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_16">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+	font-size: 16px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Aceleración curado</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="pg_prog_acel_curado">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_15">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+	font-size: 16px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Deceleración curado</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLineEdit" name="pg_prog_decel_curado">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_22">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+	font-size: 16px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Pasadas curado</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QLineEdit" name="pg_prog_cant_pasadas_curado">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_27">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+	font-size: 16px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Inicio de curado</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="pg_prog_inicio_curado">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="verticalLayoutWidget_3">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>320</y>
+        <width>301</width>
+        <height>94</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QPushButton" name="bt_pg_prog_start">
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+         </property>
+         <property name="text">
+          <string>Iniciar programa</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="bt_pg_prog_stop">
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+         </property>
+         <property name="text">
+          <string>Parar programa</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="gridLayoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>440</x>
+        <y>670</y>
+        <width>851</width>
+        <height>121</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="1" column="7">
+        <widget class="QLineEdit" name="M8D">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="4">
+        <widget class="QLineEdit" name="M5D">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="5">
+        <widget class="QLineEdit" name="M6D">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="6">
+        <widget class="QLineEdit" name="M7D">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLineEdit" name="M1D">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+  color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLineEdit" name="M4D">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="M2D">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLineEdit" name="M3D">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QComboBox" name="modulo1">
+         <property name="styleSheet">
+          <string notr="true"> border: 1px solid #62CBC9;
+color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>-</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>APMB4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SM-200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>NIR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Air dryver</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QComboBox" name="modulo2">
+         <property name="styleSheet">
+          <string notr="true"> border: 1px solid #62CBC9;
+color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>-</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>APMB4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SM-200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>NIR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Air dryver</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QComboBox" name="modulo3">
+         <property name="styleSheet">
+          <string notr="true"> border: 1px solid #62CBC9;
+color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>-</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>APMB4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SM-200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>NIR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Air dryver</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QComboBox" name="modulo4">
+         <property name="styleSheet">
+          <string notr="true"> border: 1px solid #62CBC9;
+color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>-</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>APMB4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SM-200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>NIR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Air dryver</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="4">
+        <widget class="QComboBox" name="modulo5">
+         <property name="styleSheet">
+          <string notr="true"> border: 1px solid #62CBC9;
+color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>-</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>APMB4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SM-200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>NIR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Air dryver</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="5">
+        <widget class="QComboBox" name="modulo6">
+         <property name="styleSheet">
+          <string notr="true"> border: 1px solid #62CBC9;
+color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>-</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>APMB4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SM-200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>NIR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Air dryver</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="6">
+        <widget class="QComboBox" name="modulo7">
+         <property name="styleSheet">
+          <string notr="true"> border: 1px solid #62CBC9;
+color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>-</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>APMB4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SM-200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>NIR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Air dryver</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="7">
+        <widget class="QComboBox" name="modulo8">
+         <property name="styleSheet">
+          <string notr="true"> border: 1px solid #62CBC9;
+color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>-</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>APMB4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SM-200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>NIR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Air dryver</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_17">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+font-weight: bold;</string>
+         </property>
+         <property name="text">
+          <string>1</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label_18">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+font-weight: bold;</string>
+         </property>
+         <property name="text">
+          <string>2</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_19">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+font-weight: bold;</string>
+         </property>
+         <property name="text">
+          <string>3</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="label_20">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+font-weight: bold;</string>
+         </property>
+         <property name="text">
+          <string>4</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QLabel" name="label_21">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+font-weight: bold;</string>
+         </property>
+         <property name="text">
+          <string>5</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5">
+        <widget class="QLabel" name="label_23">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+font-weight: bold;</string>
+         </property>
+         <property name="text">
+          <string>6</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="6">
+        <widget class="QLabel" name="label_24">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+font-weight: bold;</string>
+         </property>
+         <property name="text">
+          <string>7</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="7">
+        <widget class="QLabel" name="label_25">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+font-weight: bold;</string>
+         </property>
+         <property name="text">
+          <string>8</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QLabel" name="label_26">
+      <property name="geometry">
+       <rect>
+        <x>750</x>
+        <y>620</y>
+        <width>231</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+font-weight: bold;</string>
+      </property>
+      <property name="text">
+       <string>Configuración de módulos</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QGraphicsView" name="pg_vista">
+      <property name="geometry">
+       <rect>
+        <x>440</x>
+        <y>300</y>
+        <width>851</width>
+        <height>192</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QGraphicsView {
+    background-color: #3F4D4C;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+}</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="verticalLayoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>0</y>
+      <width>115</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QPushButton" name="bt_pg_menu">
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: #3F4D4C;
+	color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+	
+}
+QPushButton:hover {
+    background-color: rgb(74, 90, 88);
+}
+QPushButton:pressed {
+    background-color: rgb(89, 108, 105);
+}</string>
+       </property>
+       <property name="text">
+        <string>Menu</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="bt_pg_movimientos1">
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: #3F4D4C;
+	color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+	
+}
+QPushButton:hover {
+    background-color: rgb(74, 90, 88);
+}
+QPushButton:pressed {
+    background-color: rgb(89, 108, 105);
+}</string>
+       </property>
+       <property name="text">
+        <string>Movimientos</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="bt_pg_programa">
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: #3F4D4C;
+	color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+	
+}
+QPushButton:hover {
+    background-color: rgb(74, 90, 88);
+}
+QPushButton:pressed {
+    background-color: rgb(89, 108, 105);
+}</string>
+       </property>
+       <property name="text">
+        <string>Programa</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton">
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: #3F4D4C;
+	color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+	
+}
+QPushButton:hover {
+    background-color: rgb(74, 90, 88);
+}
+QPushButton:pressed {
+    background-color: rgb(89, 108, 105);
+}</string>
+       </property>
+       <property name="text">
+        <string>PMB-8</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1960</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,36 @@
+{
+  "campos": {
+    "objetivo": "400",
+    "vel_objetivo": "200",
+    "aceleracion": "2000",
+    "deceleracion": "2000",
+    "pg_prog_vel_impresion": "300",
+    "pg_prog_acel_impresion": "2000",
+    "pg_prog_decel_impresion": "2000",
+    "pg_prog_vel_curado": "200",
+    "pg_prog_acel_curado": "2000",
+    "pg_prog_decel_curado": "2000",
+    "pg_prog_cant_pasadas_curado": "1",
+    "pg_prog_inicio_curado": "800"
+  },
+  "modulos": {
+    "1": 1,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0,
+    "6": 0,
+    "7": 0,
+    "8": 0
+  },
+  "distancias": {
+    "1": "600",
+    "2": "",
+    "3": "",
+    "4": "",
+    "5": "",
+    "6": "",
+    "7": "",
+    "8": ""
+  }
+}

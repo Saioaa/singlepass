@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VariableInformationFile>
+    <Document Name="GIS VPI Document" VersionNumber="2.0.37.18583" Filename="C:\Users\admin\OneDrive - Materialight S.L\GUI\materialightV2\vpimod\template.vpi" EnableDocumentUndo="True" UseRelativePaths="False" PageUnits="0" PhysicalPageWidth="304.740000000000009095" PhysicalPageHeight="215.857500000000015916" VisibleWidth="192" VisibleHeight="139" ResolutionUnits="1" XPitch="0.042325000000000002" YPitch="0.042325000000000002" PrintRotation="0" DisplayGrid="True" DisplayGuides="False" SnapToGrid="True" SnapToObject="False" GridSpacingX="2.255999999999999783" GridSpacingY="2.255999999999999783" ImgPipelineView="0" ImgPipelineImage="-1" Zoom="0.025000000000000001" ZoomOffset="5">
+        <VariableData Name="Variable Data" GlobalCounter="0">
+            <DATA_UNIQUE_ID PRESET_DEF_ATTR_NAME="GlobalCounter" PRESET_VAL_ATTR="GLOBAL_COUNTER"/>
+            <ParameterSet Name="Parameter Set"/>
+            <DataSourceManager Name="Data Source Manager">
+                <DataSourceSystem Name="Data Source System">
+                    <DATA_UNIQUE_ID PRESET_DEF_ATTR_NAME="SystemTimeYear" PRESET_VAL_ATTR="SystemTimeYear"/>
+                    <DATA_UNIQUE_ID PRESET_DEF_ATTR_NAME="SystemTimeMonth" PRESET_VAL_ATTR="SystemTimeMonth"/>
+                    <DATA_UNIQUE_ID PRESET_DEF_ATTR_NAME="SystemTimeDayOfWeek" PRESET_VAL_ATTR="SystemTimeDayOfWeek"/>
+                    <DATA_UNIQUE_ID PRESET_DEF_ATTR_NAME="SystemTimeDay" PRESET_VAL_ATTR="SystemTimeDay"/>
+                    <DATA_UNIQUE_ID PRESET_DEF_ATTR_NAME="SystemTimeHour" PRESET_VAL_ATTR="SystemTimeHour"/>
+                    <DATA_UNIQUE_ID PRESET_DEF_ATTR_NAME="SystemTimeMinute" PRESET_VAL_ATTR="SystemTimeMinute"/>
+                    <DATA_UNIQUE_ID PRESET_DEF_ATTR_NAME="SystemTimeSecond" PRESET_VAL_ATTR="SystemTimeSecond"/>
+                    <DATA_UNIQUE_ID PRESET_DEF_ATTR_NAME="SystemTimeMillisecond" PRESET_VAL_ATTR="SystemTimeMillisecond"/>
+                </DataSourceSystem>
+            </DataSourceManager>
+            <DataFormatManager Name="Data Format Manager"/>
+        </VariableData>
+        <DocumentPreview Name="Preview" Width="" Height="" Data=""/>
+        <DIBitmapUser Name="BitmapUser" Selected="False" Visible="True" RenderOnInterfaceOnly="False" EditLocked="False" Rotation="0.000000000000000000" MirrorInX="False" MirrorInY="False" OrigWidth="404.838625000000035925" OrigHeight="272.615324999999984357" Filename="C:\Users\admin\Pictures\gioconda.bmp" ScreenerType="0" OriginalImageType="0" EmbeddedICCProfile="" MaskEnable="False" MaskFilename="" DoStepRepeat="False" StepRep_Mode="0" StepRep_BoundMode="0" StepRep_XSpace="0" StepRep_YSpace="0" DoBrightnessContrast="False" Brightness="0.500000000000000000" Contrast="0.500000000000000000">
+            <DPPosition Name="Position" X="0.000000000000000000" Y="0.000000000000000000"/>
+            <DPBoundary Name="Boundary" Top="0.000000000000000000" Left="0.000000000000000000" Right="0.000000000000000000" Bottom="0.000000000000000000"/>
+            <DPImageBoundary Name="Image Only Boundary" Top="0.000000000000000000" Left="0.000000000000000000" Right="0.000000000000000000" Bottom="0.000000000000000000"/>
+            <DPStepRotBoundary Name="Step Repeat Boundary" Top="0.000000000000000000" Left="0.000000000000000000" Right="0.000000000000000000" Bottom="0.000000000000000000"/>
+        </DIBitmapUser>
+    </Document>
+</VariableInformationFile>
