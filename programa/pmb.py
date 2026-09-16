@@ -34,7 +34,7 @@ CMD_PEDIR_MODOS     = "S,T,N"
 CMD_INFO_MODO       = "S,T,I"
 CMD_CARGAR_VPI      = "R,D"
 CMD_RENDERIZAR      = "R,R"
-CMD_OFFSET_BOQUILLA = "P,C,P,XOffset"
+CMD_CAMBIAR_PARAM_PC = "P,C,P"
 CMD_IMPRIMIR        = "P,P"
 
 PARAM_RENDER_POR_DEFECTO   = "0"
@@ -230,8 +230,9 @@ class ClientePMB(QObject):
     def renderizar(self, ruta_salida):
         self._enviar(f"{CMD_RENDERIZAR},{ruta_salida},{PARAM_RENDER_POR_DEFECTO}")
 
-    def set_offset_boquilla(self, offset_mm):
-        self._enviar(f"{CMD_OFFSET_BOQUILLA},{offset_mm}")
+    def cambiar_parametro_pc(self, nombre, valor):
+        """Change Parameter Value en el Print Controller (nombre = Data Unique ID)."""
+        self._enviar(f"{CMD_CAMBIAR_PARAM_PC},{nombre},{valor}")
 
     def imprimir(self, ruta_bmp):
         self._enviar(f"{CMD_IMPRIMIR},{PARAM_PRIMERA_COPIA},{ruta_bmp},"

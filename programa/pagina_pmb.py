@@ -34,6 +34,12 @@ POSICION_INICIAL_X_MM = 0.0   # donde aparece una imagen recien cargada
 POSICION_INICIAL_Y_MM = 0.0
 
 
+def calcular_offset_x(x_cabezal_mm, x_imagen_mm):
+    """Distancia que recorre el carro desde el PULSE hasta que el borde de la
+    imagen pasa bajo el cabezal."""
+    return x_cabezal_mm - x_imagen_mm - config.POSICION_PULSE_MM
+
+
 class PaginaPMB(QObject):
 
     def __init__(self, ui, pmb, posicion_cabezal, parent=None):
@@ -50,7 +56,7 @@ class PaginaPMB(QObject):
         self.espejo_x = False
         self.espejo_y = False
         self.carpeta_trabajo = None
-        self.render_pendiente = None
+        self._tras_completar = None   # accion a ejecutar cuando el PMB confirme el comando en curso
 
         self.ui.txtMessage.setReadOnly(True)
 
@@ -226,17 +232,21 @@ class PaginaPMB(QObject):
             return
 
         x_mesa_mm, y_mesa_mm = self.mesa.posicion_imagen_mm()
-        # TODO: decidir como combinar x_mesa_mm con posicion_x (cabezal) para el XOffset
+        offset_x_mm = calcular_offset_x(posicion_x, x_mesa_mm)
         self.registrar(f"[PMB] Imagen en mesa: X={x_mesa_mm:.{DECIMALES_POSICION}f} mm, "
-                       f"Y={y_mesa_mm:.{DECIMALES_POSICION}f} mm")
+                       f"Y={y_mesa_mm:.{DECIMALES_POSICION}f} mm; "
+                       f"cabezal a {posicion_x:.{DECIMALES_POSICION}f} mm -> "
+                       f"{config.PARAMETRO_OFFSET_X} = {offset_x_mm:.{DECIMALES_POSICION}f} mm")
 
         try:
             ruta_vpi = vpi.generar_vpi(
                 ruta_imagen=self.ruta_imagen,
                 ancho_mm=self.ancho_imagen_mm,
                 alto_mm=self.alto_imagen_mm,
-                pos_x_mm=posicion_x,
                 pos_y_mm=y_mesa_mm,
+                offset_x_mm=offset_x_mm,
+                x_imagen_mm=x_mesa_mm,
+                x_cabezal_mm=posicion_x,
                 rotacion=self.rotacion_imagen,
                 espejo_x=self.espejo_x,
                 espejo_y=self.espejo_y)
@@ -246,16 +256,34 @@ class PaginaPMB(QObject):
 
         self.carpeta_trabajo = os.path.dirname(ruta_vpi)
         self.registrar(f"[PMB] Trabajo generado: {ruta_vpi}")
-        self.render_pendiente = vpi.ruta_render(ruta_vpi)
+        ruta_bmp = vpi.ruta_render(ruta_vpi)
+        self._encadenar(lambda: self.pmb.renderizar(ruta_bmp))
         self.pmb.cargar_vpi(ruta_vpi)
 
+    # ===== encadenado de comandos =====
+    def _encadenar(self, accion):
+        """Registra la accion que se ejecutara cuando el PMB complete el siguiente comando."""
+        self._tras_completar = accion
+
     def tras_completar(self, id_comando):
-        """Lanza el render cuando el servidor confirma la carga del VPI."""
-        if self.render_pendiente is None:
+        """El PMB ha completado un comando: ejecutar la accion encadenada, si la hay."""
+        if self._tras_completar is None:
             return
-        ruta = self.render_pendiente
-        self.render_pendiente = None
-        self.pmb.renderizar(ruta)
+        accion = self._tras_completar
+        self._tras_completar = None
+        accion()
+
+    def _enviar_offset_y_luego(self, accion):
+        """Aplica el XOffset del trabajo y, cuando el Print Controller lo confirme, ejecuta accion.
+        Devuelve False si el trabajo no tiene offset guardado."""
+        offset_x_mm = vpi.leer_offset_x(self.carpeta_trabajo)
+        if offset_x_mm is None:
+            self.registrar("[PMB] El trabajo no tiene offset X guardado (falta position_x.json)")
+            return False
+        self.registrar(f"[PMB] {config.PARAMETRO_OFFSET_X} = {offset_x_mm:.{DECIMALES_POSICION}f} mm")
+        self._encadenar(accion)
+        self.pmb.cambiar_parametro_pc(config.PARAMETRO_OFFSET_X, offset_x_mm)
+        return True
 
     def seleccionar_trabajo(self):
         carpeta = QFileDialog.getExistingDirectory(self.mesa.window(),
@@ -265,17 +293,23 @@ class PaginaPMB(QObject):
         self.carpeta_trabajo = os.path.normpath(carpeta)
         self.registrar(f"[PMB] Trabajo: {self.carpeta_trabajo}")
 
+    def _ruta_bmp(self):
+        return os.path.join(self.carpeta_trabajo, vpi.NOMBRE_RENDER)
+
     def imprimir(self):
         if self.carpeta_trabajo is None:
             self.registrar("[PMB] No hay ninguna carpeta de trabajo seleccionada")
             return
-        self.pmb.imprimir(os.path.join(self.carpeta_trabajo, vpi.NOMBRE_RENDER))
+        self._enviar_offset_y_luego(lambda: self.pmb.imprimir(self._ruta_bmp()))
 
     def armar_impresion(self):
-        """Arma los cabezales: el PMB queda esperando la senal de print go."""
+        """Aplica el XOffset y arma los cabezales: el PMB queda esperando el print go."""
         if self.carpeta_trabajo is None:
             self.registrar("[PMB] No hay ningun trabajo rasterizado")
             return False
-        self.pmb.imprimir(os.path.join(self.carpeta_trabajo, vpi.NOMBRE_RENDER))
-        self.registrar("[PMB] Cabezales armados, esperando print go")
-        return True
+
+        def armar():
+            self.pmb.imprimir(self._ruta_bmp())
+            self.registrar("[PMB] Cabezales armados, esperando print go")
+
+        return self._enviar_offset_y_luego(armar)

@@ -30,6 +30,9 @@ CARPETA_BASE    = os.path.join(os.path.expanduser("~"), "MATERIALIGHT")
 CARPETA_SALIDA  = os.path.join(CARPETA_BASE, "RIPOutput")
 NOMBRE_PLANTILLA = "template.vpi"
 NOMBRE_POSICION  = "position_x.json"
+CLAVE_OFFSET_X   = "offset_x_mm"
+CLAVE_X_IMAGEN   = "x_imagen_mm"
+CLAVE_X_CABEZAL  = "x_cabezal_mm"
 NOMBRE_RENDER    = "img.bmp"
 
 # ===== FORMATO =====
@@ -44,16 +47,19 @@ def _ruta_plantilla():
     return os.path.join(os.path.dirname(os.path.realpath(__file__)), NOMBRE_PLANTILLA)
 
 
-def generar_vpi(ruta_imagen, ancho_mm, alto_mm, pos_x_mm, pos_y_mm,
+def generar_vpi(ruta_imagen, ancho_mm, alto_mm, pos_y_mm, offset_x_mm,
+                x_imagen_mm, x_cabezal_mm,
                 rotacion=0, espejo_x=False, espejo_y=False,
                 ancho_cabezal_mm=ANCHO_CABEZAL_MM):
     """Crea la carpeta del trabajo y devuelve la ruta del .vpi generado.
 
-    ruta_imagen : imagen a imprimir
-    ancho_mm    : ancho real de la imagen en mm
-    alto_mm     : alto real de la imagen en mm
-    pos_x_mm    : posicion a lo largo del recorrido (se guarda para el XOffset)
-    pos_y_mm    : posicion perpendicular, dentro del ancho del cabezal
+    ruta_imagen  : imagen a imprimir
+    ancho_mm     : ancho real de la imagen en mm
+    alto_mm      : alto real de la imagen en mm
+    pos_y_mm     : posicion perpendicular, dentro del ancho del cabezal
+    offset_x_mm  : XOffset ya calculado, se guarda para aplicarlo al imprimir
+    x_imagen_mm  : X de la imagen en la mesa (solo informativo, queda en el json)
+    x_cabezal_mm : distancia del cabezal (solo informativo, queda en el json)
     """
     plantilla = _ruta_plantilla()
     if not os.path.exists(plantilla):
@@ -65,9 +71,11 @@ def generar_vpi(ruta_imagen, ancho_mm, alto_mm, pos_x_mm, pos_y_mm,
     carpeta_trabajo = os.path.join(CARPETA_SALIDA, f"{marca}_{nombre_base}")
     os.makedirs(carpeta_trabajo, exist_ok=True)
 
-    # --- posicion X, para el XOffset del momento de imprimir ---
+    # --- offset X, para aplicarlo al Print Controller al imprimir ---
     with open(os.path.join(carpeta_trabajo, NOMBRE_POSICION), "w", encoding="utf-8") as f:
-        json.dump({"pos_x_mm": pos_x_mm}, f)
+        json.dump({CLAVE_OFFSET_X: offset_x_mm,
+                   CLAVE_X_IMAGEN: x_imagen_mm,
+                   CLAVE_X_CABEZAL: x_cabezal_mm}, f, indent=2)
 
     # --- copia de la imagen junto al trabajo ---
     nueva_imagen = os.path.join(carpeta_trabajo, os.path.basename(ruta_imagen))
@@ -119,3 +127,13 @@ def generar_vpi(ruta_imagen, ancho_mm, alto_mm, pos_x_mm, pos_y_mm,
 def ruta_render(ruta_vpi):
     """Ruta del bitmap rasterizado que corresponde a un trabajo."""
     return os.path.join(os.path.dirname(ruta_vpi), NOMBRE_RENDER)
+
+
+def leer_offset_x(carpeta_trabajo):
+    """XOffset guardado en la carpeta del trabajo, o None si no existe o es ilegible."""
+    ruta = os.path.join(carpeta_trabajo, NOMBRE_POSICION)
+    try:
+        with open(ruta, "r", encoding="utf-8") as f:
+            return float(json.load(f)[CLAVE_OFFSET_X])
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
