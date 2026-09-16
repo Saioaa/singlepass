@@ -37,7 +37,7 @@ class Ui_MainWindow(object):
         self.menu = QWidget()
         self.menu.setObjectName(u"menu")
         self.menu.setStyleSheet(u"QWidget#menu{\n"
-"	backgroun-color: rgb(217, 217, 217);\n"
+"	background-color: rgb(217, 217, 217);\n"
 "	border: 3px solid #333333;\n"
 "	border-radius: 10px\n"
 "}")
@@ -46,7 +46,7 @@ class Ui_MainWindow(object):
         self.label.setGeometry(QRect(760, 60, 301, 91))
         self.label.setStyleSheet(u"color: #62CBC9;\n"
 "font-size: 48px;\n"
-"font-weiht: bold;\n"
+"font-weight: bold;\n"
 "font-family: nunito;\n"
 "text-align: center;")
         self.label.setAlignment(Qt.AlignCenter)
@@ -88,7 +88,7 @@ class Ui_MainWindow(object):
         self.movimientos = QWidget()
         self.movimientos.setObjectName(u"movimientos")
         self.movimientos.setStyleSheet(u"QWidget#movimientos{\n"
-"	backgroun-color: rgb(217, 217, 217);\n"
+"	background-color: rgb(217, 217, 217);\n"
 "	border: 3px solid #333333;\n"
 "	border-radius: 10px\n"
 "}")
@@ -97,7 +97,7 @@ class Ui_MainWindow(object):
         self.label_2.setGeometry(QRect(800, 80, 221, 91))
         self.label_2.setStyleSheet(u"color: #62CBC9;\n"
 "font-size: 36px;\n"
-"font-weiht: bold;\n"
+"font-weight: bold;\n"
 "font-family: nunito;\n"
 "text-align: center;")
         self.label_2.setAlignment(Qt.AlignCenter)
@@ -115,8 +115,8 @@ class Ui_MainWindow(object):
 "    border-radius: 5px;\n"
 "    padding-top: 10px;\n"
 "	padding-bottom: 10px;\n"
-"	padding_right: 1px;\n"
-"	padding_left: 1px;\n"
+"	padding-right: 1px;\n"
+"	padding-left: 1px;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;\n"
 "}\n"
@@ -718,7 +718,7 @@ class Ui_MainWindow(object):
         self.label_10.setGeometry(QRect(750, 100, 221, 61))
         self.label_10.setStyleSheet(u"color: #62CBC9;\n"
 "font-size: 36px;\n"
-"font-weiht: bold;\n"
+"font-weight: bold;\n"
 "font-family: nunito;\n"
 "text-align: center;")
         self.label_10.setAlignment(Qt.AlignCenter)

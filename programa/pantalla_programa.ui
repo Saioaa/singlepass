@@ -36,7 +36,7 @@
     <widget class="QWidget" name="menu">
      <property name="styleSheet">
       <string notr="true">QWidget#menu{
-	backgroun-color: rgb(217, 217, 217);
+	background-color: rgb(217, 217, 217);
 	border: 3px solid #333333;
 	border-radius: 10px
 }</string>
@@ -53,7 +53,7 @@
       <property name="styleSheet">
        <string notr="true">color: #62CBC9;
 font-size: 48px;
-font-weiht: bold;
+font-weight: bold;
 font-family: nunito;
 text-align: center;</string>
       </property>
@@ -126,7 +126,7 @@ QPushButton:pressed {
     <widget class="QWidget" name="movimientos">
      <property name="styleSheet">
       <string notr="true">QWidget#movimientos{
-	backgroun-color: rgb(217, 217, 217);
+	background-color: rgb(217, 217, 217);
 	border: 3px solid #333333;
 	border-radius: 10px
 }</string>
@@ -143,7 +143,7 @@ QPushButton:pressed {
       <property name="styleSheet">
        <string notr="true">color: #62CBC9;
 font-size: 36px;
-font-weiht: bold;
+font-weight: bold;
 font-family: nunito;
 text-align: center;</string>
       </property>
@@ -173,8 +173,8 @@ text-align: center;</string>
     border-radius: 5px;
     padding-top: 10px;
 	padding-bottom: 10px;
-	padding_right: 1px;
-	padding_left: 1px;
+	padding-right: 1px;
+	padding-left: 1px;
 	font-size: 16px;
 	font-family: nunito;
 }
@@ -1260,7 +1260,7 @@ QPushButton:pressed {
       <property name="styleSheet">
        <string notr="true">color: #62CBC9;
 font-size: 36px;
-font-weiht: bold;
+font-weight: bold;
 font-family: nunito;
 text-align: center;</string>
       </property>
