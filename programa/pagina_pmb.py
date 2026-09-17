@@ -14,8 +14,6 @@ El boton Print cambia de aspecto segun el estado del trabajo:
     armando          -> igual que render listo (dura decimas de segundo)
     listo            -> verde fijo, "Ready to Print"
 
-Widgets de la pagina sin funcion todavia:
-    load_previews, rip1..rip4
 """
 
 import os
@@ -136,7 +134,6 @@ class PaginaPMB(QObject):
         self.ui.btnMirrorY.clicked.connect(self.espejar_y)
         self.ui.btnRip.clicked.connect(self.generar_trabajo)
         self.ui.btn_clear.clicked.connect(self.limpiar_imagen)
-        self.ui.load_previews.clicked.connect(self.cargar_previews)
         self._recuadros_preview = [self.ui.rip1, self.ui.rip2, self.ui.rip3, self.ui.rip4]
 
     # ===== utilidades =====
