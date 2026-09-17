@@ -59,6 +59,7 @@ INFO_PASADA          = "SP"
 INFO_IMPRIMIENDO     = "P"
 INFO_LISTO_IMPRIMIR  = "RTP"
 INFO_FIN_IMPRESION   = "EP"
+INFO_ETIQUETA_ACTUAL = "L"    # numero de etiqueta/pasada en curso (informativo, no se registra)
 INFO_REGISTRO        = "G"
 INFO_CABEZALES       = "H"    # XML de estado de cabezales (llega cada PrintHeadStatusReadDelay ms)
 
@@ -274,7 +275,7 @@ class ClientePMB(QObject):
                         break
                     recibido += datos.decode("utf-8", errors="replace")
         except socket.timeout:
-            self.mensaje.emit("[PMB] Aborto enviado, sin acuse del servidor")
+            self.mensaje.emit("[PMB] Aborto enviado")
             return True
         except OSError as e:
             self.mensaje.emit(f"[PMB] No se ha podido enviar el aborto: {e}")
@@ -336,8 +337,7 @@ class ClientePMB(QObject):
             self.comando_fallido.emit(id_comando, codigo)
             return
 
-        if info:
-            self.mensaje.emit(f"[PMB] {info}")
+        # la informacion devuelta (lista de modos, dpi...) se procesa abajo, no se registra en bruto
         self.comando_completado.emit(id_comando)
 
         if info.startswith(PREFIJO_LISTA_MODOS):
@@ -357,19 +357,16 @@ class ClientePMB(QObject):
         codigo = partes[POS_CODIGO]
         datos = partes[POS_CODIGO + 1:]
 
-        if codigo == INFO_ESTADO and len(datos) >= 2:
-            self.mensaje.emit(f"[PMB] Estado: {datos[0]} (codigo {datos[1]})")
-        elif codigo == INFO_SEMAFORO:
-            pass   # el semaforo no aporta nada al operario; el estado S ya lo dice
-        elif codigo == INFO_PASADA and datos:
-            self.mensaje.emit(f"[PMB] Pasada procesada: {datos[0]}")
-        elif codigo == INFO_IMPRIMIENDO:
-            self.mensaje.emit("[PMB] Impresion iniciada")
-        elif codigo == INFO_LISTO_IMPRIMIR and datos:
-            self.mensaje.emit(f"[PMB] Listo para imprimir ({datos[0]} pasadas)")
+        # Los mensajes I llegan por duplicado (uno por el listener P,L y otro por el
+        # comando en curso); los que solo informan se registran, los que disparan
+        # acciones salen por senal y la interfaz decide que escribir.
+        if codigo == INFO_ESTADO and datos:
+            self.mensaje.emit(f"[PMB] Estado: {datos[0]}")
+        elif codigo in (INFO_SEMAFORO, INFO_ETIQUETA_ACTUAL, INFO_PASADA, INFO_IMPRIMIENDO):
+            pass   # sin interes para el operario: semaforo, etiqueta y pasada en curso, print started
+        elif codigo == INFO_LISTO_IMPRIMIR:
             self.listo_para_imprimir.emit()
         elif codigo == INFO_FIN_IMPRESION:
-            self.mensaje.emit("[PMB] Impresion completada")
             self.impresion_terminada.emit()
         elif codigo == INFO_REGISTRO and datos:
             nivel = self._texto_nivel(datos[0])

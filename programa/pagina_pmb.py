@@ -21,6 +21,8 @@ Widgets de la pagina sin funcion todavia:
 import os
 import re
 
+import time
+
 from PySide6.QtCore import QLocale, QObject, Qt, QTimer
 from PySide6.QtGui import QColor, QDoubleValidator, QPainter, QPixmap, QTransform
 from PySide6.QtWidgets import QFileDialog
@@ -39,6 +41,10 @@ PATRON_DPI      = r"(\d+)\s*dpi"
 # ===== PREVIEWS DE LOS PLANOS DE COLOR =====
 NUMERO_PLANOS   = 4          # img_0..img_3
 COLOR_FONDO_PREVIEW = "white"
+
+# ===== REGISTRO =====
+NOMBRE_OFFSET_X = "XOffset"   # como se llama en los mensajes al parametro del Print Controller
+VENTANA_DUPLICADOS_S = 2.0    # un mensaje identico al anterior dentro de esta ventana no se repite
 
 # ===== ESTADOS DEL BOTON PRINT =====
 ESTADO_SIN_TRABAJO  = "sin_trabajo"
@@ -115,6 +121,7 @@ class PaginaPMB(QObject):
         self.pmb.listo_para_imprimir.connect(self._armado)
         self.pmb.estado_cabezales.connect(self.mostrar_cabezales)
         self._cabezales_registrados = False
+        self._ultimo_mensaje = ("", 0.0)
         self.pmb.conexion_perdida.connect(lambda _motivo: self._poner_estado(ESTADO_SIN_TRABAJO))
 
         # botones de la pagina
@@ -134,6 +141,11 @@ class PaginaPMB(QObject):
 
     # ===== utilidades =====
     def registrar(self, texto):
+        ahora = time.monotonic()
+        anterior, instante = self._ultimo_mensaje
+        if texto == anterior and ahora - instante < VENTANA_DUPLICADOS_S:
+            return   # el PMB repite los avisos (listener + comando): se muestra uno
+        self._ultimo_mensaje = (texto, ahora)
         self.ui.txtMessage.append(texto)
 
     def entrar(self):
@@ -156,11 +168,11 @@ class PaginaPMB(QObject):
     def modo_seleccionado(self, modo):
         if not modo:
             return
+        # el nombre del modo lleva la resolucion: se toma de ahi sin registrar nada,
+        # y se pide la informacion al servidor, que la confirmara por dpi_recibido
         resolucion = re.findall(PATRON_DPI, modo, re.IGNORECASE)
         if len(resolucion) == 2:
-            self.guardar_dpi(int(resolucion[0]), int(resolucion[1]))
-        else:
-            self.registrar(f"[PMB] No se ha podido leer la resolucion de: {modo}")
+            self.dpi_actual = (int(resolucion[0]), int(resolucion[1]))
         self.pmb.pedir_info_modo(modo)
 
     def guardar_dpi(self, dpi_x, dpi_y):
@@ -277,7 +289,7 @@ class PaginaPMB(QObject):
         self.registrar(f"[PMB] Imagen en mesa: X={x_mesa_mm:.{DECIMALES_POSICION}f} mm, "
                        f"Y={y_mesa_mm:.{DECIMALES_POSICION}f} mm; "
                        f"cabezal a {posicion_x:.{DECIMALES_POSICION}f} mm -> "
-                       f"{config.PARAMETRO_OFFSET_X} = {offset_x_mm:.{DECIMALES_POSICION}f} mm")
+                       f"{NOMBRE_OFFSET_X} = {offset_x_mm:.{DECIMALES_POSICION}f} mm")
 
         try:
             ruta_vpi = vpi.generar_vpi(
@@ -307,7 +319,6 @@ class PaginaPMB(QObject):
         self.pmb.renderizar(ruta_bmp)
 
     def _render_listo(self):
-        self.registrar("[PMB] Render terminado, listo para armar")
         self._poner_estado(ESTADO_RENDER_LISTO)
         self.cargar_previews()
 
@@ -333,8 +344,8 @@ class PaginaPMB(QObject):
                 continue
             recuadro.setPixmap(self._componer_preview(recuadro.size(), plano, x_mm, ancho_mm))
             cargados += 1
-        if cargados:
-            self.registrar(f"[PMB] {cargados} planos cargados en las previews")
+        if not cargados:
+            self.registrar("[PMB] No se han encontrado los planos rasterizados del trabajo")
 
     @staticmethod
     def _componer_preview(tamano, plano, x_mm, ancho_mm):
@@ -396,7 +407,7 @@ class PaginaPMB(QObject):
 
     def tras_fin_impresion(self):
         """El PMB ha terminado de imprimir (I,<id>,EP): el trabajo sigue disponible."""
-        self.registrar("[PMB] Fin de impresion")
+        self.registrar("[PMB] Impresion completada")
         self._poner_estado(ESTADO_RENDER_LISTO)
 
     def abortar(self):
@@ -424,7 +435,6 @@ class PaginaPMB(QObject):
         if offset_x_mm is None:
             self.registrar("[PMB] El trabajo no tiene offset X guardado (falta position_x.json)")
             return False
-        self.registrar(f"[PMB] {config.PARAMETRO_OFFSET_X} = {offset_x_mm:.{DECIMALES_POSICION}f} mm")
         self._encadenar(accion)
         self.pmb.cambiar_parametro_pc(config.PARAMETRO_OFFSET_X, offset_x_mm)
         return True

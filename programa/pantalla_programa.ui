@@ -31,7 +31,7 @@
 </string>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="menu">
      <property name="styleSheet">
@@ -940,9 +940,9 @@ border-radius: 5px;</string>
      <widget class="QLabel" name="lblSizeValue">
       <property name="geometry">
        <rect>
-        <x>1100</x>
+        <x>1210</x>
         <y>10</y>
-        <width>251</width>
+        <width>150</width>
         <height>40</height>
        </rect>
       </property>
@@ -1106,35 +1106,6 @@ border-radius: 5px;</string>
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QPushButton" name="load_previews">
-      <property name="geometry">
-       <rect>
-        <x>1580</x>
-        <y>10</y>
-        <width>170</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QPushButton {
-    background-color: #62CBC9;
-    border: 2px solid #333333;
-    border-radius: 5px;
-    padding: 10px;
-	font-size: 16px;
-	font-family: nunito;
-}
-QPushButton:hover {
-    background-color: rgb(170, 255, 255);
-}
-QPushButton:pressed {
-    background-color: rgb(206, 255, 252);
-}</string>
-      </property>
-      <property name="text">
-       <string>Load previews</string>
-      </property>
-     </widget>
      <widget class="QLabel" name="pos_y_real">
       <property name="geometry">
        <rect>
@@ -1189,7 +1160,7 @@ QPushButton:pressed {
      <widget class="QLabel" name="lblSizeText">
       <property name="geometry">
        <rect>
-        <x>1000</x>
+        <x>1110</x>
         <y>30</y>
         <width>81</width>
         <height>20</height>

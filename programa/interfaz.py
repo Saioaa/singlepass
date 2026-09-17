@@ -13,7 +13,7 @@ import os
 import re
 
 from PySide6.QtCore import QEvent, QLocale, QRectF, QSize, Qt, QTimer
-from PySide6.QtGui import QBrush, QColor, QDoubleValidator, QGuiApplication, QPen, QPixmap
+from PySide6.QtGui import QBrush, QColor, QDoubleValidator, QGuiApplication, QIcon, QPen, QPixmap
 from PySide6.QtWidgets import (QAbstractButton, QFrame, QGraphicsRectItem,
                                QGraphicsScene, QGraphicsTextItem, QMainWindow, QWidget)
 
@@ -63,6 +63,14 @@ ACELERACION_REPOSO      = 40
 DECELERACION_REPOSO     = 40
 SENTIDO_DERECHA   = +1
 SENTIDO_IZQUIERDA = -1
+# iconos de los botones de jog: se cargan desde codigo porque Designer reescribe
+# las rutas relativas del .ui segun desde donde se abra
+ICONOS_JOG = {
+    "bt_mov_izquierda_rapido": "doble_flecha_izquierda.png",
+    "bt_mov_izquierda":        "play_redondeado_izquierda.png",
+    "bt_mov_derecha":          "play_redondeado_derecha.png",
+    "bt_mov_derecha_rapido":   "doble_flecha_derecha.png",
+}
 
 # ===== TEMPORIZADORES (ms) =====
 PERIODO_VIGILANCIA_JOG    = 50    # comprobacion de limites durante el jog
@@ -141,6 +149,13 @@ class VentanaPrincipal(QMainWindow):
         self.ui.bt_mov_izquierda_rapido.pressed.connect(self.mov_izquierda_rapido)
         self.ui.bt_mov_derecha_rapido.released.connect(self.stop_motor)
         self.ui.bt_mov_izquierda_rapido.released.connect(self.stop_motor)
+
+        for nombre_boton, archivo in ICONOS_JOG.items():
+            ruta = os.path.join(config.CARPETA_IMAGENES, archivo)
+            if os.path.exists(ruta):
+                getattr(self.ui, nombre_boton).setIcon(QIcon(ruta))
+            else:
+                print(f"[UI] Falta el icono {ruta}")
 
         self.ui.objetivo.setValidator(validador)
         self.ui.vel_objetivo.setValidator(validador)

@@ -559,7 +559,7 @@ class Ui_MainWindow(object):
 "border-radius: 5px;")
         self.lblSizeValue = QLabel(self.PMB8)
         self.lblSizeValue.setObjectName(u"lblSizeValue")
-        self.lblSizeValue.setGeometry(QRect(1100, 10, 251, 40))
+        self.lblSizeValue.setGeometry(QRect(1210, 10, 150, 40))
         self.lblSizeValue.setStyleSheet(u"  background-color: #3F4D4C;\n"
 "color: #62CBC9;\n"
 "    border: 2px solid #62CBC9;\n"
@@ -642,23 +642,6 @@ class Ui_MainWindow(object):
 "border: 2px solid #62CBC9;\n"
 "border-radius: 5px;")
         self.txtMessage.setReadOnly(True)
-        self.load_previews = QPushButton(self.PMB8)
-        self.load_previews.setObjectName(u"load_previews")
-        self.load_previews.setGeometry(QRect(1580, 10, 170, 41))
-        self.load_previews.setStyleSheet(u"QPushButton {\n"
-"    background-color: #62CBC9;\n"
-"    border: 2px solid #333333;\n"
-"    border-radius: 5px;\n"
-"    padding: 10px;\n"
-"	font-size: 16px;\n"
-"	font-family: nunito;\n"
-"}\n"
-"QPushButton:hover {\n"
-"    background-color: rgb(170, 255, 255);\n"
-"}\n"
-"QPushButton:pressed {\n"
-"    background-color: rgb(206, 255, 252);\n"
-"}")
         self.pos_y_real = QLabel(self.PMB8)
         self.pos_y_real.setObjectName(u"pos_y_real")
         self.pos_y_real.setGeometry(QRect(60, 494, 161, 41))
@@ -688,7 +671,7 @@ class Ui_MainWindow(object):
 "}")
         self.lblSizeText = QLabel(self.PMB8)
         self.lblSizeText.setObjectName(u"lblSizeText")
-        self.lblSizeText.setGeometry(QRect(1000, 30, 81, 20))
+        self.lblSizeText.setGeometry(QRect(1110, 30, 81, 20))
         self.lblSizeText.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
@@ -1381,7 +1364,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(2)
+        self.stackedWidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -1428,7 +1411,6 @@ class Ui_MainWindow(object):
         self.btnNewjob.setText(QCoreApplication.translate("MainWindow", u"New\n"
 "image", None))
         self.btnRip.setText(QCoreApplication.translate("MainWindow", u"Render", None))
-        self.load_previews.setText(QCoreApplication.translate("MainWindow", u"Load previews", None))
         self.pos_y_real.setText("")
         self.btnMirrorX.setText(QCoreApplication.translate("MainWindow", u"Mirror X", None))
         self.lblSizeText.setText(QCoreApplication.translate("MainWindow", u"Size (mm):", None))
