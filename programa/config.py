@@ -36,4 +36,4 @@ MESA_ALTO_MM  = 210
 # ===== OFFSET X DE IMPRESION (Print Controller) =====
 # XOffset = DISTANCIA_CABEZAL (pagina Programa) - X_IMAGEN (mesa) - POSICION_PULSE_MM
 POSICION_PULSE_MM   = POSICION_REPOSO_MM   # posicion del carro cuando se envia el PULSE
-PARAMETRO_OFFSET_X  = "XOffset"            # Data Unique ID del parametro en el Print Controller
+PARAMETRO_OFFSET_X  = '"Print Manager,Print Line Manager,Master PMB,PhysicalPrePrintBufferLength"'
