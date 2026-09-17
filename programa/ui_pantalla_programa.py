@@ -48,7 +48,7 @@ class Ui_MainWindow(object):
 "font-weight: bold;\n"
 "font-family: nunito;\n"
 "text-align: center;")
-        self.label.setAlignment(Qt.AlignCenter)
+        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.bt_pg_movimientos2 = QPushButton(self.menu)
         self.bt_pg_movimientos2.setObjectName(u"bt_pg_movimientos2")
         self.bt_pg_movimientos2.setGeometry(QRect(580, 340, 121, 71))
@@ -98,7 +98,7 @@ class Ui_MainWindow(object):
 "font-weight: bold;\n"
 "font-family: nunito;\n"
 "text-align: center;")
-        self.label_2.setAlignment(Qt.AlignCenter)
+        self.label_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.horizontalLayoutWidget = QWidget(self.movimientos)
         self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
         self.horizontalLayoutWidget.setGeometry(QRect(690, 550, 451, 91))
@@ -313,10 +313,10 @@ class Ui_MainWindow(object):
         self.label_5.setStyleSheet(u"color: #62CBC9;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.label_5.setAlignment(Qt.AlignCenter)
+        self.label_5.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.formLayoutWidget = QWidget(self.movimientos)
         self.formLayoutWidget.setObjectName(u"formLayoutWidget")
-        self.formLayoutWidget.setGeometry(QRect(1390, 340, 271, 179))
+        self.formLayoutWidget.setGeometry(QRect(1390, 340, 271, 188))
         self.formLayout = QFormLayout(self.formLayoutWidget)
         self.formLayout.setObjectName(u"formLayout")
         self.formLayout.setContentsMargins(0, 0, 0, 0)
@@ -387,41 +387,31 @@ class Ui_MainWindow(object):
 "font-size: 16px;\n"
 "font-family: nunito;\n"
 "font-weight: bold;")
-        self.label_6.setAlignment(Qt.AlignCenter)
+        self.label_6.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.stackedWidget.addWidget(self.movimientos)
         self.PMB8 = QWidget()
         self.PMB8.setObjectName(u"PMB8")
-        self.lab_printarea = QLabel(self.PMB8)
-        self.lab_printarea.setObjectName(u"lab_printarea")
-        self.lab_printarea.setGeometry(QRect(950, 10, 420, 41))
-        self.lab_printarea.setStyleSheet(u"  background-color: #3F4D4C;\n"
-"color: #62CBC9;\n"
-"    border: 2px solid #62CBC9;\n"
-"    border-radius: 5px;\n"
-"    padding: 10px;\n"
-"	font-size: 24px;\n"
-"	font-family: nunito;")
         self.label_28 = QLabel(self.PMB8)
         self.label_28.setObjectName(u"label_28")
-        self.label_28.setGeometry(QRect(20, 640, 25, 25))
+        self.label_28.setGeometry(QRect(20, 610, 25, 25))
         self.label_28.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
         self.label_29 = QLabel(self.PMB8)
         self.label_29.setObjectName(u"label_29")
-        self.label_29.setGeometry(QRect(20, 590, 25, 25))
+        self.label_29.setGeometry(QRect(20, 560, 25, 25))
         self.label_29.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
         self.lblCoordsText = QLabel(self.PMB8)
         self.lblCoordsText.setObjectName(u"lblCoordsText")
-        self.lblCoordsText.setGeometry(QRect(30, 440, 130, 20))
+        self.lblCoordsText.setGeometry(QRect(30, 410, 130, 20))
         self.lblCoordsText.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
         self.btnMirrorY = QPushButton(self.PMB8)
         self.btnMirrorY.setObjectName(u"btnMirrorY")
-        self.btnMirrorY.setGeometry(QRect(70, 210, 111, 61))
+        self.btnMirrorY.setGeometry(QRect(70, 250, 111, 61))
         self.btnMirrorY.setStyleSheet(u"QPushButton {\n"
 "    background-color: #62CBC9;\n"
 "    border: 2px solid #333333;\n"
@@ -453,17 +443,17 @@ class Ui_MainWindow(object):
 "border-radius: 5px;")
         self.pos_x_target = QLineEdit(self.PMB8)
         self.pos_x_target.setObjectName(u"pos_x_target")
-        self.pos_x_target.setGeometry(QRect(60, 580, 161, 41))
+        self.pos_x_target.setGeometry(QRect(60, 550, 161, 41))
         self.pos_x_target.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
 "color: rgb(0, 0, 0);\n"
 "border: 2px solid #62CBC9;\n"
 "border-radius: 5px;\n"
 "padding: 10px;\n"
-"font-size: 24px;\n"
+"font-size: 16px;\n"
 "font-family: nunito;")
         self.btnPrint = QPushButton(self.PMB8)
         self.btnPrint.setObjectName(u"btnPrint")
-        self.btnPrint.setGeometry(QRect(1400, 690, 100, 100))
+        self.btnPrint.setGeometry(QRect(1390, 550, 100, 100))
         self.btnPrint.setStyleSheet(u"QPushButton {\n"
 "    background-color: #62CBC9;\n"
 "    border: 2px solid #333333;\n"
@@ -480,13 +470,13 @@ class Ui_MainWindow(object):
 "}")
         self.label_30 = QLabel(self.PMB8)
         self.label_30.setObjectName(u"label_30")
-        self.label_30.setGeometry(QRect(20, 480, 25, 25))
+        self.label_30.setGeometry(QRect(20, 450, 25, 25))
         self.label_30.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
         self.btnSelect = QPushButton(self.PMB8)
         self.btnSelect.setObjectName(u"btnSelect")
-        self.btnSelect.setGeometry(QRect(1400, 230, 100, 100))
+        self.btnSelect.setGeometry(QRect(1390, 190, 100, 100))
         font = QFont()
         font.setFamilies([u"nunito"])
         self.btnSelect.setFont(font)
@@ -506,7 +496,7 @@ class Ui_MainWindow(object):
 "}")
         self.btn_clear = QPushButton(self.PMB8)
         self.btn_clear.setObjectName(u"btn_clear")
-        self.btn_clear.setGeometry(QRect(1400, 910, 100, 41))
+        self.btn_clear.setGeometry(QRect(1610, 970, 100, 41))
         self.btn_clear.setStyleSheet(u"QPushButton {\n"
 "	background-color: rgb(227, 0, 0);\n"
 "	border: 2px solid #333333;\n"
@@ -536,7 +526,7 @@ class Ui_MainWindow(object):
 "border-radius: 5px;")
         self.btnRotate = QPushButton(self.PMB8)
         self.btnRotate.setObjectName(u"btnRotate")
-        self.btnRotate.setGeometry(QRect(70, 70, 111, 61))
+        self.btnRotate.setGeometry(QRect(70, 110, 111, 61))
         self.btnRotate.setStyleSheet(u"QPushButton {\n"
 "    background-color: #62CBC9;\n"
 "    border: 2px solid #333333;\n"
@@ -553,13 +543,13 @@ class Ui_MainWindow(object):
 "}")
         self.pos_y_target = QLineEdit(self.PMB8)
         self.pos_y_target.setObjectName(u"pos_y_target")
-        self.pos_y_target.setGeometry(QRect(60, 630, 161, 41))
+        self.pos_y_target.setGeometry(QRect(60, 600, 161, 41))
         self.pos_y_target.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
 "color: rgb(0, 0, 0);\n"
 "border: 2px solid #62CBC9;\n"
 "border-radius: 5px;\n"
 "padding: 10px;\n"
-"font-size: 24px;\n"
+"font-size: 22px;\n"
 "font-family: nunito;")
         self.rip1 = QLabel(self.PMB8)
         self.rip1.setObjectName(u"rip1")
@@ -569,13 +559,13 @@ class Ui_MainWindow(object):
 "border-radius: 5px;")
         self.lblSizeValue = QLabel(self.PMB8)
         self.lblSizeValue.setObjectName(u"lblSizeValue")
-        self.lblSizeValue.setGeometry(QRect(30, 340, 191, 50))
+        self.lblSizeValue.setGeometry(QRect(1120, 20, 231, 30))
         self.lblSizeValue.setStyleSheet(u"  background-color: #3F4D4C;\n"
 "color: #62CBC9;\n"
 "    border: 2px solid #62CBC9;\n"
 "    border-radius: 5px;\n"
 "    padding: 10px;\n"
-"	font-size: 24px;\n"
+"	font-size: 16px;\n"
 "	font-family: nunito;")
         self.rip3 = QLabel(self.PMB8)
         self.rip3.setObjectName(u"rip3")
@@ -585,13 +575,13 @@ class Ui_MainWindow(object):
 "border-radius: 5px;")
         self.pos_x_real = QLabel(self.PMB8)
         self.pos_x_real.setObjectName(u"pos_x_real")
-        self.pos_x_real.setGeometry(QRect(60, 474, 161, 41))
+        self.pos_x_real.setGeometry(QRect(60, 444, 161, 41))
         self.pos_x_real.setStyleSheet(u"  background-color: #3F4D4C;\n"
 "color: #62CBC9;\n"
 "    border: 2px solid #62CBC9;\n"
 "    border-radius: 5px;\n"
 "    padding: 10px;\n"
-"	font-size: 24px;\n"
+"	font-size: 20px;\n"
 "	font-family: nunito;")
         self.btnUpdateMode = QPushButton(self.PMB8)
         self.btnUpdateMode.setObjectName(u"btnUpdateMode")
@@ -612,7 +602,7 @@ class Ui_MainWindow(object):
 "}")
         self.btnNewjob = QPushButton(self.PMB8)
         self.btnNewjob.setObjectName(u"btnNewjob")
-        self.btnNewjob.setGeometry(QRect(1400, 90, 100, 100))
+        self.btnNewjob.setGeometry(QRect(1390, 70, 100, 100))
         self.btnNewjob.setStyleSheet(u"QPushButton {\n"
 "    background-color: #62CBC9;\n"
 "    border: 2px solid #333333;\n"
@@ -629,7 +619,7 @@ class Ui_MainWindow(object):
 "}")
         self.btnRip = QPushButton(self.PMB8)
         self.btnRip.setObjectName(u"btnRip")
-        self.btnRip.setGeometry(QRect(1400, 540, 100, 100))
+        self.btnRip.setGeometry(QRect(1390, 410, 100, 100))
         self.btnRip.setStyleSheet(u"QPushButton {\n"
 "    background-color: #62CBC9;\n"
 "    border: 2px solid #333333;\n"
@@ -654,7 +644,7 @@ class Ui_MainWindow(object):
         self.txtMessage.setReadOnly(True)
         self.load_previews = QPushButton(self.PMB8)
         self.load_previews.setObjectName(u"load_previews")
-        self.load_previews.setGeometry(QRect(1570, 10, 170, 41))
+        self.load_previews.setGeometry(QRect(1580, 10, 170, 41))
         self.load_previews.setStyleSheet(u"QPushButton {\n"
 "    background-color: #62CBC9;\n"
 "    border: 2px solid #333333;\n"
@@ -671,17 +661,17 @@ class Ui_MainWindow(object):
 "}")
         self.pos_y_real = QLabel(self.PMB8)
         self.pos_y_real.setObjectName(u"pos_y_real")
-        self.pos_y_real.setGeometry(QRect(60, 524, 161, 41))
+        self.pos_y_real.setGeometry(QRect(60, 494, 161, 41))
         self.pos_y_real.setStyleSheet(u"  background-color: #3F4D4C;\n"
 "color: #62CBC9;\n"
 "    border: 2px solid #62CBC9;\n"
 "    border-radius: 5px;\n"
 "    padding: 10px;\n"
-"	font-size: 24px;\n"
+"	font-size: 18px;\n"
 "	font-family: nunito;")
         self.btnMirrorX = QPushButton(self.PMB8)
         self.btnMirrorX.setObjectName(u"btnMirrorX")
-        self.btnMirrorX.setGeometry(QRect(70, 140, 111, 61))
+        self.btnMirrorX.setGeometry(QRect(70, 180, 111, 61))
         self.btnMirrorX.setStyleSheet(u"QPushButton {\n"
 "    background-color: #62CBC9;\n"
 "    border: 2px solid #333333;\n"
@@ -698,16 +688,33 @@ class Ui_MainWindow(object):
 "}")
         self.lblSizeText = QLabel(self.PMB8)
         self.lblSizeText.setObjectName(u"lblSizeText")
-        self.lblSizeText.setGeometry(QRect(30, 300, 130, 20))
+        self.lblSizeText.setGeometry(QRect(1030, 30, 81, 20))
         self.lblSizeText.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
         self.label_31 = QLabel(self.PMB8)
         self.label_31.setObjectName(u"label_31")
-        self.label_31.setGeometry(QRect(20, 530, 25, 25))
+        self.label_31.setGeometry(QRect(20, 500, 25, 25))
         self.label_31.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
+        self.btnAbort = QPushButton(self.PMB8)
+        self.btnAbort.setObjectName(u"btnAbort")
+        self.btnAbort.setGeometry(QRect(1390, 690, 100, 100))
+        self.btnAbort.setStyleSheet(u"QPushButton {\n"
+"    background-color: #62CBC9;\n"
+"    border: 2px solid #333333;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;\n"
+"}\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(170, 255, 255);\n"
+"}\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(206, 255, 252);\n"
+"}")
         self.stackedWidget.addWidget(self.PMB8)
         self.programa = QWidget()
         self.programa.setObjectName(u"programa")
@@ -719,10 +726,10 @@ class Ui_MainWindow(object):
 "font-weight: bold;\n"
 "font-family: nunito;\n"
 "text-align: center;")
-        self.label_10.setAlignment(Qt.AlignCenter)
+        self.label_10.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.formLayoutWidget_2 = QWidget(self.programa)
         self.formLayoutWidget_2.setObjectName(u"formLayoutWidget_2")
-        self.formLayoutWidget_2.setGeometry(QRect(1370, 280, 311, 509))
+        self.formLayoutWidget_2.setGeometry(QRect(1370, 280, 311, 514))
         self.formLayout_2 = QFormLayout(self.formLayoutWidget_2)
         self.formLayout_2.setObjectName(u"formLayout_2")
         self.formLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -731,7 +738,7 @@ class Ui_MainWindow(object):
         self.label_11.setStyleSheet(u"color: #62CBC9;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.label_11.setAlignment(Qt.AlignCenter)
+        self.label_11.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.formLayout_2.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label_11)
 
@@ -752,7 +759,7 @@ class Ui_MainWindow(object):
         self.label_12.setStyleSheet(u"color: #62CBC9;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.label_12.setAlignment(Qt.AlignCenter)
+        self.label_12.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.formLayout_2.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label_12)
 
@@ -773,7 +780,7 @@ class Ui_MainWindow(object):
         self.label_14.setStyleSheet(u"color: #62CBC9;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.label_14.setAlignment(Qt.AlignCenter)
+        self.label_14.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.formLayout_2.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label_14)
 
@@ -794,7 +801,7 @@ class Ui_MainWindow(object):
         self.label_13.setStyleSheet(u"color: #62CBC9;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.label_13.setAlignment(Qt.AlignCenter)
+        self.label_13.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.formLayout_2.setWidget(4, QFormLayout.ItemRole.LabelRole, self.label_13)
 
@@ -815,7 +822,7 @@ class Ui_MainWindow(object):
         self.label_16.setStyleSheet(u"color: #62CBC9;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.label_16.setAlignment(Qt.AlignCenter)
+        self.label_16.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.formLayout_2.setWidget(5, QFormLayout.ItemRole.LabelRole, self.label_16)
 
@@ -836,7 +843,7 @@ class Ui_MainWindow(object):
         self.label_15.setStyleSheet(u"color: #62CBC9;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.label_15.setAlignment(Qt.AlignCenter)
+        self.label_15.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.formLayout_2.setWidget(6, QFormLayout.ItemRole.LabelRole, self.label_15)
 
@@ -857,7 +864,7 @@ class Ui_MainWindow(object):
         self.label_22.setStyleSheet(u"color: #62CBC9;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.label_22.setAlignment(Qt.AlignCenter)
+        self.label_22.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.formLayout_2.setWidget(8, QFormLayout.ItemRole.LabelRole, self.label_22)
 
@@ -878,7 +885,7 @@ class Ui_MainWindow(object):
         self.label_27.setStyleSheet(u"color: #62CBC9;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.label_27.setAlignment(Qt.AlignCenter)
+        self.label_27.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.formLayout_2.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label_27)
 
@@ -896,7 +903,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayoutWidget_3 = QWidget(self.programa)
         self.verticalLayoutWidget_3.setObjectName(u"verticalLayoutWidget_3")
-        self.verticalLayoutWidget_3.setGeometry(QRect(60, 320, 301, 94))
+        self.verticalLayoutWidget_3.setGeometry(QRect(60, 320, 301, 100))
         self.verticalLayout_3 = QVBoxLayout(self.verticalLayoutWidget_3)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -1182,7 +1189,7 @@ class Ui_MainWindow(object):
 "font-size: 16px;\n"
 "font-family: nunito;\n"
 "font-weight: bold;")
-        self.label_17.setAlignment(Qt.AlignCenter)
+        self.label_17.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout_2.addWidget(self.label_17, 0, 0, 1, 1)
 
@@ -1192,7 +1199,7 @@ class Ui_MainWindow(object):
 "font-size: 16px;\n"
 "font-family: nunito;\n"
 "font-weight: bold;")
-        self.label_18.setAlignment(Qt.AlignCenter)
+        self.label_18.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout_2.addWidget(self.label_18, 0, 1, 1, 1)
 
@@ -1202,7 +1209,7 @@ class Ui_MainWindow(object):
 "font-size: 16px;\n"
 "font-family: nunito;\n"
 "font-weight: bold;")
-        self.label_19.setAlignment(Qt.AlignCenter)
+        self.label_19.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout_2.addWidget(self.label_19, 0, 2, 1, 1)
 
@@ -1212,7 +1219,7 @@ class Ui_MainWindow(object):
 "font-size: 16px;\n"
 "font-family: nunito;\n"
 "font-weight: bold;")
-        self.label_20.setAlignment(Qt.AlignCenter)
+        self.label_20.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout_2.addWidget(self.label_20, 0, 3, 1, 1)
 
@@ -1222,7 +1229,7 @@ class Ui_MainWindow(object):
 "font-size: 16px;\n"
 "font-family: nunito;\n"
 "font-weight: bold;")
-        self.label_21.setAlignment(Qt.AlignCenter)
+        self.label_21.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout_2.addWidget(self.label_21, 0, 4, 1, 1)
 
@@ -1232,7 +1239,7 @@ class Ui_MainWindow(object):
 "font-size: 16px;\n"
 "font-family: nunito;\n"
 "font-weight: bold;")
-        self.label_23.setAlignment(Qt.AlignCenter)
+        self.label_23.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout_2.addWidget(self.label_23, 0, 5, 1, 1)
 
@@ -1242,7 +1249,7 @@ class Ui_MainWindow(object):
 "font-size: 16px;\n"
 "font-family: nunito;\n"
 "font-weight: bold;")
-        self.label_24.setAlignment(Qt.AlignCenter)
+        self.label_24.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout_2.addWidget(self.label_24, 0, 6, 1, 1)
 
@@ -1252,7 +1259,7 @@ class Ui_MainWindow(object):
 "font-size: 16px;\n"
 "font-family: nunito;\n"
 "font-weight: bold;")
-        self.label_25.setAlignment(Qt.AlignCenter)
+        self.label_25.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout_2.addWidget(self.label_25, 0, 7, 1, 1)
 
@@ -1263,7 +1270,7 @@ class Ui_MainWindow(object):
 "font-size: 16px;\n"
 "font-family: nunito;\n"
 "font-weight: bold;")
-        self.label_26.setAlignment(Qt.AlignCenter)
+        self.label_26.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.pg_vista = QGraphicsView(self.programa)
         self.pg_vista.setObjectName(u"pg_vista")
         self.pg_vista.setGeometry(QRect(440, 300, 851, 192))
@@ -1275,7 +1282,7 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.programa)
         self.verticalLayoutWidget_2 = QWidget(self.centralwidget)
         self.verticalLayoutWidget_2.setObjectName(u"verticalLayoutWidget_2")
-        self.verticalLayoutWidget_2.setGeometry(QRect(10, 0, 115, 192))
+        self.verticalLayoutWidget_2.setGeometry(QRect(10, 0, 118, 204))
         self.verticalLayout_2 = QVBoxLayout(self.verticalLayoutWidget_2)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -1366,7 +1373,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1960, 21))
+        self.menubar.setGeometry(QRect(0, 0, 1960, 23))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -1400,7 +1407,6 @@ class Ui_MainWindow(object):
         self.label_8.setText(QCoreApplication.translate("MainWindow", u"Aceleraci\u00f3n", None))
         self.label_9.setText(QCoreApplication.translate("MainWindow", u"Deceleraci\u00f3n", None))
         self.label_6.setText(QCoreApplication.translate("MainWindow", u"Parametros de movimiento", None))
-        self.lab_printarea.setText("")
         self.label_28.setText(QCoreApplication.translate("MainWindow", u"Y:", None))
         self.label_29.setText(QCoreApplication.translate("MainWindow", u"X:", None))
         self.lblCoordsText.setText(QCoreApplication.translate("MainWindow", u"Position:", None))
@@ -1427,6 +1433,7 @@ class Ui_MainWindow(object):
         self.btnMirrorX.setText(QCoreApplication.translate("MainWindow", u"Mirror X", None))
         self.lblSizeText.setText(QCoreApplication.translate("MainWindow", u"Size (mm):", None))
         self.label_31.setText(QCoreApplication.translate("MainWindow", u"Y:", None))
+        self.btnAbort.setText(QCoreApplication.translate("MainWindow", u"Abort", None))
         self.label_10.setText(QCoreApplication.translate("MainWindow", u"Programa", None))
         self.label_11.setText(QCoreApplication.translate("MainWindow", u"Velocidad impresi\u00f3n", None))
         self.label_12.setText(QCoreApplication.translate("MainWindow", u"Aceleracion impresi\u00f3n", None))

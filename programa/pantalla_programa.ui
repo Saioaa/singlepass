@@ -60,7 +60,7 @@ text-align: center;</string>
        <string>materialight</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <widget class="QPushButton" name="bt_pg_movimientos2">
@@ -149,7 +149,7 @@ text-align: center;</string>
        <string>Movimientos</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <widget class="QWidget" name="horizontalLayoutWidget">
@@ -466,7 +466,7 @@ QPushButton:pressed {
        <string>Movimiento manual</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <widget class="QWidget" name="formLayoutWidget">
@@ -475,7 +475,7 @@ QPushButton:pressed {
         <x>1390</x>
         <y>340</y>
         <width>271</width>
-        <height>179</height>
+        <height>188</height>
        </rect>
       </property>
       <layout class="QFormLayout" name="formLayout">
@@ -575,38 +575,16 @@ font-weight: bold;</string>
        <string>Parametros de movimiento</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
     </widget>
     <widget class="QWidget" name="PMB8">
-     <widget class="QLabel" name="lab_printarea">
-      <property name="geometry">
-       <rect>
-        <x>950</x>
-        <y>10</y>
-        <width>420</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">  background-color: #3F4D4C;
-color: #62CBC9;
-    border: 2px solid #62CBC9;
-    border-radius: 5px;
-    padding: 10px;
-	font-size: 24px;
-	font-family: nunito;</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
      <widget class="QLabel" name="label_28">
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>640</y>
+        <y>610</y>
         <width>25</width>
         <height>25</height>
        </rect>
@@ -624,7 +602,7 @@ color: #62CBC9;
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>590</y>
+        <y>560</y>
         <width>25</width>
         <height>25</height>
        </rect>
@@ -642,7 +620,7 @@ color: #62CBC9;
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>440</y>
+        <y>410</y>
         <width>130</width>
         <height>20</height>
        </rect>
@@ -660,7 +638,7 @@ color: #62CBC9;
       <property name="geometry">
        <rect>
         <x>70</x>
-        <y>210</y>
+        <y>250</y>
         <width>111</width>
         <height>61</height>
        </rect>
@@ -725,7 +703,7 @@ border-radius: 5px;</string>
       <property name="geometry">
        <rect>
         <x>60</x>
-        <y>580</y>
+        <y>550</y>
         <width>161</width>
         <height>41</height>
        </rect>
@@ -736,15 +714,15 @@ color: rgb(0, 0, 0);
 border: 2px solid #62CBC9;
 border-radius: 5px;
 padding: 10px;
-font-size: 24px;
+font-size: 16px;
 font-family: nunito;</string>
       </property>
      </widget>
      <widget class="QPushButton" name="btnPrint">
       <property name="geometry">
        <rect>
-        <x>1400</x>
-        <y>690</y>
+        <x>1390</x>
+        <y>550</y>
         <width>100</width>
         <height>100</height>
        </rect>
@@ -773,7 +751,7 @@ QPushButton:pressed {
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>480</y>
+        <y>450</y>
         <width>25</width>
         <height>25</height>
        </rect>
@@ -790,8 +768,8 @@ QPushButton:pressed {
      <widget class="QPushButton" name="btnSelect">
       <property name="geometry">
        <rect>
-        <x>1400</x>
-        <y>230</y>
+        <x>1390</x>
+        <y>190</y>
         <width>100</width>
         <height>100</height>
        </rect>
@@ -826,8 +804,8 @@ job</string>
      <widget class="QPushButton" name="btn_clear">
       <property name="geometry">
        <rect>
-        <x>1400</x>
-        <y>910</y>
+        <x>1610</x>
+        <y>970</y>
         <width>100</width>
         <height>41</height>
        </rect>
@@ -897,7 +875,7 @@ border-radius: 5px;</string>
       <property name="geometry">
        <rect>
         <x>70</x>
-        <y>70</y>
+        <y>110</y>
         <width>111</width>
         <height>61</height>
        </rect>
@@ -926,7 +904,7 @@ QPushButton:pressed {
       <property name="geometry">
        <rect>
         <x>60</x>
-        <y>630</y>
+        <y>600</y>
         <width>161</width>
         <height>41</height>
        </rect>
@@ -937,7 +915,7 @@ color: rgb(0, 0, 0);
 border: 2px solid #62CBC9;
 border-radius: 5px;
 padding: 10px;
-font-size: 24px;
+font-size: 22px;
 font-family: nunito;</string>
       </property>
      </widget>
@@ -962,10 +940,10 @@ border-radius: 5px;</string>
      <widget class="QLabel" name="lblSizeValue">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>340</y>
-        <width>191</width>
-        <height>50</height>
+        <x>1120</x>
+        <y>20</y>
+        <width>231</width>
+        <height>30</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -974,7 +952,7 @@ color: #62CBC9;
     border: 2px solid #62CBC9;
     border-radius: 5px;
     padding: 10px;
-	font-size: 24px;
+	font-size: 16px;
 	font-family: nunito;</string>
       </property>
       <property name="text">
@@ -1003,7 +981,7 @@ border-radius: 5px;</string>
       <property name="geometry">
        <rect>
         <x>60</x>
-        <y>474</y>
+        <y>444</y>
         <width>161</width>
         <height>41</height>
        </rect>
@@ -1014,7 +992,7 @@ color: #62CBC9;
     border: 2px solid #62CBC9;
     border-radius: 5px;
     padding: 10px;
-	font-size: 24px;
+	font-size: 20px;
 	font-family: nunito;</string>
       </property>
       <property name="text">
@@ -1053,8 +1031,8 @@ QPushButton:pressed {
      <widget class="QPushButton" name="btnNewjob">
       <property name="geometry">
        <rect>
-        <x>1400</x>
-        <y>90</y>
+        <x>1390</x>
+        <y>70</y>
         <width>100</width>
         <height>100</height>
        </rect>
@@ -1083,8 +1061,8 @@ image</string>
      <widget class="QPushButton" name="btnRip">
       <property name="geometry">
        <rect>
-        <x>1400</x>
-        <y>540</y>
+        <x>1390</x>
+        <y>410</y>
         <width>100</width>
         <height>100</height>
        </rect>
@@ -1131,7 +1109,7 @@ border-radius: 5px;</string>
      <widget class="QPushButton" name="load_previews">
       <property name="geometry">
        <rect>
-        <x>1570</x>
+        <x>1580</x>
         <y>10</y>
         <width>170</width>
         <height>41</height>
@@ -1161,7 +1139,7 @@ QPushButton:pressed {
       <property name="geometry">
        <rect>
         <x>60</x>
-        <y>524</y>
+        <y>494</y>
         <width>161</width>
         <height>41</height>
        </rect>
@@ -1172,7 +1150,7 @@ color: #62CBC9;
     border: 2px solid #62CBC9;
     border-radius: 5px;
     padding: 10px;
-	font-size: 24px;
+	font-size: 18px;
 	font-family: nunito;</string>
       </property>
       <property name="text">
@@ -1183,7 +1161,7 @@ color: #62CBC9;
       <property name="geometry">
        <rect>
         <x>70</x>
-        <y>140</y>
+        <y>180</y>
         <width>111</width>
         <height>61</height>
        </rect>
@@ -1211,9 +1189,9 @@ QPushButton:pressed {
      <widget class="QLabel" name="lblSizeText">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>300</y>
-        <width>130</width>
+        <x>1030</x>
+        <y>30</y>
+        <width>81</width>
         <height>20</height>
        </rect>
       </property>
@@ -1230,7 +1208,7 @@ QPushButton:pressed {
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>530</y>
+        <y>500</y>
         <width>25</width>
         <height>25</height>
        </rect>
@@ -1242,6 +1220,35 @@ QPushButton:pressed {
       </property>
       <property name="text">
        <string>Y:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnAbort">
+      <property name="geometry">
+       <rect>
+        <x>1390</x>
+        <y>690</y>
+        <width>100</width>
+        <height>100</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>Abort</string>
       </property>
      </widget>
     </widget>
@@ -1266,7 +1273,7 @@ text-align: center;</string>
        <string>Programa</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <widget class="QWidget" name="formLayoutWidget_2">
@@ -1275,7 +1282,7 @@ text-align: center;</string>
         <x>1370</x>
         <y>280</y>
         <width>311</width>
-        <height>509</height>
+        <height>514</height>
        </rect>
       </property>
       <layout class="QFormLayout" name="formLayout_2">
@@ -1290,7 +1297,7 @@ text-align: center;</string>
           <string>Velocidad impresión</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -1318,7 +1325,7 @@ color: #62CBC9;
           <string>Aceleracion impresión</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -1346,7 +1353,7 @@ color: #62CBC9;
           <string>Deceleración impresion</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -1374,7 +1381,7 @@ color: #62CBC9;
           <string>Velocidad curado</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -1402,7 +1409,7 @@ color: #62CBC9;
           <string>Aceleración curado</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -1430,7 +1437,7 @@ color: #62CBC9;
           <string>Deceleración curado</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -1458,7 +1465,7 @@ color: #62CBC9;
           <string>Pasadas curado</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -1486,7 +1493,7 @@ color: #62CBC9;
           <string>Inicio de curado</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -1511,7 +1518,7 @@ color: #62CBC9;
         <x>60</x>
         <y>320</y>
         <width>301</width>
-        <height>94</height>
+        <height>100</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -2057,7 +2064,7 @@ font-weight: bold;</string>
           <string>1</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -2073,7 +2080,7 @@ font-weight: bold;</string>
           <string>2</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -2089,7 +2096,7 @@ font-weight: bold;</string>
           <string>3</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -2105,7 +2112,7 @@ font-weight: bold;</string>
           <string>4</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -2121,7 +2128,7 @@ font-weight: bold;</string>
           <string>5</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -2137,7 +2144,7 @@ font-weight: bold;</string>
           <string>6</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -2153,7 +2160,7 @@ font-weight: bold;</string>
           <string>7</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -2169,7 +2176,7 @@ font-weight: bold;</string>
           <string>8</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -2194,7 +2201,7 @@ font-weight: bold;</string>
        <string>Configuración de módulos</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <widget class="QGraphicsView" name="pg_vista">
@@ -2221,8 +2228,8 @@ font-weight: bold;</string>
      <rect>
       <x>10</x>
       <y>0</y>
-      <width>115</width>
-      <height>192</height>
+      <width>118</width>
+      <height>204</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -2335,7 +2342,7 @@ QPushButton:pressed {
      <x>0</x>
      <y>0</y>
      <width>1960</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>

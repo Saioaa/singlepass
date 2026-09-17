@@ -8,6 +8,12 @@ Todo lo que falta por programar del PMB va aqui.
 El recuadro de imagen (labelImage en el .ui) se sustituye en tiempo de
 ejecucion por una MesaImpresion (mesa.py) con la misma geometria y estilo.
 
+El boton Print cambia de aspecto segun el estado del trabajo:
+    sin trabajo      -> aspecto del disenador, "Print"
+    render listo     -> parpadea en naranja, "Print"
+    armando          -> naranja fijo, "Arming..."
+    listo            -> verde fijo, "Ready to Print"
+
 Widgets de la pagina sin funcion todavia:
     load_previews, rip1..rip4
 """
@@ -15,7 +21,7 @@ Widgets de la pagina sin funcion todavia:
 import os
 import re
 
-from PySide6.QtCore import QLocale, QObject, Qt
+from PySide6.QtCore import QLocale, QObject, Qt, QTimer
 from PySide6.QtGui import QDoubleValidator, QPixmap, QTransform
 from PySide6.QtWidgets import QFileDialog
 
@@ -29,6 +35,19 @@ MM_POR_PULGADA  = 25.4
 GRADOS_POR_GIRO = 90
 GRADOS_VUELTA   = 360
 PATRON_DPI      = r"(\d+)\s*dpi"
+
+# ===== ESTADOS DEL BOTON PRINT =====
+ESTADO_SIN_TRABAJO  = "sin_trabajo"
+ESTADO_RENDER_LISTO = "render_listo"
+ESTADO_ARMANDO      = "armando"
+ESTADO_LISTO        = "listo"
+
+TEXTO_PRINT   = "Print"
+TEXTO_ARMANDO = "Arming..."
+TEXTO_LISTO   = "Ready to Print"
+COLOR_AVISO   = "#F39C12"   # naranja: hay render, falta armar
+COLOR_LISTO   = "#27AE60"   # verde: PMB armado
+PERIODO_PARPADEO_MS = 500
 DECIMALES_POSICION = 2
 POSICION_INICIAL_X_MM = 0.0   # donde aparece una imagen recien cargada
 POSICION_INICIAL_Y_MM = 0.0
@@ -58,6 +77,14 @@ class PaginaPMB(QObject):
         self.carpeta_trabajo = None
         self._tras_completar = None   # accion a ejecutar cuando el PMB confirme el comando en curso
 
+        # estado del boton Print
+        self._estilo_print_base = self.ui.btnPrint.styleSheet()
+        self._parpadeo_encendido = False
+        self.timer_parpadeo = QTimer(self)
+        self.timer_parpadeo.setInterval(PERIODO_PARPADEO_MS)
+        self.timer_parpadeo.timeout.connect(self._parpadear)
+        self.estado = ESTADO_SIN_TRABAJO
+
         self.ui.txtMessage.setReadOnly(True)
 
         # mesa de impresion en lugar del QLabel del disenador
@@ -80,12 +107,16 @@ class PaginaPMB(QObject):
         self.pmb.modos_recibidos.connect(self.cargar_modos)
         self.pmb.dpi_recibido.connect(self.guardar_dpi)
         self.pmb.comando_completado.connect(self.tras_completar)
+        self.pmb.comando_fallido.connect(self.tras_fallo)
+        self.pmb.impresion_terminada.connect(self.tras_fin_impresion)
+        self.pmb.conexion_perdida.connect(lambda _motivo: self._poner_estado(ESTADO_SIN_TRABAJO))
 
         # botones de la pagina
         self.ui.btnUpdateMode.clicked.connect(self.cargar_modos_pmb)
         self.ui.systemode.currentTextChanged.connect(self.modo_seleccionado)
         self.ui.btnSelect.clicked.connect(self.seleccionar_trabajo)
         self.ui.btnPrint.clicked.connect(self.imprimir)
+        self.ui.btnAbort.clicked.connect(self.abortar)
         self.ui.btnNewjob.clicked.connect(self.cargar_imagen)
         self.ui.btnRotate.clicked.connect(self.rotar_imagen)
         self.ui.btnMirrorX.clicked.connect(self.espejar_x)
@@ -217,6 +248,7 @@ class PaginaPMB(QObject):
         self.ui.lblSizeValue.clear()
         self.ui.pos_x_real.clear()
         self.ui.pos_y_real.clear()
+        self._poner_estado(ESTADO_SIN_TRABAJO)
         self.registrar("[PMB] Imagen descartada")
 
     # ===== trabajo (ripeo e impresion) =====
@@ -257,21 +289,72 @@ class PaginaPMB(QObject):
         self.carpeta_trabajo = os.path.dirname(ruta_vpi)
         self.registrar(f"[PMB] Trabajo generado: {ruta_vpi}")
         ruta_bmp = vpi.ruta_render(ruta_vpi)
-        self._encadenar(lambda: self.pmb.renderizar(ruta_bmp))
+        self._poner_estado(ESTADO_SIN_TRABAJO)
+        self._encadenar(self._lanzar_render, ruta_bmp)
         self.pmb.cargar_vpi(ruta_vpi)
 
+    def _lanzar_render(self, ruta_bmp):
+        self._encadenar(self._render_listo)
+        self.pmb.renderizar(ruta_bmp)
+
+    def _render_listo(self):
+        self.registrar("[PMB] Render terminado, listo para armar")
+        self._poner_estado(ESTADO_RENDER_LISTO)
+
+    # ===== estado del boton Print =====
+    def _pintar_print(self, color=None, texto=TEXTO_PRINT):
+        hoja = self._estilo_print_base
+        if color is not None:
+            hoja += f"\nQPushButton {{ background-color: {color}; }}"
+        self.ui.btnPrint.setStyleSheet(hoja)
+        self.ui.btnPrint.setText(texto)
+
+    def _parpadear(self):
+        self._parpadeo_encendido = not self._parpadeo_encendido
+        self._pintar_print(COLOR_AVISO if self._parpadeo_encendido else None)
+
+    def _poner_estado(self, estado):
+        self.estado = estado
+        self.timer_parpadeo.stop()
+        if estado == ESTADO_RENDER_LISTO:
+            self._pintar_print()
+            self._parpadeo_encendido = False
+            self.timer_parpadeo.start()
+        elif estado == ESTADO_ARMANDO:
+            self._pintar_print(COLOR_AVISO, TEXTO_ARMANDO)
+        elif estado == ESTADO_LISTO:
+            self._pintar_print(COLOR_LISTO, TEXTO_LISTO)
+        else:
+            self._pintar_print()
+
+    def tras_fallo(self, id_comando, codigo):
+        """Un comando ha fallado: se descarta lo encadenado y se vuelve al estado anterior."""
+        self._tras_completar = None
+        if self.estado == ESTADO_ARMANDO:
+            self._poner_estado(ESTADO_RENDER_LISTO)
+
+    def tras_fin_impresion(self):
+        """El PMB ha terminado de imprimir (I,<id>,EP): el trabajo sigue disponible."""
+        self.registrar("[PMB] Fin de impresion")
+        self._poner_estado(ESTADO_RENDER_LISTO)
+
+    def abortar(self):
+        if self.pmb.abortar_impresion():
+            self._tras_completar = None
+            self._poner_estado(ESTADO_RENDER_LISTO if self.carpeta_trabajo else ESTADO_SIN_TRABAJO)
+
     # ===== encadenado de comandos =====
-    def _encadenar(self, accion):
+    def _encadenar(self, accion, *argumentos):
         """Registra la accion que se ejecutara cuando el PMB complete el siguiente comando."""
-        self._tras_completar = accion
+        self._tras_completar = (accion, argumentos)
 
     def tras_completar(self, id_comando):
         """El PMB ha completado un comando: ejecutar la accion encadenada, si la hay."""
         if self._tras_completar is None:
             return
-        accion = self._tras_completar
+        accion, argumentos = self._tras_completar
         self._tras_completar = None
-        accion()
+        accion(*argumentos)
 
     def _enviar_offset_y_luego(self, accion):
         """Aplica el XOffset del trabajo y, cuando el Print Controller lo confirme, ejecuta accion.
@@ -292,24 +375,35 @@ class PaginaPMB(QObject):
             return
         self.carpeta_trabajo = os.path.normpath(carpeta)
         self.registrar(f"[PMB] Trabajo: {self.carpeta_trabajo}")
+        self._poner_estado(ESTADO_RENDER_LISTO)
 
     def _ruta_bmp(self):
         return os.path.join(self.carpeta_trabajo, vpi.NOMBRE_RENDER)
 
     def imprimir(self):
+        """Boton Print: arma el PMB (XOffset + P,P). La mesa la mueve la pagina Programa."""
         if self.carpeta_trabajo is None:
             self.registrar("[PMB] No hay ninguna carpeta de trabajo seleccionada")
             return
-        self._enviar_offset_y_luego(lambda: self.pmb.imprimir(self._ruta_bmp()))
+        self.armar_impresion()
 
     def armar_impresion(self):
         """Aplica el XOffset y arma los cabezales: el PMB queda esperando el print go."""
         if self.carpeta_trabajo is None:
             self.registrar("[PMB] No hay ningun trabajo rasterizado")
             return False
+        if self.estado == ESTADO_LISTO:
+            return True   # ya armado, no repetir P,P (daria -201 Print Controller busy)
+        self._poner_estado(ESTADO_ARMANDO)
+        if not self._enviar_offset_y_luego(self._enviar_print):
+            self._poner_estado(ESTADO_RENDER_LISTO)
+            return False
+        return True
 
-        def armar():
-            self.pmb.imprimir(self._ruta_bmp())
-            self.registrar("[PMB] Cabezales armados, esperando print go")
+    def _enviar_print(self):
+        self._encadenar(self._armado)
+        self.pmb.imprimir(self._ruta_bmp())
 
-        return self._enviar_offset_y_luego(armar)
+    def _armado(self):
+        self.registrar("[PMB] Cabezales armados, esperando print go")
+        self._poner_estado(ESTADO_LISTO)

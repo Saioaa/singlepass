@@ -48,7 +48,8 @@ def main():
     ventana = VentanaPrincipal(motor, mduino, pmb)
     app.aboutToQuit.connect(pmb.cerrar)
     app.aboutToQuit.connect(motor.close)
-    ventana.show()
+    ventana.ajustar_a_pantalla()
+    ventana.showMaximized()
     sys.exit(app.exec())
 
 

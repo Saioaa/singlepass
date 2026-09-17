@@ -36,6 +36,7 @@ CMD_CARGAR_VPI      = "R,D"
 CMD_RENDERIZAR      = "R,R"
 CMD_CAMBIAR_PARAM_PC = "P,C,P"
 CMD_IMPRIMIR        = "P,P"
+CMD_ABORTAR_IMPRESION = "P,A"   # se envia por un socket independiente (manual, 2.2)
 
 PARAM_RENDER_POR_DEFECTO   = "0"
 PARAM_COPIAS_POR_DEFECTO   = "1"
@@ -151,6 +152,7 @@ class ClientePMB(QObject):
     impresion_terminada = Signal()
     conexion_perdida = Signal(str)
     comando_completado = Signal(str)  # id del comando que ha terminado bien
+    comando_fallido = Signal(str, int)  # id del comando y codigo de error
 
     def __init__(self, host=HOST_PMB, puerto=PUERTO_PMB, parent=None):
         super().__init__(parent)
@@ -238,6 +240,18 @@ class ClientePMB(QObject):
         self._enviar(f"{CMD_IMPRIMIR},{PARAM_PRIMERA_COPIA},{ruta_bmp},"
                      f"{PARAM_COPIAS_POR_DEFECTO}")
 
+    def abortar_impresion(self):
+        """Aborta la impresion en curso. El manual exige enviar P,A por una
+        conexion nueva, distinta de la de impresion. Devuelve True si se envio."""
+        try:
+            with socket.create_connection((self.host, self.puerto), timeout=TIMEOUT_SOCKET) as s:
+                s.sendall((CMD_ABORTAR_IMPRESION + TERMINADOR).encode("utf-8"))
+        except OSError as e:
+            self.mensaje.emit(f"[PMB] No se ha podido enviar el aborto: {e}")
+            return False
+        self.mensaje.emit("[PMB] Aborto de impresion enviado")
+        return True
+
     # ----- recepcion -----
 
     def _procesar_linea(self, linea):
@@ -274,6 +288,7 @@ class ClientePMB(QObject):
             self.mensaje.emit(f"[PMB] ERROR {codigo} en el comando {id_comando}: "
                               f"{descripcion}. {info}")
             self.esperando_info_modo = False
+            self.comando_fallido.emit(id_comando, codigo)
             return
 
         self.mensaje.emit(f"[PMB] Comando {id_comando} completado. {info}")

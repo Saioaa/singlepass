@@ -10,11 +10,12 @@ ui_pantalla_programa.py debe generarse con:
 
 import json
 import os
+import re
 
 from PySide6.QtCore import QLocale, QRectF, Qt, QTimer
-from PySide6.QtGui import QBrush, QColor, QDoubleValidator, QPen, QPixmap
+from PySide6.QtGui import QBrush, QColor, QDoubleValidator, QGuiApplication, QPen, QPixmap
 from PySide6.QtWidgets import (QFrame, QGraphicsRectItem, QGraphicsScene,
-                               QGraphicsTextItem, QMainWindow)
+                               QGraphicsTextItem, QMainWindow, QWidget)
 
 import config
 from d1 import MODO_POSICION
@@ -42,6 +43,13 @@ COLOR_SECADOR = "#CC7662"
 COLOR_CABEZAL = "#62CBC9"
 
 GRADOS_POR_GIRO = 90   # rotacion del nombre del modulo en el grafico
+
+# ===== ESCALADO A LA PANTALLA =====
+# El .ui esta disenado con geometrias absolutas para esta resolucion.
+ANCHO_DISENO_PX = 1960
+ALTO_DISENO_PX  = 1072
+TOLERANCIA_ESCALA = 0.01
+PATRON_PIXELES = re.compile(r"(\d+)px")
 
 # ===== MOVIMIENTOS MANUALES (mm/s, mm/s2) =====
 VELOCIDAD_JOG_LENTA     = 100
@@ -187,6 +195,32 @@ class VentanaPrincipal(QMainWindow):
             campo.textChanged.connect(self.dibujar_modulos)
 
         self.cargar_ajustes()
+
+    # ===== escalado =====
+    def ajustar_a_pantalla(self):
+        """Escala geometrias y tamanos en px de las hojas de estilo para que el
+        diseno (ANCHO_DISENO_PX x ALTO_DISENO_PX) quepa en la pantalla actual."""
+        pantalla = QGuiApplication.primaryScreen().availableGeometry()
+        factor = min(pantalla.width() / ANCHO_DISENO_PX, pantalla.height() / ALTO_DISENO_PX)
+        if abs(factor - 1.0) < TOLERANCIA_ESCALA:
+            return
+
+        def px(valor):
+            return max(1, round(valor * factor))
+
+        for widget in [self.centralWidget()] + self.findChildren(QWidget):
+            g = widget.geometry()
+            widget.setGeometry(px(g.x()), px(g.y()), px(g.width()), px(g.height()))
+            hoja = widget.styleSheet()
+            if hoja:
+                widget.setStyleSheet(PATRON_PIXELES.sub(lambda m: f"{px(int(m.group(1)))}px", hoja))
+            fuente = widget.font()
+            if fuente.pointSizeF() > 0:
+                fuente.setPointSizeF(fuente.pointSizeF() * factor)
+                widget.setFont(fuente)
+
+        self.resize(px(ANCHO_DISENO_PX), px(ALTO_DISENO_PX))
+        print(f"[UI] Interfaz escalada x{factor:.2f} para {pantalla.width()}x{pantalla.height()}")
 
     # ===== cierre =====
     def closeEvent(self, evento):
