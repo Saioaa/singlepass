@@ -125,7 +125,7 @@ class Ui_MainWindow(object):
 "    background-color: rgb(206, 255, 252);\n"
 "}")
         icon = QIcon()
-        icon.addFile(u"../imagenes/doble_flecha_izquierda.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon.addFile(u"../../../../.designer/imagenes/doble_flecha_izquierda.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.bt_mov_izquierda_rapido.setIcon(icon)
         self.bt_mov_izquierda_rapido.setIconSize(QSize(36, 36))
 
@@ -148,7 +148,7 @@ class Ui_MainWindow(object):
 "    background-color: rgb(206, 255, 252);\n"
 "}")
         icon1 = QIcon()
-        icon1.addFile(u"../imagenes/play_redondeado_izquierda.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon1.addFile(u"../../../../.designer/imagenes/play_redondeado_izquierda.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.bt_mov_izquierda.setIcon(icon1)
         self.bt_mov_izquierda.setIconSize(QSize(36, 36))
 
@@ -171,7 +171,7 @@ class Ui_MainWindow(object):
 "    background-color: rgb(206, 255, 252);\n"
 "}")
         icon2 = QIcon()
-        icon2.addFile(u"../imagenes/play_redondeado_derecha.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon2.addFile(u"../../../../.designer/imagenes/play_redondeado_derecha.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.bt_mov_derecha.setIcon(icon2)
         self.bt_mov_derecha.setIconSize(QSize(36, 36))
 
@@ -194,7 +194,7 @@ class Ui_MainWindow(object):
 "    background-color: rgb(206, 255, 252);\n"
 "}")
         icon3 = QIcon()
-        icon3.addFile(u"../imagenes/doble_flecha_derecha.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon3.addFile(u"../../../../.designer/imagenes/doble_flecha_derecha.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.bt_mov_derecha_rapido.setIcon(icon3)
         self.bt_mov_derecha_rapido.setIconSize(QSize(36, 36))
 
@@ -449,7 +449,7 @@ class Ui_MainWindow(object):
 "border: 2px solid #62CBC9;\n"
 "border-radius: 5px;\n"
 "padding: 10px;\n"
-"font-size: 16px;\n"
+"font-size: 20px;\n"
 "font-family: nunito;")
         self.btnPrint = QPushButton(self.PMB8)
         self.btnPrint.setObjectName(u"btnPrint")
@@ -549,7 +549,7 @@ class Ui_MainWindow(object):
 "border: 2px solid #62CBC9;\n"
 "border-radius: 5px;\n"
 "padding: 10px;\n"
-"font-size: 22px;\n"
+"font-size: 20px;\n"
 "font-family: nunito;")
         self.rip1 = QLabel(self.PMB8)
         self.rip1.setObjectName(u"rip1")
@@ -559,7 +559,7 @@ class Ui_MainWindow(object):
 "border-radius: 5px;")
         self.lblSizeValue = QLabel(self.PMB8)
         self.lblSizeValue.setObjectName(u"lblSizeValue")
-        self.lblSizeValue.setGeometry(QRect(1120, 20, 231, 30))
+        self.lblSizeValue.setGeometry(QRect(1100, 10, 251, 40))
         self.lblSizeValue.setStyleSheet(u"  background-color: #3F4D4C;\n"
 "color: #62CBC9;\n"
 "    border: 2px solid #62CBC9;\n"
@@ -667,7 +667,7 @@ class Ui_MainWindow(object):
 "    border: 2px solid #62CBC9;\n"
 "    border-radius: 5px;\n"
 "    padding: 10px;\n"
-"	font-size: 18px;\n"
+"	font-size: 20px;\n"
 "	font-family: nunito;")
         self.btnMirrorX = QPushButton(self.PMB8)
         self.btnMirrorX.setObjectName(u"btnMirrorX")
@@ -688,7 +688,7 @@ class Ui_MainWindow(object):
 "}")
         self.lblSizeText = QLabel(self.PMB8)
         self.lblSizeText.setObjectName(u"lblSizeText")
-        self.lblSizeText.setGeometry(QRect(1030, 30, 81, 20))
+        self.lblSizeText.setGeometry(QRect(1000, 30, 81, 20))
         self.lblSizeText.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
@@ -702,7 +702,7 @@ class Ui_MainWindow(object):
         self.btnAbort.setObjectName(u"btnAbort")
         self.btnAbort.setGeometry(QRect(1390, 690, 100, 100))
         self.btnAbort.setStyleSheet(u"QPushButton {\n"
-"    background-color: #62CBC9;\n"
+"    background-color: rgb(227, 0, 0);\n"
 "    border: 2px solid #333333;\n"
 "    border-radius: 5px;\n"
 "    padding: 10px;\n"
@@ -1412,7 +1412,7 @@ class Ui_MainWindow(object):
         self.lblCoordsText.setText(QCoreApplication.translate("MainWindow", u"Position:", None))
         self.btnMirrorY.setText(QCoreApplication.translate("MainWindow", u"Mirror Y", None))
         self.rip2.setText("")
-        self.btnPrint.setText(QCoreApplication.translate("MainWindow", u"PRINT", None))
+        self.btnPrint.setText(QCoreApplication.translate("MainWindow", u"Print", None))
         self.label_30.setText(QCoreApplication.translate("MainWindow", u"X:", None))
         self.btnSelect.setText(QCoreApplication.translate("MainWindow", u"Select\n"
 "job", None))

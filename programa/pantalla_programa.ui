@@ -188,7 +188,7 @@ QPushButton:pressed {
          </property>
          <property name="icon">
           <iconset>
-           <normaloff>../imagenes/doble_flecha_izquierda.png</normaloff>../imagenes/doble_flecha_izquierda.png</iconset>
+           <normaloff>../../../../.designer/imagenes/doble_flecha_izquierda.png</normaloff>../../../../.designer/imagenes/doble_flecha_izquierda.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -221,7 +221,7 @@ QPushButton:pressed {
          </property>
          <property name="icon">
           <iconset>
-           <normaloff>../imagenes/play_redondeado_izquierda.png</normaloff>../imagenes/play_redondeado_izquierda.png</iconset>
+           <normaloff>../../../../.designer/imagenes/play_redondeado_izquierda.png</normaloff>../../../../.designer/imagenes/play_redondeado_izquierda.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -254,7 +254,7 @@ QPushButton:pressed {
          </property>
          <property name="icon">
           <iconset>
-           <normaloff>../imagenes/play_redondeado_derecha.png</normaloff>../imagenes/play_redondeado_derecha.png</iconset>
+           <normaloff>../../../../.designer/imagenes/play_redondeado_derecha.png</normaloff>../../../../.designer/imagenes/play_redondeado_derecha.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -287,7 +287,7 @@ QPushButton:pressed {
          </property>
          <property name="icon">
           <iconset>
-           <normaloff>../imagenes/doble_flecha_derecha.png</normaloff>../imagenes/doble_flecha_derecha.png</iconset>
+           <normaloff>../../../../.designer/imagenes/doble_flecha_derecha.png</normaloff>../../../../.designer/imagenes/doble_flecha_derecha.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -714,7 +714,7 @@ color: rgb(0, 0, 0);
 border: 2px solid #62CBC9;
 border-radius: 5px;
 padding: 10px;
-font-size: 16px;
+font-size: 20px;
 font-family: nunito;</string>
       </property>
      </widget>
@@ -744,7 +744,7 @@ QPushButton:pressed {
 }</string>
       </property>
       <property name="text">
-       <string>PRINT</string>
+       <string>Print</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_30">
@@ -915,7 +915,7 @@ color: rgb(0, 0, 0);
 border: 2px solid #62CBC9;
 border-radius: 5px;
 padding: 10px;
-font-size: 22px;
+font-size: 20px;
 font-family: nunito;</string>
       </property>
      </widget>
@@ -940,10 +940,10 @@ border-radius: 5px;</string>
      <widget class="QLabel" name="lblSizeValue">
       <property name="geometry">
        <rect>
-        <x>1120</x>
-        <y>20</y>
-        <width>231</width>
-        <height>30</height>
+        <x>1100</x>
+        <y>10</y>
+        <width>251</width>
+        <height>40</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -1150,7 +1150,7 @@ color: #62CBC9;
     border: 2px solid #62CBC9;
     border-radius: 5px;
     padding: 10px;
-	font-size: 18px;
+	font-size: 20px;
 	font-family: nunito;</string>
       </property>
       <property name="text">
@@ -1189,7 +1189,7 @@ QPushButton:pressed {
      <widget class="QLabel" name="lblSizeText">
       <property name="geometry">
        <rect>
-        <x>1030</x>
+        <x>1000</x>
         <y>30</y>
         <width>81</width>
         <height>20</height>
@@ -1233,7 +1233,7 @@ QPushButton:pressed {
       </property>
       <property name="styleSheet">
        <string notr="true">QPushButton {
-    background-color: #62CBC9;
+    background-color: rgb(227, 0, 0);
     border: 2px solid #333333;
     border-radius: 5px;
     padding: 10px;

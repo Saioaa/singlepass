@@ -7,7 +7,7 @@ en lugar de leerse de la interfaz, y que las salidas al M-Duino van por
 ClienteMDuino.
 
 Uso:
-    self.secuencia = SecuenciaImpresion(motor, mduino, self.armar_impresion)
+    self.secuencia = SecuenciaImpresion(motor, mduino, self.pagina_pmb.esta_lista)
     self.secuencia.start(ParametrosPrograma(...))
 """
 
@@ -53,12 +53,12 @@ class SecuenciaImpresion(QObject):
 
     terminada = Signal()    # la secuencia ha vuelto a ESPERA
 
-    def __init__(self, motor, mduino, armar_impresion, posicion_reposo, final_recorrido,
+    def __init__(self, motor, mduino, pmb_listo, posicion_reposo, final_recorrido,
                  parent=None):
         super().__init__(parent)
         self.motor = motor
         self.mduino = mduino
-        self._armar_impresion = armar_impresion   # callable -> bool (arma el PMB)
+        self._pmb_listo = pmb_listo   # callable -> bool: el PMB esta armado (se arma en la pagina PMB)
         self.posicion_reposo = posicion_reposo
         self.final_recorrido = final_recorrido
 
@@ -102,7 +102,7 @@ class SecuenciaImpresion(QObject):
 
     # ===== arranque / parada =====
     def start(self, parametros):
-        if self.referencia_pendiente or self.seta:
+        if self.referencia_pendiente or self.seta or not self._pmb_listo():
             return False
         self.parametros = parametros
         self.contpas = parametros.pasadas_curado
@@ -171,7 +171,6 @@ class SecuenciaImpresion(QObject):
         """E0: asegurar la posicion de reposo antes de empezar la pasada."""
         if self.subpaso == 0:
             self.params_impresion()
-            self._armar_impresion()
             self.mover_secuencia(self.posicion_reposo)
             self.subpaso = 1
         elif self.subpaso == 1:
@@ -196,7 +195,6 @@ class SecuenciaImpresion(QObject):
     def etapa_ida_impresion(self):
         """E3: encender lamparas, esperar, e ida de impresion (= pasada 1)."""
         if self.subpaso == 0:
-            self._armar_impresion()
             self.senal_lamparas = PWM_CURADO
             self.mduino.lamparas(PWM_CURADO)
             self.t_espera = time.time() + T_LAMPARAS_ON

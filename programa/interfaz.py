@@ -12,7 +12,7 @@ import json
 import os
 import re
 
-from PySide6.QtCore import QLocale, QRectF, Qt, QTimer
+from PySide6.QtCore import QEvent, QLocale, QRectF, Qt, QTimer
 from PySide6.QtGui import QBrush, QColor, QDoubleValidator, QGuiApplication, QPen, QPixmap
 from PySide6.QtWidgets import (QFrame, QGraphicsRectItem, QGraphicsScene,
                                QGraphicsTextItem, QMainWindow, QWidget)
@@ -114,7 +114,7 @@ class VentanaPrincipal(QMainWindow):
         # ===== paginas y secuencia =====
         self.pagina_pmb = PaginaPMB(self.ui, self.pmb, self.posicion_cabezal, parent=self)
         self.secuencia = SecuenciaImpresion(self.motor, self.mduino,
-                                            self.pagina_pmb.armar_impresion,
+                                            self.pagina_pmb.esta_lista,
                                             config.POSICION_REPOSO_MM,
                                             config.FINAL_RECORRIDO_MM, parent=self)
         self.mduino.seta_cambiada.connect(self.secuencia.set_seta)
@@ -195,6 +195,13 @@ class VentanaPrincipal(QMainWindow):
             campo.textChanged.connect(self.dibujar_modulos)
 
         self.cargar_ajustes()
+        # redibujar el grafico cuando cambie el tamano de la vista (escalado, pantalla)
+        self.ui.pg_vista.viewport().installEventFilter(self)
+
+    def eventFilter(self, objeto, evento):
+        if objeto is self.ui.pg_vista.viewport() and evento.type() == QEvent.Resize:
+            QTimer.singleShot(0, self.dibujar_modulos)
+        return super().eventFilter(objeto, evento)
 
     # ===== escalado =====
     def ajustar_a_pantalla(self):
@@ -282,11 +289,16 @@ class VentanaPrincipal(QMainWindow):
         except ValueError:
             self.ui.txtMessage.append("[PROGRAMA] Faltan parametros de impresion o curado")
             return
+        if not self.pagina_pmb.esta_lista():
+            self.ui.txtMessage.append("[PROGRAMA] El PMB no esta armado: pulsa Print en la pagina PMB-8")
+            return
         if not self.secuencia.start(parametros):
             self.ui.txtMessage.append("[PROGRAMA] No se puede arrancar: seta o referencia pendiente")
 
     def stop(self):
         self.secuencia.stop()
+        if self.pagina_pmb.esta_lista():
+            self.pagina_pmb.abortar()   # el PMB no debe quedarse esperando un print go que no llegara
 
     # ===== grafico de la barra =====
     def leer_modulos(self):

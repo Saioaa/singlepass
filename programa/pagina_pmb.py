@@ -109,6 +109,7 @@ class PaginaPMB(QObject):
         self.pmb.comando_completado.connect(self.tras_completar)
         self.pmb.comando_fallido.connect(self.tras_fallo)
         self.pmb.impresion_terminada.connect(self.tras_fin_impresion)
+        self.pmb.listo_para_imprimir.connect(self._armado)
         self.pmb.conexion_perdida.connect(lambda _motivo: self._poner_estado(ESTADO_SIN_TRABAJO))
 
         # botones de la pagina
@@ -401,9 +402,15 @@ class PaginaPMB(QObject):
         return True
 
     def _enviar_print(self):
-        self._encadenar(self._armado)
+        # P,P no completa hasta el FIN de la impresion: el "listo" llega por I,<id>,RTP
         self.pmb.imprimir(self._ruta_bmp())
 
     def _armado(self):
+        if self.estado != ESTADO_ARMANDO:
+            return
         self.registrar("[PMB] Cabezales armados, esperando print go")
         self._poner_estado(ESTADO_LISTO)
+
+    def esta_lista(self):
+        """True si el PMB esta armado y solo espera el print go."""
+        return self.estado == ESTADO_LISTO

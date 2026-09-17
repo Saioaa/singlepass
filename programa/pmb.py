@@ -36,12 +36,14 @@ CMD_CARGAR_VPI      = "R,D"
 CMD_RENDERIZAR      = "R,R"
 CMD_CAMBIAR_PARAM_PC = "P,C,P"
 CMD_IMPRIMIR        = "P,P"
+CMD_ESCUCHAR_PC     = "P,L"     # registrar listener del Print Controller (mensajes I,...)
 CMD_ABORTAR_IMPRESION = "P,A"   # se envia por un socket independiente (manual, 2.2)
 
 PARAM_RENDER_POR_DEFECTO   = "0"
 PARAM_COPIAS_POR_DEFECTO   = "1"
 PARAM_PRIMERA_COPIA        = "1"
 TERMINADOR                 = "\n"
+TIMEOUT_ACUSE_ABORTO       = 3     # s de espera del acuse A,<id>,P,A en el socket de aborto
 
 # ===== TIPOS DE MENSAJE DE RESPUESTA =====
 TIPO_RED       = "N"   # notificacion de red
@@ -148,7 +150,7 @@ class ClientePMB(QObject):
     mensaje = Signal(str)            # linea para el registro de la interfaz
     modos_recibidos = Signal(list)   # lista de modos de sistema disponibles
     dpi_recibido = Signal(int, int)  # resolucion del modo seleccionado
-    render_terminado = Signal()
+    listo_para_imprimir = Signal()   # I,<id>,RTP: el PMB tiene datos y espera el print go
     impresion_terminada = Signal()
     conexion_perdida = Signal(str)
     comando_completado = Signal(str)  # id del comando que ha terminado bien
@@ -181,6 +183,8 @@ class ClientePMB(QObject):
         self.lector.desconectado.connect(self._al_desconectar)
         self.lector.start()
         self.mensaje.emit(f"[PMB] Conectado a {self.host}:{self.puerto}")
+        # sin esto el servidor solo envia A y C; los I (RTP, EP, estado) no llegan
+        self._enviar(CMD_ESCUCHAR_PC)
         return True
 
     def conectado(self):
@@ -246,10 +250,23 @@ class ClientePMB(QObject):
         try:
             with socket.create_connection((self.host, self.puerto), timeout=TIMEOUT_SOCKET) as s:
                 s.sendall((CMD_ABORTAR_IMPRESION + TERMINADOR).encode("utf-8"))
+                # esperar el acuse antes de cerrar, para que el servidor no descarte el comando
+                s.settimeout(TIMEOUT_ACUSE_ABORTO)
+                recibido = ""
+                while TIPO_ACUSE + "," + CMD_ABORTAR_IMPRESION not in recibido:
+                    datos = s.recv(TAM_BUFFER)
+                    if not datos:
+                        break
+                    recibido += datos.decode("utf-8", errors="replace")
+        except socket.timeout:
+            self.mensaje.emit("[PMB] Aborto enviado, sin acuse del servidor")
+            return True
         except OSError as e:
             self.mensaje.emit(f"[PMB] No se ha podido enviar el aborto: {e}")
             return False
-        self.mensaje.emit("[PMB] Aborto de impresion enviado")
+        for linea in recibido.split(TERMINADOR):
+            if linea.strip():
+                self.mensaje.emit(f"[PMB] (aborto) {linea.strip()}")
         return True
 
     # ----- recepcion -----
@@ -321,7 +338,7 @@ class ClientePMB(QObject):
             self.mensaje.emit("[PMB] Impresion iniciada")
         elif codigo == INFO_LISTO_IMPRIMIR and datos:
             self.mensaje.emit(f"[PMB] Listo para imprimir ({datos[0]} pasadas)")
-            self.render_terminado.emit()
+            self.listo_para_imprimir.emit()
         elif codigo == INFO_FIN_IMPRESION:
             self.mensaje.emit("[PMB] Impresion completada")
             self.impresion_terminada.emit()
