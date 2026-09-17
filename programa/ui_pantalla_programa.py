@@ -559,7 +559,7 @@ class Ui_MainWindow(object):
 "border-radius: 5px;")
         self.lblSizeValue = QLabel(self.PMB8)
         self.lblSizeValue.setObjectName(u"lblSizeValue")
-        self.lblSizeValue.setGeometry(QRect(1210, 10, 150, 40))
+        self.lblSizeValue.setGeometry(QRect(1210, 10, 160, 40))
         self.lblSizeValue.setStyleSheet(u"  background-color: #3F4D4C;\n"
 "color: #62CBC9;\n"
 "    border: 2px solid #62CBC9;\n"
@@ -1364,7 +1364,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(1)
+        self.stackedWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

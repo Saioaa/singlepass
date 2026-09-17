@@ -31,7 +31,7 @@
 </string>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="menu">
      <property name="styleSheet">
@@ -942,7 +942,7 @@ border-radius: 5px;</string>
        <rect>
         <x>1210</x>
         <y>10</y>
-        <width>150</width>
+        <width>160</width>
         <height>40</height>
        </rect>
       </property>
