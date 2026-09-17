@@ -20,6 +20,7 @@ Uso:
 
 import re
 import socket
+import xml.etree.ElementTree as ET
 
 from PySide6.QtCore import QObject, QThread, Signal
 
@@ -59,6 +60,20 @@ INFO_IMPRIMIENDO     = "P"
 INFO_LISTO_IMPRIMIR  = "RTP"
 INFO_FIN_IMPRESION   = "EP"
 INFO_REGISTRO        = "G"
+INFO_CABEZALES       = "H"    # XML de estado de cabezales (llega cada PrintHeadStatusReadDelay ms)
+
+# ===== CONEXION: codigos de etapa (N,<codigo>) =====
+ETAPA_CONEXION_OK     = "C"
+ETAPA_CONEXION_AUTH   = "A"
+ETAPA_CONEXION_FALLO  = "F"
+ETAPA_CONEXION_CERRADA = "N"
+
+# ===== XML de estado de cabezales =====
+SEPARADOR_XML_H   = chr(23)   # ASCII 23 separa los elementos del XML (manual, 6.7)
+ATRIBUTO_NOMBRE   = "Name"
+ATRIBUTO_TEMP     = "CurrentTemperature"
+ATRIBUTO_OBJETIVO = "TargetTemperature"
+ATRIBUTO_ACTIVO   = "HeadEnabled"
 
 # ===== POSICIONES DENTRO DE LOS MENSAJES =====
 POS_TIPO          = 0
@@ -155,6 +170,7 @@ class ClientePMB(QObject):
     conexion_perdida = Signal(str)
     comando_completado = Signal(str)  # id del comando que ha terminado bien
     comando_fallido = Signal(str, int)  # id del comando y codigo de error
+    estado_cabezales = Signal(list)   # [{"nombre", "temperatura", "objetivo", "activo"}, ...]
 
     def __init__(self, host=HOST_PMB, puerto=PUERTO_PMB, parent=None):
         super().__init__(parent)
@@ -276,7 +292,7 @@ class ClientePMB(QObject):
         tipo = partes[POS_TIPO]
 
         if tipo == TIPO_RED:
-            self.mensaje.emit("[PMB] Notificacion de red")
+            self._procesar_red(partes)
         elif tipo == TIPO_ACUSE:
             pass   # el acuse no aporta nada a la interfaz
         elif tipo == TIPO_INFO:
@@ -285,6 +301,19 @@ class ClientePMB(QObject):
             self._procesar_completo(partes)
         else:
             self.mensaje.emit(f"[PMB] Mensaje no reconocido: {linea}")
+
+    def _procesar_red(self, partes):
+        etapa = partes[POS_ID_COMANDO] if len(partes) > POS_ID_COMANDO else ""
+        if etapa == ETAPA_CONEXION_OK:
+            self.mensaje.emit("[PMB] Conexion aceptada por el servidor")
+        elif etapa == ETAPA_CONEXION_AUTH:
+            self.mensaje.emit("[PMB] El servidor pide autenticacion (no implementada)")
+        elif etapa == ETAPA_CONEXION_FALLO:
+            self.mensaje.emit("[PMB] Autenticacion rechazada")
+        elif etapa == ETAPA_CONEXION_CERRADA:
+            self.mensaje.emit("[PMB] El servidor no acepta conexiones")
+        else:
+            self.mensaje.emit(f"[PMB] Notificacion de red: {','.join(partes)}")
 
     def _procesar_completo(self, partes):
         if len(partes) < CAMPOS_MINIMOS_C:
@@ -345,11 +374,36 @@ class ClientePMB(QObject):
         elif codigo == INFO_REGISTRO and datos:
             nivel = self._texto_nivel(datos[0])
             self.mensaje.emit(f"[PMB] {nivel}: {', '.join(datos[1:])}")
+        elif codigo == INFO_CABEZALES:
+            # llega periodicamente; no se vuelca al registro, se emite parseado
+            self.estado_cabezales.emit(self._parsear_cabezales(",".join(datos)))
         else:
             self.mensaje.emit(f"[PMB] Info {codigo} del comando {id_comando}: "
                               f"{', '.join(datos)}")
 
     # ----- utilidades -----
+
+    @staticmethod
+    def _parsear_cabezales(texto):
+        """Extrae nombre, temperaturas y habilitado de cada cabezal del XML de estado."""
+        cabezales = []
+        try:
+            raiz = ET.fromstring(texto.replace(SEPARADOR_XML_H, ""))
+        except ET.ParseError:
+            return cabezales
+        for nodo in raiz.iter():
+            if ATRIBUTO_TEMP not in nodo.attrib:
+                continue
+            try:
+                cabezales.append({
+                    "nombre": nodo.get(ATRIBUTO_NOMBRE, ""),
+                    "temperatura": float(nodo.get(ATRIBUTO_TEMP)),
+                    "objetivo": float(nodo.get(ATRIBUTO_OBJETIVO, 0)),
+                    "activo": nodo.get(ATRIBUTO_ACTIVO, "") == "True",
+                })
+            except ValueError:
+                continue
+        return cabezales
 
     @staticmethod
     def _extraer_dpi(texto):

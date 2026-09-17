@@ -12,10 +12,10 @@ import json
 import os
 import re
 
-from PySide6.QtCore import QEvent, QLocale, QRectF, Qt, QTimer
+from PySide6.QtCore import QEvent, QLocale, QRectF, QSize, Qt, QTimer
 from PySide6.QtGui import QBrush, QColor, QDoubleValidator, QGuiApplication, QPen, QPixmap
-from PySide6.QtWidgets import (QFrame, QGraphicsRectItem, QGraphicsScene,
-                               QGraphicsTextItem, QMainWindow, QWidget)
+from PySide6.QtWidgets import (QAbstractButton, QFrame, QGraphicsRectItem,
+                               QGraphicsScene, QGraphicsTextItem, QMainWindow, QWidget)
 
 import config
 from d1 import MODO_POSICION
@@ -225,6 +225,9 @@ class VentanaPrincipal(QMainWindow):
             if fuente.pointSizeF() > 0:
                 fuente.setPointSizeF(fuente.pointSizeF() * factor)
                 widget.setFont(fuente)
+            if isinstance(widget, QAbstractButton) and not widget.icon().isNull():
+                icono = widget.iconSize()
+                widget.setIconSize(QSize(px(icono.width()), px(icono.height())))
 
         self.resize(px(ANCHO_DISENO_PX), px(ALTO_DISENO_PX))
         print(f"[UI] Interfaz escalada x{factor:.2f} para {pantalla.width()}x{pantalla.height()}")

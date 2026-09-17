@@ -11,7 +11,7 @@ ejecucion por una MesaImpresion (mesa.py) con la misma geometria y estilo.
 El boton Print cambia de aspecto segun el estado del trabajo:
     sin trabajo      -> aspecto del disenador, "Print"
     render listo     -> parpadea en naranja, "Print"
-    armando          -> naranja fijo, "Arming..."
+    armando          -> igual que render listo (dura decimas de segundo)
     listo            -> verde fijo, "Ready to Print"
 
 Widgets de la pagina sin funcion todavia:
@@ -43,8 +43,7 @@ ESTADO_ARMANDO      = "armando"
 ESTADO_LISTO        = "listo"
 
 TEXTO_PRINT   = "Print"
-TEXTO_ARMANDO = "Arming..."
-TEXTO_LISTO   = "Ready to Print"
+TEXTO_LISTO   = "Ready\nto\nPrint"
 COLOR_AVISO   = "#F39C12"   # naranja: hay render, falta armar
 COLOR_LISTO   = "#27AE60"   # verde: PMB armado
 PERIODO_PARPADEO_MS = 500
@@ -110,6 +109,8 @@ class PaginaPMB(QObject):
         self.pmb.comando_fallido.connect(self.tras_fallo)
         self.pmb.impresion_terminada.connect(self.tras_fin_impresion)
         self.pmb.listo_para_imprimir.connect(self._armado)
+        self.pmb.estado_cabezales.connect(self.mostrar_cabezales)
+        self._cabezales_registrados = False
         self.pmb.conexion_perdida.connect(lambda _motivo: self._poner_estado(ESTADO_SIN_TRABAJO))
 
         # botones de la pagina
@@ -302,6 +303,16 @@ class PaginaPMB(QObject):
         self.registrar("[PMB] Render terminado, listo para armar")
         self._poner_estado(ESTADO_RENDER_LISTO)
 
+    def mostrar_cabezales(self, cabezales):
+        """Estado periodico de los cabezales: se registra solo la primera vez."""
+        if self._cabezales_registrados or not cabezales:
+            return
+        self._cabezales_registrados = True
+        for c in cabezales:
+            estado = "activo" if c["activo"] else "deshabilitado"
+            self.registrar(f"[PMB] Cabezal {c['nombre']}: {estado}, "
+                           f"{c['temperatura']:.1f} C (objetivo {c['objetivo']:.1f} C)")
+
     # ===== estado del boton Print =====
     def _pintar_print(self, color=None, texto=TEXTO_PRINT):
         hoja = self._estilo_print_base
@@ -317,12 +328,10 @@ class PaginaPMB(QObject):
     def _poner_estado(self, estado):
         self.estado = estado
         self.timer_parpadeo.stop()
-        if estado == ESTADO_RENDER_LISTO:
+        if estado in (ESTADO_RENDER_LISTO, ESTADO_ARMANDO):
             self._pintar_print()
             self._parpadeo_encendido = False
             self.timer_parpadeo.start()
-        elif estado == ESTADO_ARMANDO:
-            self._pintar_print(COLOR_AVISO, TEXTO_ARMANDO)
         elif estado == ESTADO_LISTO:
             self._pintar_print(COLOR_LISTO, TEXTO_LISTO)
         else:
