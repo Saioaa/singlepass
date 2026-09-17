@@ -22,7 +22,7 @@ import os
 import re
 
 from PySide6.QtCore import QLocale, QObject, Qt, QTimer
-from PySide6.QtGui import QDoubleValidator, QPixmap, QTransform
+from PySide6.QtGui import QColor, QDoubleValidator, QPainter, QPixmap, QTransform
 from PySide6.QtWidgets import QFileDialog
 
 import config
@@ -35,6 +35,10 @@ MM_POR_PULGADA  = 25.4
 GRADOS_POR_GIRO = 90
 GRADOS_VUELTA   = 360
 PATRON_DPI      = r"(\d+)\s*dpi"
+
+# ===== PREVIEWS DE LOS PLANOS DE COLOR =====
+NUMERO_PLANOS   = 4          # img_0..img_3
+COLOR_FONDO_PREVIEW = "white"
 
 # ===== ESTADOS DEL BOTON PRINT =====
 ESTADO_SIN_TRABAJO  = "sin_trabajo"
@@ -125,6 +129,8 @@ class PaginaPMB(QObject):
         self.ui.btnMirrorY.clicked.connect(self.espejar_y)
         self.ui.btnRip.clicked.connect(self.generar_trabajo)
         self.ui.btn_clear.clicked.connect(self.limpiar_imagen)
+        self.ui.load_previews.clicked.connect(self.cargar_previews)
+        self._recuadros_preview = [self.ui.rip1, self.ui.rip2, self.ui.rip3, self.ui.rip4]
 
     # ===== utilidades =====
     def registrar(self, texto):
@@ -189,7 +195,7 @@ class PaginaPMB(QObject):
         self.alto_imagen_mm = pixmap.height() * MM_POR_PULGADA / dpi_y
         self.mesa.mostrar_imagen(pixmap, self.ancho_imagen_mm, self.alto_imagen_mm, x_mm, y_mm)
         self.ui.lblSizeValue.setText(
-            f"{self.ancho_imagen_mm:.2f} mm x\n{self.alto_imagen_mm:.2f} mm")
+            f"{self.ancho_imagen_mm:.1f} x {self.alto_imagen_mm:.1f} mm")
 
     def cargar_imagen(self):
         """Carga la imagen a imprimir y la muestra ajustada al recuadro."""
@@ -250,6 +256,7 @@ class PaginaPMB(QObject):
         self.ui.lblSizeValue.clear()
         self.ui.pos_x_real.clear()
         self.ui.pos_y_real.clear()
+        self.limpiar_previews()
         self._poner_estado(ESTADO_SIN_TRABAJO)
         self.registrar("[PMB] Imagen descartada")
 
@@ -302,6 +309,50 @@ class PaginaPMB(QObject):
     def _render_listo(self):
         self.registrar("[PMB] Render terminado, listo para armar")
         self._poner_estado(ESTADO_RENDER_LISTO)
+        self.cargar_previews()
+
+    # ===== previews =====
+    def cargar_previews(self):
+        """Coloca cada plano rasterizado en su recuadro, a escala de la mesa y con
+        el desplazamiento X del trabajo. El alto del render ya es el de la mesa."""
+        self.limpiar_previews()
+        if self.carpeta_trabajo is None:
+            return
+        datos = vpi.leer_datos_trabajo(self.carpeta_trabajo)
+        try:
+            x_mm = float(datos[vpi.CLAVE_X_IMAGEN])
+            ancho_mm = float(datos[vpi.CLAVE_ANCHO_PAGINA])
+        except (KeyError, TypeError, ValueError):
+            self.registrar("[PMB] El trabajo no tiene datos de geometria para las previews")
+            return
+
+        cargados = 0
+        for recuadro, ruta in zip(self._recuadros_preview, vpi.rutas_planos(self.carpeta_trabajo, NUMERO_PLANOS)):
+            plano = QPixmap(ruta)
+            if plano.isNull():
+                continue
+            recuadro.setPixmap(self._componer_preview(recuadro.size(), plano, x_mm, ancho_mm))
+            cargados += 1
+        if cargados:
+            self.registrar(f"[PMB] {cargados} planos cargados en las previews")
+
+    @staticmethod
+    def _componer_preview(tamano, plano, x_mm, ancho_mm):
+        """Mesa blanca del tamano del recuadro con el plano escalado y desplazado en X."""
+        escala = tamano.width() / config.MESA_ANCHO_MM   # px por mm
+        lienzo = QPixmap(tamano)
+        lienzo.fill(QColor(COLOR_FONDO_PREVIEW))
+        pintor = QPainter(lienzo)
+        pintor.setRenderHint(QPainter.SmoothPixmapTransform)
+        pintor.drawPixmap(round(x_mm * escala), 0,
+                          plano.scaled(round(ancho_mm * escala), tamano.height(),
+                                       Qt.IgnoreAspectRatio, Qt.SmoothTransformation))
+        pintor.end()
+        return lienzo
+
+    def limpiar_previews(self):
+        for recuadro in self._recuadros_preview:
+            recuadro.clear()
 
     def mostrar_cabezales(self, cabezales):
         """Estado periodico de los cabezales: se registra solo la primera vez."""
@@ -386,6 +437,7 @@ class PaginaPMB(QObject):
         self.carpeta_trabajo = os.path.normpath(carpeta)
         self.registrar(f"[PMB] Trabajo: {self.carpeta_trabajo}")
         self._poner_estado(ESTADO_RENDER_LISTO)
+        self.cargar_previews()
 
     def _ruta_bmp(self):
         return os.path.join(self.carpeta_trabajo, vpi.NOMBRE_RENDER)

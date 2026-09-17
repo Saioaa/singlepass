@@ -198,7 +198,6 @@ class ClientePMB(QObject):
         self.lector.linea_recibida.connect(self._procesar_linea)
         self.lector.desconectado.connect(self._al_desconectar)
         self.lector.start()
-        self.mensaje.emit(f"[PMB] Conectado a {self.host}:{self.puerto}")
         # sin esto el servidor solo envia A y C; los I (RTP, EP, estado) no llegan
         self._enviar(CMD_ESCUCHAR_PC)
         return True
@@ -337,7 +336,8 @@ class ClientePMB(QObject):
             self.comando_fallido.emit(id_comando, codigo)
             return
 
-        self.mensaje.emit(f"[PMB] Comando {id_comando} completado. {info}")
+        if info:
+            self.mensaje.emit(f"[PMB] {info}")
         self.comando_completado.emit(id_comando)
 
         if info.startswith(PREFIJO_LISTA_MODOS):
@@ -359,8 +359,8 @@ class ClientePMB(QObject):
 
         if codigo == INFO_ESTADO and len(datos) >= 2:
             self.mensaje.emit(f"[PMB] Estado: {datos[0]} (codigo {datos[1]})")
-        elif codigo == INFO_SEMAFORO and datos:
-            self.mensaje.emit(f"[PMB] Semaforo: {self._texto_semaforo(datos[0])}")
+        elif codigo == INFO_SEMAFORO:
+            pass   # el semaforo no aporta nada al operario; el estado S ya lo dice
         elif codigo == INFO_PASADA and datos:
             self.mensaje.emit(f"[PMB] Pasada procesada: {datos[0]}")
         elif codigo == INFO_IMPRIMIENDO:

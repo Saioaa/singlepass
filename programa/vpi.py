@@ -33,6 +33,8 @@ NOMBRE_POSICION  = "position_x.json"
 CLAVE_OFFSET_X   = "offset_x_mm"
 CLAVE_X_IMAGEN   = "x_imagen_mm"
 CLAVE_X_CABEZAL  = "x_cabezal_mm"
+CLAVE_ANCHO_PAGINA = "ancho_pagina_mm"   # ancho del render (direccion X) en mm
+EXTENSION_RENDER = ".bmp"
 NOMBRE_RENDER    = "img.bmp"
 
 # ===== FORMATO =====
@@ -71,21 +73,22 @@ def generar_vpi(ruta_imagen, ancho_mm, alto_mm, pos_y_mm, offset_x_mm,
     carpeta_trabajo = os.path.join(CARPETA_SALIDA, f"{marca}_{nombre_base}")
     os.makedirs(carpeta_trabajo, exist_ok=True)
 
-    # --- offset X, para aplicarlo al Print Controller al imprimir ---
-    with open(os.path.join(carpeta_trabajo, NOMBRE_POSICION), "w", encoding="utf-8") as f:
-        json.dump({CLAVE_OFFSET_X: offset_x_mm,
-                   CLAVE_X_IMAGEN: x_imagen_mm,
-                   CLAVE_X_CABEZAL: x_cabezal_mm}, f, indent=2)
-
-    # --- copia de la imagen junto al trabajo ---
-    nueva_imagen = os.path.join(carpeta_trabajo, os.path.basename(ruta_imagen))
-    shutil.copy(ruta_imagen, nueva_imagen)
-
     # --- dimensiones segun la rotacion ---
     if rotacion % (GRADOS_VUELTA // 2) == GIRO_PERPENDICULAR:
         ancho_pagina, alto_visible = alto_mm, ancho_mm
     else:
         ancho_pagina, alto_visible = ancho_mm, alto_mm
+
+    # --- datos del trabajo: offset X para el Print Controller y geometria para las previews ---
+    with open(os.path.join(carpeta_trabajo, NOMBRE_POSICION), "w", encoding="utf-8") as f:
+        json.dump({CLAVE_OFFSET_X: offset_x_mm,
+                   CLAVE_X_IMAGEN: x_imagen_mm,
+                   CLAVE_X_CABEZAL: x_cabezal_mm,
+                   CLAVE_ANCHO_PAGINA: ancho_pagina}, f, indent=2)
+
+    # --- copia de la imagen junto al trabajo ---
+    nueva_imagen = os.path.join(carpeta_trabajo, os.path.basename(ruta_imagen))
+    shutil.copy(ruta_imagen, nueva_imagen)
 
     # --- rellenar la plantilla ---
     arbol = ET.parse(plantilla)
@@ -129,11 +132,26 @@ def ruta_render(ruta_vpi):
     return os.path.join(os.path.dirname(ruta_vpi), NOMBRE_RENDER)
 
 
-def leer_offset_x(carpeta_trabajo):
-    """XOffset guardado en la carpeta del trabajo, o None si no existe o es ilegible."""
+def leer_datos_trabajo(carpeta_trabajo):
+    """Diccionario guardado junto al trabajo, o {} si no existe o es ilegible."""
     ruta = os.path.join(carpeta_trabajo, NOMBRE_POSICION)
     try:
         with open(ruta, "r", encoding="utf-8") as f:
-            return float(json.load(f)[CLAVE_OFFSET_X])
-    except (OSError, ValueError, KeyError, TypeError):
+            return json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+
+def leer_offset_x(carpeta_trabajo):
+    """XOffset guardado en la carpeta del trabajo, o None si no existe o es ilegible."""
+    try:
+        return float(leer_datos_trabajo(carpeta_trabajo)[CLAVE_OFFSET_X])
+    except (KeyError, TypeError, ValueError):
         return None
+
+
+def rutas_planos(carpeta_trabajo, numero_planos):
+    """Rutas de los bitmaps por plano de color: img_0.bmp, img_1.bmp, ..."""
+    base = os.path.splitext(NOMBRE_RENDER)[0]
+    return [os.path.join(carpeta_trabajo, f"{base}_{i}{EXTENSION_RENDER}")
+            for i in range(numero_planos)]
