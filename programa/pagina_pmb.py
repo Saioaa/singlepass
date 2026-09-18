@@ -39,6 +39,8 @@ PATRON_DPI      = r"(\d+)\s*dpi"
 # ===== PREVIEWS DE LOS PLANOS DE COLOR =====
 NUMERO_PLANOS   = 4          # img_0..img_3
 COLOR_FONDO_PREVIEW = "white"
+# tinta de cada plano, en el orden en que los genera el render (CMYK)
+COLORES_PLANOS = ("#00AEEF", "#EC008C", "#FFF100", "#000000")
 
 # ===== REGISTRO =====
 NOMBRE_OFFSET_X = "XOffset"   # como se llama en los mensajes al parametro del Print Controller
@@ -335,26 +337,39 @@ class PaginaPMB(QObject):
             return
 
         cargados = 0
-        for recuadro, ruta in zip(self._recuadros_preview, vpi.rutas_planos(self.carpeta_trabajo, NUMERO_PLANOS)):
+        for recuadro, ruta, color in zip(self._recuadros_preview,
+                                         vpi.rutas_planos(self.carpeta_trabajo, NUMERO_PLANOS),
+                                         COLORES_PLANOS):
             plano = QPixmap(ruta)
             if plano.isNull():
                 continue
-            recuadro.setPixmap(self._componer_preview(recuadro.size(), plano, x_mm, ancho_mm))
+            recuadro.setPixmap(self._componer_preview(recuadro.size(), plano, x_mm, ancho_mm, color))
             cargados += 1
         if not cargados:
             self.registrar("[PMB] No se han encontrado los planos rasterizados del trabajo")
 
     @staticmethod
-    def _componer_preview(tamano, plano, x_mm, ancho_mm):
-        """Mesa blanca del tamano del recuadro con el plano escalado y desplazado en X."""
+    def _tenir_plano(plano, color):
+        """El plano viene en blanco y negro (negro = tinta). Se pinta la tinta del
+        color dado: max(pixel, color) deja el blanco intacto y el negro pasa a color."""
+        tenido = QPixmap(plano)
+        pintor = QPainter(tenido)
+        pintor.setCompositionMode(QPainter.CompositionMode_Lighten)
+        pintor.fillRect(tenido.rect(), QColor(color))
+        pintor.end()
+        return tenido
+
+    @classmethod
+    def _componer_preview(cls, tamano, plano, x_mm, ancho_mm, color):
+        """Mesa blanca del tamano del recuadro con el plano escalado, tenido de su
+        color y desplazado en X."""
         escala = tamano.width() / config.MESA_ANCHO_MM   # px por mm
+        reducido = plano.scaled(round(ancho_mm * escala), tamano.height(),
+                                Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
         lienzo = QPixmap(tamano)
         lienzo.fill(QColor(COLOR_FONDO_PREVIEW))
         pintor = QPainter(lienzo)
-        pintor.setRenderHint(QPainter.SmoothPixmapTransform)
-        pintor.drawPixmap(round(x_mm * escala), 0,
-                          plano.scaled(round(ancho_mm * escala), tamano.height(),
-                                       Qt.IgnoreAspectRatio, Qt.SmoothTransformation))
+        pintor.drawPixmap(round(x_mm * escala), 0, cls._tenir_plano(reducido, color))
         pintor.end()
         return lienzo
 
