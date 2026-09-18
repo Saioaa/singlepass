@@ -92,7 +92,7 @@ class Ui_MainWindow(object):
 "}")
         self.label_2 = QLabel(self.movimientos)
         self.label_2.setObjectName(u"label_2")
-        self.label_2.setGeometry(QRect(800, 80, 221, 91))
+        self.label_2.setGeometry(QRect(750, 100, 270, 90))
         self.label_2.setStyleSheet(u"color: #62CBC9;\n"
 "font-size: 36px;\n"
 "font-weight: bold;\n"
@@ -703,7 +703,7 @@ class Ui_MainWindow(object):
         self.programa.setObjectName(u"programa")
         self.label_10 = QLabel(self.programa)
         self.label_10.setObjectName(u"label_10")
-        self.label_10.setGeometry(QRect(750, 100, 221, 61))
+        self.label_10.setGeometry(QRect(780, 100, 270, 90))
         self.label_10.setStyleSheet(u"color: #62CBC9;\n"
 "font-size: 36px;\n"
 "font-weight: bold;\n"
@@ -712,7 +712,7 @@ class Ui_MainWindow(object):
         self.label_10.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.formLayoutWidget_2 = QWidget(self.programa)
         self.formLayoutWidget_2.setObjectName(u"formLayoutWidget_2")
-        self.formLayoutWidget_2.setGeometry(QRect(1480, 220, 321, 491))
+        self.formLayoutWidget_2.setGeometry(QRect(1530, 250, 251, 191))
         self.formLayout_2 = QFormLayout(self.formLayoutWidget_2)
         self.formLayout_2.setObjectName(u"formLayout_2")
         self.formLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -779,90 +779,6 @@ class Ui_MainWindow(object):
 
         self.formLayout_2.setWidget(2, QFormLayout.ItemRole.FieldRole, self.pg_prog_decel_impresion)
 
-        self.label_13 = QLabel(self.formLayoutWidget_2)
-        self.label_13.setObjectName(u"label_13")
-        self.label_13.setStyleSheet(u"color: #62CBC9;\n"
-"	font-size: 16px;\n"
-"	font-family: nunito;")
-        self.label_13.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.formLayout_2.setWidget(6, QFormLayout.ItemRole.LabelRole, self.label_13)
-
-        self.pg_prog_vel_curado = QLineEdit(self.formLayoutWidget_2)
-        self.pg_prog_vel_curado.setObjectName(u"pg_prog_vel_curado")
-        self.pg_prog_vel_curado.setStyleSheet(u"  background-color: #3F4D4C;\n"
-"color: #62CBC9;\n"
-"    border: 2px solid #62CBC9;\n"
-"    border-radius: 5px;\n"
-"    padding: 10px;\n"
-"	font-size: 24px;\n"
-"	font-family: nunito;")
-
-        self.formLayout_2.setWidget(6, QFormLayout.ItemRole.FieldRole, self.pg_prog_vel_curado)
-
-        self.label_16 = QLabel(self.formLayoutWidget_2)
-        self.label_16.setObjectName(u"label_16")
-        self.label_16.setStyleSheet(u"color: #62CBC9;\n"
-"	font-size: 16px;\n"
-"	font-family: nunito;")
-        self.label_16.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.formLayout_2.setWidget(7, QFormLayout.ItemRole.LabelRole, self.label_16)
-
-        self.pg_prog_acel_curado = QLineEdit(self.formLayoutWidget_2)
-        self.pg_prog_acel_curado.setObjectName(u"pg_prog_acel_curado")
-        self.pg_prog_acel_curado.setStyleSheet(u"  background-color: #3F4D4C;\n"
-"color: #62CBC9;\n"
-"    border: 2px solid #62CBC9;\n"
-"    border-radius: 5px;\n"
-"    padding: 10px;\n"
-"	font-size: 24px;\n"
-"	font-family: nunito;")
-
-        self.formLayout_2.setWidget(7, QFormLayout.ItemRole.FieldRole, self.pg_prog_acel_curado)
-
-        self.label_15 = QLabel(self.formLayoutWidget_2)
-        self.label_15.setObjectName(u"label_15")
-        self.label_15.setStyleSheet(u"color: #62CBC9;\n"
-"	font-size: 16px;\n"
-"	font-family: nunito;")
-        self.label_15.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.formLayout_2.setWidget(8, QFormLayout.ItemRole.LabelRole, self.label_15)
-
-        self.pg_prog_decel_curado = QLineEdit(self.formLayoutWidget_2)
-        self.pg_prog_decel_curado.setObjectName(u"pg_prog_decel_curado")
-        self.pg_prog_decel_curado.setStyleSheet(u"  background-color: #3F4D4C;\n"
-"color: #62CBC9;\n"
-"    border: 2px solid #62CBC9;\n"
-"    border-radius: 5px;\n"
-"    padding: 10px;\n"
-"	font-size: 24px;\n"
-"	font-family: nunito;")
-
-        self.formLayout_2.setWidget(8, QFormLayout.ItemRole.FieldRole, self.pg_prog_decel_curado)
-
-        self.pg_prog_cant_pasadas_curado = QLineEdit(self.formLayoutWidget_2)
-        self.pg_prog_cant_pasadas_curado.setObjectName(u"pg_prog_cant_pasadas_curado")
-        self.pg_prog_cant_pasadas_curado.setStyleSheet(u"  background-color: #3F4D4C;\n"
-"color: #62CBC9;\n"
-"    border: 2px solid #62CBC9;\n"
-"    border-radius: 5px;\n"
-"    padding: 10px;\n"
-"	font-size: 24px;\n"
-"	font-family: nunito;")
-
-        self.formLayout_2.setWidget(9, QFormLayout.ItemRole.FieldRole, self.pg_prog_cant_pasadas_curado)
-
-        self.label_22 = QLabel(self.formLayoutWidget_2)
-        self.label_22.setObjectName(u"label_22")
-        self.label_22.setStyleSheet(u"color: #62CBC9;\n"
-"	font-size: 16px;\n"
-"	font-family: nunito;")
-        self.label_22.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.formLayout_2.setWidget(9, QFormLayout.ItemRole.LabelRole, self.label_22)
-
         self.verticalLayoutWidget_3 = QWidget(self.programa)
         self.verticalLayoutWidget_3.setObjectName(u"verticalLayoutWidget_3")
         self.verticalLayoutWidget_3.setGeometry(QRect(40, 360, 221, 152))
@@ -928,7 +844,7 @@ class Ui_MainWindow(object):
 
         self.gridLayoutWidget_2 = QWidget(self.programa)
         self.gridLayoutWidget_2.setObjectName(u"gridLayoutWidget_2")
-        self.gridLayoutWidget_2.setGeometry(QRect(440, 720, 851, 121))
+        self.gridLayoutWidget_2.setGeometry(QRect(480, 720, 851, 121))
         self.gridLayout_2 = QGridLayout(self.gridLayoutWidget_2)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -1246,7 +1162,7 @@ class Ui_MainWindow(object):
 
         self.label_26 = QLabel(self.programa)
         self.label_26.setObjectName(u"label_26")
-        self.label_26.setGeometry(QRect(750, 660, 231, 29))
+        self.label_26.setGeometry(QRect(790, 660, 231, 29))
         self.label_26.setStyleSheet(u"color: #62CBC9;\n"
 "font-size: 16px;\n"
 "font-family: nunito;\n"
@@ -1254,12 +1170,121 @@ class Ui_MainWindow(object):
         self.label_26.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.pg_vista = QGraphicsView(self.programa)
         self.pg_vista.setObjectName(u"pg_vista")
-        self.pg_vista.setGeometry(QRect(300, 330, 1121, 211))
+        self.pg_vista.setGeometry(QRect(350, 330, 1121, 211))
         self.pg_vista.setStyleSheet(u"QGraphicsView {\n"
 "    background-color: #3F4D4C;\n"
 "    border: 2px solid #62CBC9;\n"
 "    border-radius: 5px;\n"
 "}")
+        self.formLayoutWidget_3 = QWidget(self.programa)
+        self.formLayoutWidget_3.setObjectName(u"formLayoutWidget_3")
+        self.formLayoutWidget_3.setGeometry(QRect(1530, 530, 251, 261))
+        self.formLayout_3 = QFormLayout(self.formLayoutWidget_3)
+        self.formLayout_3.setObjectName(u"formLayout_3")
+        self.formLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.label_13 = QLabel(self.formLayoutWidget_3)
+        self.label_13.setObjectName(u"label_13")
+        self.label_13.setStyleSheet(u"color: #62CBC9;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.label_13.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.formLayout_3.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label_13)
+
+        self.pg_prog_vel_curado = QLineEdit(self.formLayoutWidget_3)
+        self.pg_prog_vel_curado.setObjectName(u"pg_prog_vel_curado")
+        self.pg_prog_vel_curado.setStyleSheet(u"  background-color: #3F4D4C;\n"
+"color: #62CBC9;\n"
+"    border: 2px solid #62CBC9;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 24px;\n"
+"	font-family: nunito;")
+
+        self.formLayout_3.setWidget(0, QFormLayout.ItemRole.FieldRole, self.pg_prog_vel_curado)
+
+        self.label_16 = QLabel(self.formLayoutWidget_3)
+        self.label_16.setObjectName(u"label_16")
+        self.label_16.setStyleSheet(u"color: #62CBC9;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.label_16.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.formLayout_3.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label_16)
+
+        self.pg_prog_acel_curado = QLineEdit(self.formLayoutWidget_3)
+        self.pg_prog_acel_curado.setObjectName(u"pg_prog_acel_curado")
+        self.pg_prog_acel_curado.setStyleSheet(u"  background-color: #3F4D4C;\n"
+"color: #62CBC9;\n"
+"    border: 2px solid #62CBC9;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 24px;\n"
+"	font-family: nunito;")
+
+        self.formLayout_3.setWidget(1, QFormLayout.ItemRole.FieldRole, self.pg_prog_acel_curado)
+
+        self.label_15 = QLabel(self.formLayoutWidget_3)
+        self.label_15.setObjectName(u"label_15")
+        self.label_15.setStyleSheet(u"color: #62CBC9;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.label_15.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.formLayout_3.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label_15)
+
+        self.pg_prog_decel_curado = QLineEdit(self.formLayoutWidget_3)
+        self.pg_prog_decel_curado.setObjectName(u"pg_prog_decel_curado")
+        self.pg_prog_decel_curado.setStyleSheet(u"  background-color: #3F4D4C;\n"
+"color: #62CBC9;\n"
+"    border: 2px solid #62CBC9;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 24px;\n"
+"	font-family: nunito;")
+
+        self.formLayout_3.setWidget(2, QFormLayout.ItemRole.FieldRole, self.pg_prog_decel_curado)
+
+        self.label_22 = QLabel(self.formLayoutWidget_3)
+        self.label_22.setObjectName(u"label_22")
+        self.label_22.setStyleSheet(u"color: #62CBC9;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.label_22.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.formLayout_3.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label_22)
+
+        self.pg_prog_cant_pasadas_curado = QLineEdit(self.formLayoutWidget_3)
+        self.pg_prog_cant_pasadas_curado.setObjectName(u"pg_prog_cant_pasadas_curado")
+        self.pg_prog_cant_pasadas_curado.setStyleSheet(u"  background-color: #3F4D4C;\n"
+"color: #62CBC9;\n"
+"    border: 2px solid #62CBC9;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 24px;\n"
+"	font-family: nunito;")
+
+        self.formLayout_3.setWidget(3, QFormLayout.ItemRole.FieldRole, self.pg_prog_cant_pasadas_curado)
+
+        self.label_27 = QLabel(self.programa)
+        self.label_27.setObjectName(u"label_27")
+        self.label_27.setGeometry(QRect(1530, 200, 251, 31))
+        font1 = QFont()
+        font1.setFamilies([u"nunito"])
+        font1.setBold(True)
+        self.label_27.setFont(font1)
+        self.label_27.setStyleSheet(u"color: #62CBC9;\n"
+"	font-size: 20px;\n"
+"	font-family: nunito;")
+        self.label_27.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_32 = QLabel(self.programa)
+        self.label_32.setObjectName(u"label_32")
+        self.label_32.setGeometry(QRect(1530, 480, 251, 31))
+        self.label_32.setFont(font1)
+        self.label_32.setStyleSheet(u"color: #62CBC9;\n"
+"	font-size: 20px;\n"
+"	font-family: nunito;")
+        self.label_32.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.stackedWidget.addWidget(self.programa)
         self.verticalLayoutWidget_2 = QWidget(self.centralwidget)
         self.verticalLayoutWidget_2.setObjectName(u"verticalLayoutWidget_2")
@@ -1415,13 +1440,9 @@ class Ui_MainWindow(object):
         self.label_31.setText(QCoreApplication.translate("MainWindow", u"Y:", None))
         self.btnAbort.setText(QCoreApplication.translate("MainWindow", u"Abort", None))
         self.label_10.setText(QCoreApplication.translate("MainWindow", u"Programa", None))
-        self.label_11.setText(QCoreApplication.translate("MainWindow", u"Velocidad impresi\u00f3n", None))
-        self.label_12.setText(QCoreApplication.translate("MainWindow", u"Aceleracion impresi\u00f3n", None))
-        self.label_14.setText(QCoreApplication.translate("MainWindow", u"Deceleraci\u00f3n impresion", None))
-        self.label_13.setText(QCoreApplication.translate("MainWindow", u"Velocidad curado", None))
-        self.label_16.setText(QCoreApplication.translate("MainWindow", u"Aceleraci\u00f3n curado", None))
-        self.label_15.setText(QCoreApplication.translate("MainWindow", u"Deceleraci\u00f3n curado", None))
-        self.label_22.setText(QCoreApplication.translate("MainWindow", u"Pasadas curado", None))
+        self.label_11.setText(QCoreApplication.translate("MainWindow", u"Velocidad", None))
+        self.label_12.setText(QCoreApplication.translate("MainWindow", u"Aceleracion", None))
+        self.label_14.setText(QCoreApplication.translate("MainWindow", u"Deceleraci\u00f3n", None))
         self.bt_pg_prog_start.setText(QCoreApplication.translate("MainWindow", u"Iniciar programa", None))
         self.bt_pg_prog_stop.setText(QCoreApplication.translate("MainWindow", u"Parar programa", None))
         self.bt_pg_prog_simulacion.setText(QCoreApplication.translate("MainWindow", u"SIMULACI\u00d3N", None))
@@ -1498,6 +1519,12 @@ class Ui_MainWindow(object):
         self.label_24.setText(QCoreApplication.translate("MainWindow", u"7", None))
         self.label_25.setText(QCoreApplication.translate("MainWindow", u"8", None))
         self.label_26.setText(QCoreApplication.translate("MainWindow", u"Configuraci\u00f3n de m\u00f3dulos", None))
+        self.label_13.setText(QCoreApplication.translate("MainWindow", u"Velocidad", None))
+        self.label_16.setText(QCoreApplication.translate("MainWindow", u"Aceleraci\u00f3n", None))
+        self.label_15.setText(QCoreApplication.translate("MainWindow", u"Deceleraci\u00f3n", None))
+        self.label_22.setText(QCoreApplication.translate("MainWindow", u"Pasadas", None))
+        self.label_27.setText(QCoreApplication.translate("MainWindow", u"IMPRESI\u00d3N", None))
+        self.label_32.setText(QCoreApplication.translate("MainWindow", u"CURADO", None))
         self.bt_pg_menu.setText(QCoreApplication.translate("MainWindow", u"Menu", None))
         self.bt_pg_movimientos1.setText(QCoreApplication.translate("MainWindow", u"Movimientos", None))
         self.bt_pg_programa.setText(QCoreApplication.translate("MainWindow", u"Programa", None))

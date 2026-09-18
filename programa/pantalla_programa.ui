@@ -132,10 +132,10 @@ QPushButton:pressed {
      <widget class="QLabel" name="label_2">
       <property name="geometry">
        <rect>
-        <x>800</x>
-        <y>80</y>
-        <width>221</width>
-        <height>91</height>
+        <x>750</x>
+        <y>100</y>
+        <width>270</width>
+        <height>90</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -1227,10 +1227,10 @@ QPushButton:pressed {
      <widget class="QLabel" name="label_10">
       <property name="geometry">
        <rect>
-        <x>750</x>
+        <x>780</x>
         <y>100</y>
-        <width>221</width>
-        <height>61</height>
+        <width>270</width>
+        <height>90</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -1250,10 +1250,10 @@ text-align: center;</string>
      <widget class="QWidget" name="formLayoutWidget_2">
       <property name="geometry">
        <rect>
-        <x>1480</x>
-        <y>220</y>
-        <width>321</width>
-        <height>491</height>
+        <x>1530</x>
+        <y>250</y>
+        <width>251</width>
+        <height>191</height>
        </rect>
       </property>
       <layout class="QFormLayout" name="formLayout_2">
@@ -1265,7 +1265,7 @@ text-align: center;</string>
 	font-family: nunito;</string>
          </property>
          <property name="text">
-          <string>Velocidad impresión</string>
+          <string>Velocidad</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -1293,7 +1293,7 @@ color: #62CBC9;
 	font-family: nunito;</string>
          </property>
          <property name="text">
-          <string>Aceleracion impresión</string>
+          <string>Aceleracion</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -1321,7 +1321,7 @@ color: #62CBC9;
 	font-family: nunito;</string>
          </property>
          <property name="text">
-          <string>Deceleración impresion</string>
+          <string>Deceleración</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -1338,118 +1338,6 @@ color: #62CBC9;
     padding: 10px;
 	font-size: 24px;
 	font-family: nunito;</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="label_13">
-         <property name="styleSheet">
-          <string notr="true">color: #62CBC9;
-	font-size: 16px;
-	font-family: nunito;</string>
-         </property>
-         <property name="text">
-          <string>Velocidad curado</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="1">
-        <widget class="QLineEdit" name="pg_prog_vel_curado">
-         <property name="styleSheet">
-          <string notr="true">  background-color: #3F4D4C;
-color: #62CBC9;
-    border: 2px solid #62CBC9;
-    border-radius: 5px;
-    padding: 10px;
-	font-size: 24px;
-	font-family: nunito;</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="0">
-        <widget class="QLabel" name="label_16">
-         <property name="styleSheet">
-          <string notr="true">color: #62CBC9;
-	font-size: 16px;
-	font-family: nunito;</string>
-         </property>
-         <property name="text">
-          <string>Aceleración curado</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="1">
-        <widget class="QLineEdit" name="pg_prog_acel_curado">
-         <property name="styleSheet">
-          <string notr="true">  background-color: #3F4D4C;
-color: #62CBC9;
-    border: 2px solid #62CBC9;
-    border-radius: 5px;
-    padding: 10px;
-	font-size: 24px;
-	font-family: nunito;</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="0">
-        <widget class="QLabel" name="label_15">
-         <property name="styleSheet">
-          <string notr="true">color: #62CBC9;
-	font-size: 16px;
-	font-family: nunito;</string>
-         </property>
-         <property name="text">
-          <string>Deceleración curado</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="1">
-        <widget class="QLineEdit" name="pg_prog_decel_curado">
-         <property name="styleSheet">
-          <string notr="true">  background-color: #3F4D4C;
-color: #62CBC9;
-    border: 2px solid #62CBC9;
-    border-radius: 5px;
-    padding: 10px;
-	font-size: 24px;
-	font-family: nunito;</string>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="1">
-        <widget class="QLineEdit" name="pg_prog_cant_pasadas_curado">
-         <property name="styleSheet">
-          <string notr="true">  background-color: #3F4D4C;
-color: #62CBC9;
-    border: 2px solid #62CBC9;
-    border-radius: 5px;
-    padding: 10px;
-	font-size: 24px;
-	font-family: nunito;</string>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="0">
-        <widget class="QLabel" name="label_22">
-         <property name="styleSheet">
-          <string notr="true">color: #62CBC9;
-	font-size: 16px;
-	font-family: nunito;</string>
-         </property>
-         <property name="text">
-          <string>Pasadas curado</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -1539,7 +1427,7 @@ QPushButton:pressed {
      <widget class="QWidget" name="gridLayoutWidget_2">
       <property name="geometry">
        <rect>
-        <x>440</x>
+        <x>480</x>
         <y>720</y>
         <width>851</width>
         <height>121</height>
@@ -2151,7 +2039,7 @@ font-weight: bold;</string>
      <widget class="QLabel" name="label_26">
       <property name="geometry">
        <rect>
-        <x>750</x>
+        <x>790</x>
         <y>660</y>
         <width>231</width>
         <height>29</height>
@@ -2173,7 +2061,7 @@ font-weight: bold;</string>
      <widget class="QGraphicsView" name="pg_vista">
       <property name="geometry">
        <rect>
-        <x>300</x>
+        <x>350</x>
         <y>330</y>
         <width>1121</width>
         <height>211</height>
@@ -2185,6 +2073,186 @@ font-weight: bold;</string>
     border: 2px solid #62CBC9;
     border-radius: 5px;
 }</string>
+      </property>
+     </widget>
+     <widget class="QWidget" name="formLayoutWidget_3">
+      <property name="geometry">
+       <rect>
+        <x>1530</x>
+        <y>530</y>
+        <width>251</width>
+        <height>261</height>
+       </rect>
+      </property>
+      <layout class="QFormLayout" name="formLayout_3">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_13">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+	font-size: 16px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Velocidad</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="pg_prog_vel_curado">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_16">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+	font-size: 16px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Aceleración</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="pg_prog_acel_curado">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_15">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+	font-size: 16px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Deceleración</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="pg_prog_decel_curado">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_22">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+	font-size: 16px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Pasadas</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="pg_prog_cant_pasadas_curado">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QLabel" name="label_27">
+      <property name="geometry">
+       <rect>
+        <x>1530</x>
+        <y>200</y>
+        <width>251</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>nunito</family>
+        <pointsize>-1</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;
+	font-size: 20px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>IMPRESIÓN</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_32">
+      <property name="geometry">
+       <rect>
+        <x>1530</x>
+        <y>480</y>
+        <width>251</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>nunito</family>
+        <pointsize>-1</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;
+	font-size: 20px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>CURADO</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
     </widget>

@@ -49,6 +49,8 @@ COLOR_BORDE_MESA = "#333333"
 COLOR_IMAGEN  = "#7F8C8D"
 COLOR_TEXTO   = "#FFFFFF"
 COLOR_PULSO   = "#E74C3C"
+COLOR_LIMITE  = "#E74C3C"   # marca del limite de carrera del eje sobre la barra
+GROSOR_LIMITE = 1
 DURACION_AVISO_PULSO_S = 0.6
 
 COLOR_PERFIL_IMPRESION = "#2E86C1"
@@ -331,6 +333,18 @@ class PaginaPrograma(QObject):
         self.escena.addRect(QRectF(0, y_barra, ancho_px, ALTO_BARRA_PX),
                             QPen(Qt.NoPen), QBrush(QColor(COLOR_BARRA)))
         self._y_base = y_barra - ALTO_MESA_PX   # sobre la mesa arrancan los perfiles
+
+        # limite de carrera del eje: hasta aqui llega el borde trasero de la mesa
+        lapiz_limite = QPen(QColor(COLOR_LIMITE))
+        lapiz_limite.setWidth(GROSOR_LIMITE)
+        lapiz_limite.setStyle(Qt.DashLine)
+        x_limite = config.LIMITE_MAX_MM * escala
+        self.escena.addLine(x_limite, MARGEN_SUPERIOR_MODULO, x_limite, y_barra, lapiz_limite)
+        etiqueta = QGraphicsSimpleTextItem(f"limite eje {config.LIMITE_MAX_MM:.0f} mm")
+        etiqueta.setBrush(QBrush(QColor(COLOR_LIMITE)))
+        etiqueta.setFont(QFont("", TAMANO_TEXTO_ESTADO_PT))
+        etiqueta.setPos(x_limite + MARGEN_TEXTO_PX, MARGEN_SUPERIOR_MODULO)
+        self.escena.addItem(etiqueta)
 
         alto_rect = self._y_base - ALTO_RESERVADO_MODULO
         for i, tipo, distancia in self.leer_modulos():
