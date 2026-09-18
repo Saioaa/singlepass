@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1960</width>
+    <width>1958</width>
     <height>1072</height>
    </rect>
   </property>
@@ -31,7 +31,7 @@
 </string>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="menu">
      <property name="styleSheet">
@@ -1250,8 +1250,8 @@ text-align: center;</string>
      <widget class="QWidget" name="formLayoutWidget_2">
       <property name="geometry">
        <rect>
-        <x>1370</x>
-        <y>280</y>
+        <x>1490</x>
+        <y>190</y>
         <width>311</width>
         <height>514</height>
        </rect>
@@ -1486,10 +1486,10 @@ color: #62CBC9;
      <widget class="QWidget" name="verticalLayoutWidget_3">
       <property name="geometry">
        <rect>
-        <x>60</x>
-        <y>320</y>
-        <width>301</width>
-        <height>100</height>
+        <x>40</x>
+        <y>360</y>
+        <width>221</width>
+        <height>152</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -1539,13 +1539,36 @@ QPushButton:pressed {
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QPushButton" name="bt_pg_prog_simulacion">
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    background-color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+         </property>
+         <property name="text">
+          <string>SIMULACIÓN</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="gridLayoutWidget_2">
       <property name="geometry">
        <rect>
         <x>440</x>
-        <y>670</y>
+        <y>720</y>
         <width>851</width>
         <height>121</height>
        </rect>
@@ -2157,7 +2180,7 @@ font-weight: bold;</string>
       <property name="geometry">
        <rect>
         <x>750</x>
-        <y>620</y>
+        <y>660</y>
         <width>231</width>
         <height>29</height>
        </rect>
@@ -2178,10 +2201,10 @@ font-weight: bold;</string>
      <widget class="QGraphicsView" name="pg_vista">
       <property name="geometry">
        <rect>
-        <x>440</x>
-        <y>300</y>
-        <width>851</width>
-        <height>192</height>
+        <x>300</x>
+        <y>330</y>
+        <width>1121</width>
+        <height>211</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -2312,7 +2335,7 @@ QPushButton:pressed {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1960</width>
+     <width>1958</width>
      <height>23</height>
     </rect>
    </property>

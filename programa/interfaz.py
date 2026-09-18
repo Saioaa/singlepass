@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Ventana principal: navegacion, pagina de movimientos y pagina de programa.
+"""Ventana principal: navegacion, pagina de movimientos, ajustes y escalado.
 
 Los dispositivos (MotorD1, ClienteMDuino, ClientePMB) los crea main.py y
-llegan por el constructor. La pagina PMB-8 vive en pagina_pmb.py.
+llegan por el constructor. La pagina PMB-8 vive en pagina_pmb.py y la pagina
+Programa (secuencia, grafico, simulacion) en pagina_programa.py.
 
 ui_pantalla_programa.py debe generarse con:
     pyside6-uic pantalla_programa.ui -o ui_pantalla_programa.py
@@ -12,16 +13,21 @@ import json
 import os
 import re
 
-from PySide6.QtCore import QEvent, QLocale, QRectF, QSize, Qt, QTimer
-from PySide6.QtGui import QBrush, QColor, QDoubleValidator, QGuiApplication, QIcon, QPen, QPixmap
-from PySide6.QtWidgets import (QAbstractButton, QFrame, QGraphicsRectItem,
-                               QGraphicsScene, QGraphicsTextItem, QMainWindow, QWidget)
+from PySide6.QtCore import QLocale, QSize, QTimer
+from PySide6.QtGui import QDoubleValidator, QGuiApplication, QIcon
+from PySide6.QtWidgets import QAbstractButton, QMainWindow, QWidget
 
 import config
 from d1 import MODO_POSICION
 from pagina_pmb import PaginaPMB
-from secuencia import ParametrosPrograma, SecuenciaImpresion
+from pagina_programa import PaginaPrograma
+from secuencia import SecuenciaImpresion
+from simulacion import MDuinoSimulado, MotorSimulado
 from ui_pantalla_programa import Ui_MainWindow
+
+# ===== MODULOS DE LA BARRA (para la persistencia de ajustes) =====
+PRIMER_MODULO = 1
+ULTIMO_MODULO = 8
 
 # ===== CAMPOS DE TEXTO QUE SE GUARDAN ENTRE SESIONES =====
 CAMPOS_TEXTO = [
@@ -30,19 +36,6 @@ CAMPOS_TEXTO = [
     "pg_prog_vel_curado", "pg_prog_acel_curado", "pg_prog_decel_curado",
     "pg_prog_cant_pasadas_curado", "pg_prog_inicio_curado",
 ]
-
-# ===== MODULOS DE LA BARRA =====
-PRIMER_MODULO = 1
-ULTIMO_MODULO = 8
-TIPOS_CABEZAL = ("PMB-C8", "PMB-C2", "APMB4")   # confirmar si SM-200 imprime
-MODULO_VACIO  = "-"
-TIPO_NIR      = "NIR"
-TIPO_SECADOR  = "Air dryver"
-COLOR_NIR     = "#CC9B62"
-COLOR_SECADOR = "#CC7662"
-COLOR_CABEZAL = "#62CBC9"
-
-GRADOS_POR_GIRO = 90   # rotacion del nombre del modulo en el grafico
 
 # ===== ESCALADO A LA PANTALLA =====
 # El .ui esta disenado con geometrias absolutas para esta resolucion.
@@ -78,24 +71,6 @@ PERIODO_SONDEO_HOMING     = 100   # vigilancia del homing
 PERIODO_REFRESCO_POSICION = 500   # refresco del campo de posicion
 PERIODO_LATIDO            = 500   # lectura ligera para que el D1 no cierre la sesion
 
-# ===== GRAFICO DE LA BARRA (px) =====
-MARGEN_SUPERIOR_MODULO = 10
-ALTO_RESERVADO_MODULO  = 40    # alto de la vista menos esto = alto del rectangulo
-Y_NUMERO_MODULO        = 12
-MARGEN_MESETA          = 15
-GROSOR_PERFIL          = 2
-# recorrido (mm) de los dos bordes del carro durante la impresion
-PERFIL_IMPRESION_DELANTERO = (50, 1900)
-PERFIL_IMPRESION_TRASERO   = (300, 2150)
-DESFASE_BORDE_TRASERO_MM   = 250
-FIN_CARRERA_DELANTERO_MM   = 1900
-FIN_CARRERA_TRASERO_MM     = 2150
-COLOR_IMPR_DELANTERO = "#2E86C1"
-COLOR_IMPR_TRASERO   = "#C0392B"
-COLOR_CUR_DELANTERO  = "#27AE60"
-COLOR_CUR_TRASERO    = "#F39C12"
-
-
 def _leer_float(campo, por_defecto=None):
     """float del texto de un QLineEdit, o por_defecto si esta vacio o no es numero."""
     try:
@@ -119,7 +94,7 @@ class VentanaPrincipal(QMainWindow):
         self.mduino = mduino
         self.pmb = pmb
 
-        # ===== paginas y secuencia =====
+        # ===== paginas y secuencias =====
         self.pagina_pmb = PaginaPMB(self.ui, self.pmb, self.posicion_cabezal, parent=self)
         self.secuencia = SecuenciaImpresion(self.motor, self.mduino,
                                             self.pagina_pmb.esta_lista,
@@ -127,7 +102,25 @@ class VentanaPrincipal(QMainWindow):
                                             config.FINAL_RECORRIDO_MM, parent=self)
         self.mduino.seta_cambiada.connect(self.secuencia.set_seta)
 
+        # simulacion: misma secuencia sobre dispositivos simulados, sin PMB
+        self.motor_sim = MotorSimulado(config.LIMITE_MIN_MM, config.LIMITE_MAX_MM,
+                                       config.POSICION_REPOSO_MM)
+        self.mduino_sim = MDuinoSimulado(self)
+        self.secuencia_sim = SecuenciaImpresion(self.motor_sim, self.mduino_sim, lambda: True,
+                                                config.POSICION_REPOSO_MM,
+                                                config.FINAL_RECORRIDO_MM, parent=self)
+
         self.homing_en_curso = False   # impide leer la posicion durante el homing
+        self.posicion_mm = None        # ultima posicion leida del D1
+
+        self.pagina_programa = PaginaPrograma(
+            self.ui, self.secuencia, self.secuencia_sim, self.motor_sim, self.mduino_sim,
+            pmb_lista=self.pagina_pmb.esta_lista,
+            abortar_pmb=self.pagina_pmb.abortar,
+            geometria_imagen=self.pagina_pmb.geometria_imagen,
+            posicion_real=lambda: self.posicion_mm,
+            registrar=self.pagina_pmb.registrar,
+            parent=self)
 
         # ===== navegacion =====
         self.ui.bt_pg_movimientos1.clicked.connect(self.ir_pg_movimientos)
@@ -180,43 +173,7 @@ class VentanaPrincipal(QMainWindow):
         self.timer_latido.timeout.connect(self.latido)
         self.timer_latido.start()
 
-        # ===== pagina programa =====
-        self.ui.bt_pg_prog_start.clicked.connect(self.start)
-        self.ui.bt_pg_prog_stop.clicked.connect(self.stop)
-
-        self.ui.pg_prog_acel_curado.setValidator(validador)
-        self.ui.pg_prog_acel_impresion.setValidator(validador)
-        self.ui.pg_prog_cant_pasadas_curado.setValidator(validador)
-        self.ui.pg_prog_decel_curado.setValidator(validador)
-        self.ui.pg_prog_decel_impresion.setValidator(validador)
-        self.ui.pg_prog_vel_impresion.setValidator(validador)
-        self.ui.pg_prog_vel_curado.setValidator(validador)
-
-        # grafico de modulos a escala
-        self.escena = QGraphicsScene(self)
-        self.ui.pg_vista.setScene(self.escena)
-        self.ui.pg_vista.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.ui.pg_vista.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.ui.pg_vista.setFrameShape(QFrame.NoFrame)
-
-        # redibujar cuando el operario cambie un combo o una distancia
-        for i in range(PRIMER_MODULO, ULTIMO_MODULO + 1):
-            self._combo_modulo(i).currentIndexChanged.connect(self.dibujar_modulos)
-            self._campo_distancia(i).textChanged.connect(self.dibujar_modulos)
-        for campo in (self.ui.pg_prog_vel_impresion, self.ui.pg_prog_acel_impresion,
-                      self.ui.pg_prog_decel_impresion, self.ui.pg_prog_vel_curado,
-                      self.ui.pg_prog_acel_curado, self.ui.pg_prog_decel_curado,
-                      self.ui.pg_prog_inicio_curado):
-            campo.textChanged.connect(self.dibujar_modulos)
-
         self.cargar_ajustes()
-        # redibujar el grafico cuando cambie el tamano de la vista (escalado, pantalla)
-        self.ui.pg_vista.viewport().installEventFilter(self)
-
-    def eventFilter(self, objeto, evento):
-        if objeto is self.ui.pg_vista.viewport() and evento.type() == QEvent.Resize:
-            QTimer.singleShot(0, self.dibujar_modulos)
-        return super().eventFilter(objeto, evento)
 
     # ===== escalado =====
     def ajustar_a_pantalla(self):
@@ -254,10 +211,10 @@ class VentanaPrincipal(QMainWindow):
 
     # ===== accesos a widgets repetidos =====
     def _combo_modulo(self, i):
-        return getattr(self.ui, f"modulo{i}")
+        return self.pagina_programa.combo_modulo(i)
 
     def _campo_distancia(self, i):
-        return getattr(self.ui, f"M{i}D")
+        return self.pagina_programa.campo_distancia(i)
 
     # ===== navegacion =====
     def ir_pg_menu(self):
@@ -281,156 +238,15 @@ class VentanaPrincipal(QMainWindow):
         if self.homing_en_curso or self.secuencia.en_marcha():
             return
         try:
-            self.ui.posicion.setText(f"{self.motor.leer_posicion():.2f}")
+            self.posicion_mm = self.motor.leer_posicion()
+            self.ui.posicion.setText(f"{self.posicion_mm:.2f}")
         except Exception as e:
             self.ui.posicion.setText("---")
             print(f"[POSICION] Lectura fallida: {e}")
             self.timer_posicion.stop()
 
-    # ===== pagina programa =====
-    def leer_parametros_programa(self):
-        pasadas = _leer_float(self.ui.pg_prog_cant_pasadas_curado, por_defecto=0)
-        return ParametrosPrograma(
-            vel_impresion=float(self.ui.pg_prog_vel_impresion.text()),
-            acel_impresion=float(self.ui.pg_prog_acel_impresion.text()),
-            decel_impresion=float(self.ui.pg_prog_decel_impresion.text()),
-            vel_curado=float(self.ui.pg_prog_vel_curado.text()),
-            acel_curado=float(self.ui.pg_prog_acel_curado.text()),
-            decel_curado=float(self.ui.pg_prog_decel_curado.text()),
-            pasadas_curado=int(pasadas),
-            inicio_curado=_leer_float(self.ui.pg_prog_inicio_curado),
-        )
-
-    def start(self):
-        try:
-            parametros = self.leer_parametros_programa()
-        except ValueError:
-            self.ui.txtMessage.append("[PROGRAMA] Faltan parametros de impresion o curado")
-            return
-        if not self.pagina_pmb.esta_lista():
-            self.ui.txtMessage.append("[PROGRAMA] El PMB no esta armado: pulsa Print en la pagina PMB-8")
-            return
-        if not self.secuencia.start(parametros):
-            self.ui.txtMessage.append("[PROGRAMA] No se puede arrancar: seta o referencia pendiente")
-
-    def stop(self):
-        self.secuencia.stop()
-        if self.pagina_pmb.esta_lista():
-            self.pagina_pmb.abortar()   # el PMB no debe quedarse esperando un print go que no llegara
-
-    # ===== grafico de la barra =====
-    def leer_modulos(self):
-        """[(indice, tipo, posicion_mm), ...] de las ranuras ocupadas."""
-        modulos = []
-        for i in range(PRIMER_MODULO, ULTIMO_MODULO + 1):
-            tipo = self._combo_modulo(i).currentText()
-            distancia = _leer_float(self._campo_distancia(i))
-            if tipo in (MODULO_VACIO, "") or distancia is None:
-                continue
-            modulos.append((i, tipo, distancia))
-        return modulos
-
     def posicion_cabezal(self):
-        """Posicion del primer cabezal de impresion sobre el recorrido, en mm."""
-        cabezales = sorted((m for m in self.leer_modulos() if m[1] in TIPOS_CABEZAL),
-                           key=lambda m: m[2])
-        return cabezales[0][2] if cabezales else None
-
-    def _dibujar_perfil(self, v, a, dec, inicio_mm, fin_mm, escala, y_base, altura, color):
-        """Perfil trapezoidal de velocidad de un borde del carro."""
-        if v <= 0 or a <= 0 or dec <= 0:
-            return
-        dist_acel = v * v / (2 * a)
-        dist_decel = v * v / (2 * dec)
-        recorrido = fin_mm - inicio_mm
-
-        # si no cabe la meseta, el carro no llega a velocidad de crucero (triangulo)
-        if dist_acel + dist_decel > recorrido:
-            dist_acel = recorrido * a / (a + dec)
-            dist_decel = recorrido - dist_acel
-
-        x0 = inicio_mm * escala
-        x1 = (inicio_mm + dist_acel) * escala
-        x2 = (fin_mm - dist_decel) * escala
-        x3 = fin_mm * escala
-        y_pico = y_base - altura
-
-        lapiz = QPen(QColor(color))
-        lapiz.setWidth(GROSOR_PERFIL)
-        self.escena.addLine(x0, y_base, x1, y_pico, lapiz)
-        self.escena.addLine(x1, y_pico, x2, y_pico, lapiz)
-        self.escena.addLine(x2, y_pico, x3, y_base, lapiz)
-
-    def dibujar_modulos(self):
-        self.escena.clear()
-
-        ancho_px = self.ui.pg_vista.viewport().width()
-        alto_px = self.ui.pg_vista.viewport().height()
-        self.escena.setSceneRect(0, 0, ancho_px, alto_px)
-        escala = ancho_px / config.BARRA_MM   # px por mm
-
-        # fondo: imagen de la barra, a lo ancho, sin deformar, pegada abajo
-        pixmap = QPixmap(config.RUTA_GUIA_EJE).scaledToWidth(ancho_px, Qt.SmoothTransformation)
-        fondo = self.escena.addPixmap(pixmap)
-        fondo.setPos(0, alto_px - pixmap.height())
-
-        alto_rect = alto_px - ALTO_RESERVADO_MODULO
-        for i, tipo, distancia in self.leer_modulos():
-            x = distancia * escala
-            w = config.MODULO_MM * escala
-
-            if tipo == TIPO_NIR:
-                color = COLOR_NIR
-            elif tipo == TIPO_SECADOR:
-                color = COLOR_SECADOR
-            else:
-                color = COLOR_CABEZAL
-
-            rect = QGraphicsRectItem(QRectF(x, MARGEN_SUPERIOR_MODULO, w, alto_rect))
-            rect.setBrush(QBrush(QColor(color)))
-            self.escena.addItem(rect)
-
-            # numero del modulo: horizontal, centrado arriba
-            num = QGraphicsTextItem(str(i))
-            num.setPos(x + (w - num.boundingRect().width()) / 2, Y_NUMERO_MODULO)
-            self.escena.addItem(num)
-
-            # nombre del modulo: vertical y centrado en el modulo
-            nombre = QGraphicsTextItem(tipo)
-            r = nombre.boundingRect()
-            cx = x + w / 2
-            cy = MARGEN_SUPERIOR_MODULO + alto_rect / 2
-            nombre.setRotation(GRADOS_POR_GIRO)
-            nombre.setPos(cx + r.height() / 2, cy - r.width() / 2)
-            self.escena.addItem(nombre)
-
-        # perfiles de velocidad de los dos bordes del carro
-        y_base = alto_px - pixmap.height()
-        altura_max = y_base - MARGEN_MESETA
-
-        v_impr = _leer_float(self.ui.pg_prog_vel_impresion, por_defecto=0)
-        a_impr = _leer_float(self.ui.pg_prog_acel_impresion, por_defecto=0)
-        d_impr = _leer_float(self.ui.pg_prog_decel_impresion, por_defecto=0)
-        v_cur = _leer_float(self.ui.pg_prog_vel_curado, por_defecto=0)
-        a_cur = _leer_float(self.ui.pg_prog_acel_curado, por_defecto=0)
-        d_cur = _leer_float(self.ui.pg_prog_decel_curado, por_defecto=0)
-
-        # impresion: siempre a altura maxima
-        if v_impr > 0:
-            self._dibujar_perfil(v_impr, a_impr, d_impr, *PERFIL_IMPRESION_DELANTERO,
-                                 escala, y_base, altura_max, COLOR_IMPR_DELANTERO)
-            self._dibujar_perfil(v_impr, a_impr, d_impr, *PERFIL_IMPRESION_TRASERO,
-                                 escala, y_base, altura_max, COLOR_IMPR_TRASERO)
-
-        # curado: altura proporcional a su velocidad respecto a la de impresion
-        inicio_cur = _leer_float(self.ui.pg_prog_inicio_curado)
-        if v_impr > 0 and v_cur > 0 and inicio_cur is not None:
-            altura_cur = altura_max * (v_cur / v_impr)
-            self._dibujar_perfil(v_cur, a_cur, d_cur, inicio_cur, FIN_CARRERA_DELANTERO_MM,
-                                 escala, y_base, altura_cur, COLOR_CUR_DELANTERO)
-            self._dibujar_perfil(v_cur, a_cur, d_cur,
-                                 inicio_cur + DESFASE_BORDE_TRASERO_MM, FIN_CARRERA_TRASERO_MM,
-                                 escala, y_base, altura_cur, COLOR_CUR_TRASERO)
+        return self.pagina_programa.posicion_cabezal()
 
     # ===== pagina movimientos =====
     def ir_objetivo(self):

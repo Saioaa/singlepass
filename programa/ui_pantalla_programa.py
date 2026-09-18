@@ -25,7 +25,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1960, 1072)
+        MainWindow.resize(1958, 1072)
         MainWindow.setStyleSheet(u"background-color: #62CBC9")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
@@ -712,7 +712,7 @@ class Ui_MainWindow(object):
         self.label_10.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.formLayoutWidget_2 = QWidget(self.programa)
         self.formLayoutWidget_2.setObjectName(u"formLayoutWidget_2")
-        self.formLayoutWidget_2.setGeometry(QRect(1370, 280, 311, 514))
+        self.formLayoutWidget_2.setGeometry(QRect(1490, 190, 311, 514))
         self.formLayout_2 = QFormLayout(self.formLayoutWidget_2)
         self.formLayout_2.setObjectName(u"formLayout_2")
         self.formLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -886,7 +886,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayoutWidget_3 = QWidget(self.programa)
         self.verticalLayoutWidget_3.setObjectName(u"verticalLayoutWidget_3")
-        self.verticalLayoutWidget_3.setGeometry(QRect(60, 320, 301, 100))
+        self.verticalLayoutWidget_3.setGeometry(QRect(40, 360, 221, 152))
         self.verticalLayout_3 = QVBoxLayout(self.verticalLayoutWidget_3)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -928,9 +928,28 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_3.addWidget(self.bt_pg_prog_stop)
 
+        self.bt_pg_prog_simulacion = QPushButton(self.verticalLayoutWidget_3)
+        self.bt_pg_prog_simulacion.setObjectName(u"bt_pg_prog_simulacion")
+        self.bt_pg_prog_simulacion.setStyleSheet(u"QPushButton {\n"
+"    background-color: #62CBC9;\n"
+"    border: 2px solid #333333;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;\n"
+"}\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(170, 255, 255);\n"
+"}\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(206, 255, 252);\n"
+"}")
+
+        self.verticalLayout_3.addWidget(self.bt_pg_prog_simulacion)
+
         self.gridLayoutWidget_2 = QWidget(self.programa)
         self.gridLayoutWidget_2.setObjectName(u"gridLayoutWidget_2")
-        self.gridLayoutWidget_2.setGeometry(QRect(440, 670, 851, 121))
+        self.gridLayoutWidget_2.setGeometry(QRect(440, 720, 851, 121))
         self.gridLayout_2 = QGridLayout(self.gridLayoutWidget_2)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -1248,7 +1267,7 @@ class Ui_MainWindow(object):
 
         self.label_26 = QLabel(self.programa)
         self.label_26.setObjectName(u"label_26")
-        self.label_26.setGeometry(QRect(750, 620, 231, 29))
+        self.label_26.setGeometry(QRect(750, 660, 231, 29))
         self.label_26.setStyleSheet(u"color: #62CBC9;\n"
 "font-size: 16px;\n"
 "font-family: nunito;\n"
@@ -1256,7 +1275,7 @@ class Ui_MainWindow(object):
         self.label_26.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.pg_vista = QGraphicsView(self.programa)
         self.pg_vista.setObjectName(u"pg_vista")
-        self.pg_vista.setGeometry(QRect(440, 300, 851, 192))
+        self.pg_vista.setGeometry(QRect(300, 330, 1121, 211))
         self.pg_vista.setStyleSheet(u"QGraphicsView {\n"
 "    background-color: #3F4D4C;\n"
 "    border: 2px solid #62CBC9;\n"
@@ -1356,7 +1375,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1960, 23))
+        self.menubar.setGeometry(QRect(0, 0, 1958, 23))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -1364,7 +1383,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(2)
+        self.stackedWidget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -1427,6 +1446,7 @@ class Ui_MainWindow(object):
         self.label_27.setText(QCoreApplication.translate("MainWindow", u"Inicio de curado", None))
         self.bt_pg_prog_start.setText(QCoreApplication.translate("MainWindow", u"Iniciar programa", None))
         self.bt_pg_prog_stop.setText(QCoreApplication.translate("MainWindow", u"Parar programa", None))
+        self.bt_pg_prog_simulacion.setText(QCoreApplication.translate("MainWindow", u"SIMULACI\u00d3N", None))
         self.modulo1.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
         self.modulo1.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
         self.modulo1.setItemText(2, QCoreApplication.translate("MainWindow", u"PMB-C2", None))

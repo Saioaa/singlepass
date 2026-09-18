@@ -199,6 +199,13 @@ class PaginaPMB(QObject):
             return
         self.mesa.mover_imagen(x_mm, y_mm)
 
+    def geometria_imagen(self):
+        """(x_mm, ancho_mm) de la imagen sobre la mesa, o None si no hay imagen."""
+        posicion = self.mesa.posicion_imagen_mm()
+        if posicion is None or self.ancho_imagen_mm is None:
+            return None
+        return posicion[0], self.ancho_imagen_mm
+
     # ===== imagen =====
     def _mostrar_pixmap(self, pixmap, x_mm=None, y_mm=None):
         dpi_x, dpi_y = self.dpi_actual
