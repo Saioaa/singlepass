@@ -1250,10 +1250,10 @@ text-align: center;</string>
      <widget class="QWidget" name="formLayoutWidget_2">
       <property name="geometry">
        <rect>
-        <x>1490</x>
-        <y>190</y>
-        <width>311</width>
-        <height>514</height>
+        <x>1480</x>
+        <y>220</y>
+        <width>321</width>
+        <height>491</height>
        </rect>
       </property>
       <layout class="QFormLayout" name="formLayout_2">
@@ -1341,7 +1341,7 @@ color: #62CBC9;
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
+       <item row="6" column="0">
         <widget class="QLabel" name="label_13">
          <property name="styleSheet">
           <string notr="true">color: #62CBC9;
@@ -1356,7 +1356,7 @@ color: #62CBC9;
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
+       <item row="6" column="1">
         <widget class="QLineEdit" name="pg_prog_vel_curado">
          <property name="styleSheet">
           <string notr="true">  background-color: #3F4D4C;
@@ -1369,7 +1369,7 @@ color: #62CBC9;
          </property>
         </widget>
        </item>
-       <item row="5" column="0">
+       <item row="7" column="0">
         <widget class="QLabel" name="label_16">
          <property name="styleSheet">
           <string notr="true">color: #62CBC9;
@@ -1384,7 +1384,7 @@ color: #62CBC9;
          </property>
         </widget>
        </item>
-       <item row="5" column="1">
+       <item row="7" column="1">
         <widget class="QLineEdit" name="pg_prog_acel_curado">
          <property name="styleSheet">
           <string notr="true">  background-color: #3F4D4C;
@@ -1397,7 +1397,7 @@ color: #62CBC9;
          </property>
         </widget>
        </item>
-       <item row="6" column="0">
+       <item row="8" column="0">
         <widget class="QLabel" name="label_15">
          <property name="styleSheet">
           <string notr="true">color: #62CBC9;
@@ -1412,7 +1412,7 @@ color: #62CBC9;
          </property>
         </widget>
        </item>
-       <item row="6" column="1">
+       <item row="8" column="1">
         <widget class="QLineEdit" name="pg_prog_decel_curado">
          <property name="styleSheet">
           <string notr="true">  background-color: #3F4D4C;
@@ -1425,22 +1425,7 @@ color: #62CBC9;
          </property>
         </widget>
        </item>
-       <item row="8" column="0">
-        <widget class="QLabel" name="label_22">
-         <property name="styleSheet">
-          <string notr="true">color: #62CBC9;
-	font-size: 16px;
-	font-family: nunito;</string>
-         </property>
-         <property name="text">
-          <string>Pasadas curado</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="1">
+       <item row="9" column="1">
         <widget class="QLineEdit" name="pg_prog_cant_pasadas_curado">
          <property name="styleSheet">
           <string notr="true">  background-color: #3F4D4C;
@@ -1453,31 +1438,18 @@ color: #62CBC9;
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_27">
+       <item row="9" column="0">
+        <widget class="QLabel" name="label_22">
          <property name="styleSheet">
           <string notr="true">color: #62CBC9;
 	font-size: 16px;
 	font-family: nunito;</string>
          </property>
          <property name="text">
-          <string>Inicio de curado</string>
+          <string>Pasadas curado</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="pg_prog_inicio_curado">
-         <property name="styleSheet">
-          <string notr="true">  background-color: #3F4D4C;
-color: #62CBC9;
-    border: 2px solid #62CBC9;
-    border-radius: 5px;
-    padding: 10px;
-	font-size: 24px;
-	font-family: nunito;</string>
          </property>
         </widget>
        </item>

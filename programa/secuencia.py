@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 """Secuencia de impresion (maquina de estados guiada por un QTimer).
 
-Extraida de programa_impresora.py. La logica de las etapas es la misma;
-lo unico que cambia es que los parametros llegan en un ParametrosPrograma
-en lugar de leerse de la interfaz, y que las salidas al M-Duino van por
-ClienteMDuino.
+Los recorridos (fin de impresion, inicio y fin de curado) no se leen de la
+interfaz: los calcula la pagina Programa a partir de los modulos montados y
+llegan en ParametrosPrograma. La secuencia solo sabe de posiciones.
 
 Uso:
     self.secuencia = SecuenciaImpresion(motor, mduino, self.pagina_pmb.esta_lista)
@@ -13,7 +12,6 @@ Uso:
 
 import time
 from dataclasses import dataclass
-from typing import Optional
 
 from PySide6.QtCore import QObject, QTimer, Signal
 
@@ -45,22 +43,23 @@ class ParametrosPrograma:
     vel_curado: float
     acel_curado: float
     decel_curado: float
-    pasadas_curado: int
-    inicio_curado: Optional[float]   # None si el campo estaba vacio
+    pasadas_curado: int            # la ida de impresion cuenta como pasada 1
+    fin_impresion: float           # mm: la mesa entera ha pasado el cabezal (y el curado, si lo hay)
+    inicio_curado: float           # mm: mesa entera antes del primer modulo de curado
+    fin_curado: float              # mm: mesa entera despues del ultimo modulo de curado
+    hay_curado: bool = False       # hay modulo NIR/secador y pasadas > 0
 
 
 class SecuenciaImpresion(QObject):
 
     terminada = Signal()    # la secuencia ha vuelto a ESPERA
 
-    def __init__(self, motor, mduino, pmb_listo, posicion_reposo, final_recorrido,
-                 parent=None):
+    def __init__(self, motor, mduino, pmb_listo, posicion_reposo, parent=None):
         super().__init__(parent)
         self.motor = motor
         self.mduino = mduino
         self._pmb_listo = pmb_listo   # callable -> bool: el PMB esta armado (se arma en la pagina PMB)
         self.posicion_reposo = posicion_reposo
-        self.final_recorrido = final_recorrido
 
         self.timer = QTimer(self)
         self.timer.setInterval(PERIODO_SECUENCIA_MS)
@@ -161,11 +160,6 @@ class SecuenciaImpresion(QObject):
         self.motor.set_aceleracion(self.parametros.acel_curado)
         self.motor.set_deceleracion(self.parametros.decel_curado)
 
-    def inicio_cur(self):
-        if self.parametros.inicio_curado is None:
-            return self.posicion_reposo
-        return self.parametros.inicio_curado
-
     # ===== etapas =====
     def etapa_reposo(self):
         """E0: asegurar la posicion de reposo antes de empezar la pasada."""
@@ -174,7 +168,8 @@ class SecuenciaImpresion(QObject):
             self.mover_secuencia(self.posicion_reposo)
             self.subpaso = 1
         elif self.subpaso == 1:
-            self.etapa = ETAPA_SIN_CURADO if self.contpas <= 0 else ETAPA_IDA_IMPRESION
+            curando = self.parametros.hay_curado and self.contpas > 0
+            self.etapa = ETAPA_IDA_IMPRESION if curando else ETAPA_SIN_CURADO
             self.subpaso = 0
 
     def etapa_sin_curado(self):
@@ -183,7 +178,7 @@ class SecuenciaImpresion(QObject):
             self.params_impresion()
             self.senal_impresion = True
             self.mduino.pulso_impresion()
-            self.mover_secuencia(self.final_recorrido)
+            self.mover_secuencia(self.parametros.fin_impresion)
             self.subpaso = 1
         elif self.subpaso == 1:
             self.mover_secuencia(self.posicion_reposo)
@@ -205,21 +200,21 @@ class SecuenciaImpresion(QObject):
             self.params_impresion()
             self.senal_impresion = True
             self.mduino.pulso_impresion()
-            self.mover_secuencia(self.final_recorrido)
+            self.mover_secuencia(self.parametros.fin_impresion)
             self.subpaso = 2
         elif self.subpaso == 2:
             self.senal_impresion = False
-            self.destino_curado = self.final_recorrido   # aqui hemos acabado
+            self.destino_curado = self.parametros.fin_curado   # la ida ha acabado en el extremo lejano
             self.contpas -= 1   # la ida ya fue la pasada 1
             if self.contpas > 0:
                 self.etapa = ETAPA_CURADO
-                self.destino_curado = self.inicio_cur()   # siguiente: volver curando
+                self.destino_curado = self.parametros.inicio_curado   # siguiente: volver curando
             else:
                 self.etapa = ETAPA_FIN
             self.subpaso = 0
 
     def etapa_curado(self):
-        """E4: pasadas de curado alternando entre inicio_curado y final."""
+        """E4: pasadas de curado alternando entre inicio_curado y fin_curado."""
         if self.subpaso == 0:
             self.params_curado()
             self.mover_secuencia(self.destino_curado)
@@ -227,10 +222,10 @@ class SecuenciaImpresion(QObject):
         elif self.subpaso == 1:
             self.contpas -= 1
             if self.contpas > 0:
-                if self.destino_curado == self.final_recorrido:
-                    self.destino_curado = self.inicio_cur()
+                if self.destino_curado == self.parametros.fin_curado:
+                    self.destino_curado = self.parametros.inicio_curado
                 else:
-                    self.destino_curado = self.final_recorrido
+                    self.destino_curado = self.parametros.fin_curado
                 self.subpaso = 0
             else:
                 self.etapa = ETAPA_FIN
@@ -241,7 +236,7 @@ class SecuenciaImpresion(QObject):
         if self.subpaso == 0:
             self.senal_lamparas = PWM_APAGADAS
             self.mduino.lamparas(PWM_APAGADAS)
-            if self.destino_curado == self.final_recorrido:
+            if self.destino_curado == self.parametros.fin_curado:
                 # acabamos al final: esperar apagado y luego volver
                 self.t_espera = time.time() + T_LAMPARAS_OFF
                 self.subpaso = 1

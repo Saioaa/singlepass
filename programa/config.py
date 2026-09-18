@@ -24,10 +24,12 @@ IP_MDUINO     = "192.168.79.180"
 PUERTO_MDUINO = 5000
 
 # ===== GEOMETRIA DEL RECORRIDO =====
-POSICION_REPOSO_MM = 50
-FINAL_RECORRIDO_MM = 1200   # borde trasero al final del recorrido 1900
+POSICION_REPOSO_MM = 50     # arranque y fin de cada impresion (desde aqui se envia el PULSE)
 BARRA_MM           = 2200   # longitud fisica de la barra
-MODULO_MM          = 125    # ancho de cada modulo
+MODULO_MM          = 125    # ancho de cada modulo a lo largo de la barra
+# La mesa ocupa [p, p + MESA_ANCHO_MM] sobre la barra cuando el eje esta en p;
+# un modulo montado a distancia d ocupa [d, d + MODULO_MM]. Los recorridos de la
+# secuencia se calculan con esto a partir de los modulos de la pagina Programa.
 
 # ===== MESA DE IMPRESION (A4 apaisado: X = direccion del movimiento) =====
 MESA_ANCHO_MM = 297

@@ -34,7 +34,7 @@ CAMPOS_TEXTO = [
     "objetivo", "vel_objetivo", "aceleracion", "deceleracion",
     "pg_prog_vel_impresion", "pg_prog_acel_impresion", "pg_prog_decel_impresion",
     "pg_prog_vel_curado", "pg_prog_acel_curado", "pg_prog_decel_curado",
-    "pg_prog_cant_pasadas_curado", "pg_prog_inicio_curado",
+    "pg_prog_cant_pasadas_curado",
 ]
 
 # ===== ESCALADO A LA PANTALLA =====
@@ -98,8 +98,7 @@ class VentanaPrincipal(QMainWindow):
         self.pagina_pmb = PaginaPMB(self.ui, self.pmb, self.posicion_cabezal, parent=self)
         self.secuencia = SecuenciaImpresion(self.motor, self.mduino,
                                             self.pagina_pmb.esta_lista,
-                                            config.POSICION_REPOSO_MM,
-                                            config.FINAL_RECORRIDO_MM, parent=self)
+                                            config.POSICION_REPOSO_MM, parent=self)
         self.mduino.seta_cambiada.connect(self.secuencia.set_seta)
 
         # simulacion: misma secuencia sobre dispositivos simulados, sin PMB
@@ -107,8 +106,7 @@ class VentanaPrincipal(QMainWindow):
                                        config.POSICION_REPOSO_MM)
         self.mduino_sim = MDuinoSimulado(self)
         self.secuencia_sim = SecuenciaImpresion(self.motor_sim, self.mduino_sim, lambda: True,
-                                                config.POSICION_REPOSO_MM,
-                                                config.FINAL_RECORRIDO_MM, parent=self)
+                                                config.POSICION_REPOSO_MM, parent=self)
 
         self.homing_en_curso = False   # impide leer la posicion durante el homing
         self.posicion_mm = None        # ultima posicion leida del D1

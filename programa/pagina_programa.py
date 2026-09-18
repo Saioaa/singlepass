@@ -51,19 +51,17 @@ COLOR_TEXTO   = "#FFFFFF"
 COLOR_PULSO   = "#E74C3C"
 DURACION_AVISO_PULSO_S = 0.6
 
-# recorrido (mm) de los dos bordes del carro durante la impresion
-PERFIL_IMPRESION_DELANTERO = (50, 1900)
-PERFIL_IMPRESION_TRASERO   = (300, 2150)
-DESFASE_BORDE_TRASERO_MM   = 250
-FIN_CARRERA_DELANTERO_MM   = 1900
-FIN_CARRERA_TRASERO_MM     = 2150
-COLOR_IMPR_DELANTERO = "#2E86C1"
-COLOR_IMPR_TRASERO   = "#C0392B"
-COLOR_CUR_DELANTERO  = "#27AE60"
-COLOR_CUR_TRASERO    = "#F39C12"
+COLOR_PERFIL_IMPRESION = "#2E86C1"
+COLOR_PERFIL_CURADO    = "#27AE60"
+TIPOS_CURADO = (TIPO_NIR, TIPO_SECADOR)
 
 # ===== TEMPORIZACION =====
-PERIODO_ANIMACION_MS = 40   # refresco de la mesa en el grafico
+PERIODO_ANIMACION_MS   = 40     # refresco de la mesa en el grafico
+RETARDO_VOLVER_REAL_MS = 3000   # tras la simulacion, la mesa del grafico vuelve a la posicion real
+
+
+class PlanInvalido(ValueError):
+    """El plan de recorrido no puede construirse con los modulos/parametros actuales."""
 
 
 def _leer_float(campo, por_defecto=None):
@@ -108,7 +106,7 @@ class PaginaPrograma(QObject):
 
         self.mduino_sim.pulso_enviado.connect(self._pulso_simulado)
         self.mduino_sim.lamparas_cambiadas.connect(lambda _pwm: self.actualizar_animacion())
-        self.secuencia_sim.terminada.connect(lambda: self.registrar("[SIMULACION] Secuencia terminada"))
+        self.secuencia_sim.terminada.connect(self._fin_simulacion)
 
         # grafico de la barra a escala
         self.escena = QGraphicsScene(self)
@@ -129,7 +127,7 @@ class PaginaPrograma(QObject):
         for campo in (self.ui.pg_prog_vel_impresion, self.ui.pg_prog_acel_impresion,
                       self.ui.pg_prog_decel_impresion, self.ui.pg_prog_vel_curado,
                       self.ui.pg_prog_acel_curado, self.ui.pg_prog_decel_curado,
-                      self.ui.pg_prog_inicio_curado):
+                      self.ui.pg_prog_cant_pasadas_curado):
             campo.textChanged.connect(self.dibujar_modulos)
 
         self.timer_animacion = QTimer(self)
@@ -149,9 +147,49 @@ class PaginaPrograma(QObject):
     def campo_distancia(self, i):
         return getattr(self.ui, f"M{i}D")
 
+    # ===== plan de recorrido =====
+    def calcular_plan(self, pasadas_curado):
+        """Recorridos (mm) a partir de los modulos montados.
+        Devuelve (fin_impresion, inicio_curado, fin_curado, hay_curado, avisos)."""
+        modulos = self.leer_modulos()
+        cabezal = self.posicion_cabezal()
+        if cabezal is None:
+            raise PlanInvalido("no hay ningun cabezal de impresion en los modulos")
+        avisos = []
+        reposo = config.POSICION_REPOSO_MM
+        mesa = config.MESA_ANCHO_MM
+        ancho_modulo = config.MODULO_MM
+
+        fin_impresion = cabezal + ancho_modulo         # la mesa entera ha pasado el cabezal
+        if reposo + mesa > cabezal:
+            avisos.append(f"en reposo ({reposo} mm) la mesa ya alcanza el cabezal ({cabezal} mm)")
+
+        curado = [d for _i, tipo, d in modulos if tipo in TIPOS_CURADO]
+        hay_curado = bool(curado) and pasadas_curado > 0
+        if pasadas_curado > 0 and not curado:
+            avisos.append("se han pedido pasadas de curado pero no hay modulo NIR/secador")
+        if hay_curado:
+            inicio_curado = max(config.LIMITE_MIN_MM, min(curado) - mesa)
+            fin_curado = max(curado) + ancho_modulo
+            fin_impresion = max(fin_impresion, fin_curado)   # la ida imprime y cura a la vez
+        else:
+            inicio_curado = fin_curado = reposo
+
+        maximo = config.LIMITE_MAX_MM
+        if fin_impresion > maximo or fin_curado > maximo:
+            avisos.append(f"el recorrido necesario ({max(fin_impresion, fin_curado):.0f} mm) "
+                          f"supera el limite del eje ({maximo} mm): se recorta")
+            fin_impresion = min(fin_impresion, maximo)
+            fin_curado = min(fin_curado, maximo)
+        return fin_impresion, inicio_curado, fin_curado, hay_curado, avisos
+
     # ===== parametros =====
     def leer_parametros(self):
-        pasadas = _leer_float(self.ui.pg_prog_cant_pasadas_curado, por_defecto=0)
+        """ParametrosPrograma listo para la secuencia. Lanza ValueError si falta algo."""
+        pasadas = int(_leer_float(self.ui.pg_prog_cant_pasadas_curado, por_defecto=0))
+        fin_impresion, inicio_curado, fin_curado, hay_curado, avisos = self.calcular_plan(pasadas)
+        for aviso in avisos:
+            self.registrar(f"[PROGRAMA] Aviso: {aviso}")
         return ParametrosPrograma(
             vel_impresion=float(self.ui.pg_prog_vel_impresion.text()),
             acel_impresion=float(self.ui.pg_prog_acel_impresion.text()),
@@ -159,15 +197,30 @@ class PaginaPrograma(QObject):
             vel_curado=float(self.ui.pg_prog_vel_curado.text()),
             acel_curado=float(self.ui.pg_prog_acel_curado.text()),
             decel_curado=float(self.ui.pg_prog_decel_curado.text()),
-            pasadas_curado=int(pasadas),
-            inicio_curado=_leer_float(self.ui.pg_prog_inicio_curado),
+            pasadas_curado=pasadas,
+            fin_impresion=fin_impresion,
+            inicio_curado=inicio_curado,
+            fin_curado=fin_curado,
+            hay_curado=hay_curado,
         )
+
+    def describir_plan(self, parametros):
+        texto = (f"impresion {config.POSICION_REPOSO_MM:.0f} -> {parametros.fin_impresion:.0f} mm "
+                 f"a {parametros.vel_impresion:.0f} mm/s")
+        if parametros.hay_curado:
+            texto += (f"; curado {parametros.pasadas_curado} pasadas entre "
+                      f"{parametros.inicio_curado:.0f} y {parametros.fin_curado:.0f} mm "
+                      f"a {parametros.vel_curado:.0f} mm/s")
+        return texto
 
     # ===== arranque / parada =====
     def start(self):
         """Secuencia real: D1 + M-Duino + PMB armado."""
         try:
             parametros = self.leer_parametros()
+        except PlanInvalido as e:
+            self.registrar(f"[PROGRAMA] No se puede planificar: {e}")
+            return
         except ValueError:
             self.registrar("[PROGRAMA] Faltan parametros de impresion o curado")
             return
@@ -180,11 +233,16 @@ class PaginaPrograma(QObject):
         self.mostrar_simulada = False
         if not self.secuencia_real.start(parametros):
             self.registrar("[PROGRAMA] No se puede arrancar: seta o referencia pendiente")
+            return
+        self.registrar(f"[PROGRAMA] Plan: {self.describir_plan(parametros)}")
 
     def simular(self):
         """Solo el grafico: mueve el MotorSimulado con la secuencia, sin tocar la maquina."""
         try:
             parametros = self.leer_parametros()
+        except PlanInvalido as e:
+            self.registrar(f"[SIMULACION] No se puede planificar: {e}")
+            return
         except ValueError:
             self.registrar("[SIMULACION] Faltan parametros de impresion o curado")
             return
@@ -194,12 +252,21 @@ class PaginaPrograma(QObject):
         self.mostrar_simulada = True
         self.mduino_sim.lamparas(0)
         if self.secuencia_sim.start(parametros):
-            self.registrar("[SIMULACION] Secuencia iniciada")
+            self.registrar(f"[SIMULACION] Plan: {self.describir_plan(parametros)}")
+
+    def _fin_simulacion(self):
+        self.registrar("[SIMULACION] Secuencia terminada")
+        QTimer.singleShot(RETARDO_VOLVER_REAL_MS, self._volver_a_real)
+
+    def _volver_a_real(self):
+        if not self.secuencia_sim.en_marcha():
+            self.mostrar_simulada = False
 
     def stop(self):
         if self.secuencia_sim.en_marcha():
             self.secuencia_sim.stop()
             self.registrar("[SIMULACION] Parada")
+            QTimer.singleShot(RETARDO_VOLVER_REAL_MS, self._volver_a_real)
         if self.secuencia_real.en_marcha():
             self.secuencia_real.stop()
             if self._pmb_lista():
@@ -283,7 +350,7 @@ class PaginaPrograma(QObject):
                           MARGEN_SUPERIOR_MODULO + alto_rect / 2 - r.width() / 2)
             self.escena.addItem(nombre)
 
-        # perfiles de velocidad de los dos bordes del carro
+        # perfiles de velocidad del plan (posicion del eje): impresion y, si lo hay, curado
         y_base = self._y_base
         altura_max = y_base - MARGEN_MESETA
         v_impr = _leer_float(self.ui.pg_prog_vel_impresion, por_defecto=0)
@@ -292,19 +359,18 @@ class PaginaPrograma(QObject):
         v_cur = _leer_float(self.ui.pg_prog_vel_curado, por_defecto=0)
         a_cur = _leer_float(self.ui.pg_prog_acel_curado, por_defecto=0)
         d_cur = _leer_float(self.ui.pg_prog_decel_curado, por_defecto=0)
-        if v_impr > 0:
-            self._dibujar_perfil(v_impr, a_impr, d_impr, *PERFIL_IMPRESION_DELANTERO,
-                                 escala, y_base, altura_max, COLOR_IMPR_DELANTERO)
-            self._dibujar_perfil(v_impr, a_impr, d_impr, *PERFIL_IMPRESION_TRASERO,
-                                 escala, y_base, altura_max, COLOR_IMPR_TRASERO)
-        inicio_cur = _leer_float(self.ui.pg_prog_inicio_curado)
-        if v_impr > 0 and v_cur > 0 and inicio_cur is not None:
-            altura_cur = altura_max * (v_cur / v_impr)
-            self._dibujar_perfil(v_cur, a_cur, d_cur, inicio_cur, FIN_CARRERA_DELANTERO_MM,
-                                 escala, y_base, altura_cur, COLOR_CUR_DELANTERO)
-            self._dibujar_perfil(v_cur, a_cur, d_cur,
-                                 inicio_cur + DESFASE_BORDE_TRASERO_MM, FIN_CARRERA_TRASERO_MM,
-                                 escala, y_base, altura_cur, COLOR_CUR_TRASERO)
+        pasadas = int(_leer_float(self.ui.pg_prog_cant_pasadas_curado, por_defecto=0))
+        try:
+            fin_impresion, inicio_curado, fin_curado, hay_curado, _avisos = self.calcular_plan(pasadas)
+        except PlanInvalido:
+            fin_impresion = hay_curado = None
+        if v_impr > 0 and fin_impresion is not None:
+            self._dibujar_perfil(v_impr, a_impr, d_impr, config.POSICION_REPOSO_MM, fin_impresion,
+                                 escala, y_base, altura_max, COLOR_PERFIL_IMPRESION)
+            if hay_curado and v_cur > 0:
+                altura_cur = altura_max * min(1.0, v_cur / v_impr)
+                self._dibujar_perfil(v_cur, a_cur, d_cur, inicio_curado, fin_curado,
+                                     escala, y_base, altura_cur, COLOR_PERFIL_CURADO)
 
         # elementos animados: mesa, imagen sobre la mesa y texto de estado
         self._mesa_item = self.escena.addRect(

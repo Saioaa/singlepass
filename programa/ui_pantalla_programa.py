@@ -712,7 +712,7 @@ class Ui_MainWindow(object):
         self.label_10.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.formLayoutWidget_2 = QWidget(self.programa)
         self.formLayoutWidget_2.setObjectName(u"formLayoutWidget_2")
-        self.formLayoutWidget_2.setGeometry(QRect(1490, 190, 311, 514))
+        self.formLayoutWidget_2.setGeometry(QRect(1480, 220, 321, 491))
         self.formLayout_2 = QFormLayout(self.formLayoutWidget_2)
         self.formLayout_2.setObjectName(u"formLayout_2")
         self.formLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -786,7 +786,7 @@ class Ui_MainWindow(object):
 "	font-family: nunito;")
         self.label_13.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.formLayout_2.setWidget(4, QFormLayout.ItemRole.LabelRole, self.label_13)
+        self.formLayout_2.setWidget(6, QFormLayout.ItemRole.LabelRole, self.label_13)
 
         self.pg_prog_vel_curado = QLineEdit(self.formLayoutWidget_2)
         self.pg_prog_vel_curado.setObjectName(u"pg_prog_vel_curado")
@@ -798,7 +798,7 @@ class Ui_MainWindow(object):
 "	font-size: 24px;\n"
 "	font-family: nunito;")
 
-        self.formLayout_2.setWidget(4, QFormLayout.ItemRole.FieldRole, self.pg_prog_vel_curado)
+        self.formLayout_2.setWidget(6, QFormLayout.ItemRole.FieldRole, self.pg_prog_vel_curado)
 
         self.label_16 = QLabel(self.formLayoutWidget_2)
         self.label_16.setObjectName(u"label_16")
@@ -807,7 +807,7 @@ class Ui_MainWindow(object):
 "	font-family: nunito;")
         self.label_16.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.formLayout_2.setWidget(5, QFormLayout.ItemRole.LabelRole, self.label_16)
+        self.formLayout_2.setWidget(7, QFormLayout.ItemRole.LabelRole, self.label_16)
 
         self.pg_prog_acel_curado = QLineEdit(self.formLayoutWidget_2)
         self.pg_prog_acel_curado.setObjectName(u"pg_prog_acel_curado")
@@ -819,7 +819,7 @@ class Ui_MainWindow(object):
 "	font-size: 24px;\n"
 "	font-family: nunito;")
 
-        self.formLayout_2.setWidget(5, QFormLayout.ItemRole.FieldRole, self.pg_prog_acel_curado)
+        self.formLayout_2.setWidget(7, QFormLayout.ItemRole.FieldRole, self.pg_prog_acel_curado)
 
         self.label_15 = QLabel(self.formLayoutWidget_2)
         self.label_15.setObjectName(u"label_15")
@@ -828,7 +828,7 @@ class Ui_MainWindow(object):
 "	font-family: nunito;")
         self.label_15.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.formLayout_2.setWidget(6, QFormLayout.ItemRole.LabelRole, self.label_15)
+        self.formLayout_2.setWidget(8, QFormLayout.ItemRole.LabelRole, self.label_15)
 
         self.pg_prog_decel_curado = QLineEdit(self.formLayoutWidget_2)
         self.pg_prog_decel_curado.setObjectName(u"pg_prog_decel_curado")
@@ -840,16 +840,7 @@ class Ui_MainWindow(object):
 "	font-size: 24px;\n"
 "	font-family: nunito;")
 
-        self.formLayout_2.setWidget(6, QFormLayout.ItemRole.FieldRole, self.pg_prog_decel_curado)
-
-        self.label_22 = QLabel(self.formLayoutWidget_2)
-        self.label_22.setObjectName(u"label_22")
-        self.label_22.setStyleSheet(u"color: #62CBC9;\n"
-"	font-size: 16px;\n"
-"	font-family: nunito;")
-        self.label_22.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.formLayout_2.setWidget(8, QFormLayout.ItemRole.LabelRole, self.label_22)
+        self.formLayout_2.setWidget(8, QFormLayout.ItemRole.FieldRole, self.pg_prog_decel_curado)
 
         self.pg_prog_cant_pasadas_curado = QLineEdit(self.formLayoutWidget_2)
         self.pg_prog_cant_pasadas_curado.setObjectName(u"pg_prog_cant_pasadas_curado")
@@ -861,28 +852,16 @@ class Ui_MainWindow(object):
 "	font-size: 24px;\n"
 "	font-family: nunito;")
 
-        self.formLayout_2.setWidget(8, QFormLayout.ItemRole.FieldRole, self.pg_prog_cant_pasadas_curado)
+        self.formLayout_2.setWidget(9, QFormLayout.ItemRole.FieldRole, self.pg_prog_cant_pasadas_curado)
 
-        self.label_27 = QLabel(self.formLayoutWidget_2)
-        self.label_27.setObjectName(u"label_27")
-        self.label_27.setStyleSheet(u"color: #62CBC9;\n"
+        self.label_22 = QLabel(self.formLayoutWidget_2)
+        self.label_22.setObjectName(u"label_22")
+        self.label_22.setStyleSheet(u"color: #62CBC9;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.label_27.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_22.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.formLayout_2.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label_27)
-
-        self.pg_prog_inicio_curado = QLineEdit(self.formLayoutWidget_2)
-        self.pg_prog_inicio_curado.setObjectName(u"pg_prog_inicio_curado")
-        self.pg_prog_inicio_curado.setStyleSheet(u"  background-color: #3F4D4C;\n"
-"color: #62CBC9;\n"
-"    border: 2px solid #62CBC9;\n"
-"    border-radius: 5px;\n"
-"    padding: 10px;\n"
-"	font-size: 24px;\n"
-"	font-family: nunito;")
-
-        self.formLayout_2.setWidget(3, QFormLayout.ItemRole.FieldRole, self.pg_prog_inicio_curado)
+        self.formLayout_2.setWidget(9, QFormLayout.ItemRole.LabelRole, self.label_22)
 
         self.verticalLayoutWidget_3 = QWidget(self.programa)
         self.verticalLayoutWidget_3.setObjectName(u"verticalLayoutWidget_3")
@@ -1443,7 +1422,6 @@ class Ui_MainWindow(object):
         self.label_16.setText(QCoreApplication.translate("MainWindow", u"Aceleraci\u00f3n curado", None))
         self.label_15.setText(QCoreApplication.translate("MainWindow", u"Deceleraci\u00f3n curado", None))
         self.label_22.setText(QCoreApplication.translate("MainWindow", u"Pasadas curado", None))
-        self.label_27.setText(QCoreApplication.translate("MainWindow", u"Inicio de curado", None))
         self.bt_pg_prog_start.setText(QCoreApplication.translate("MainWindow", u"Iniciar programa", None))
         self.bt_pg_prog_stop.setText(QCoreApplication.translate("MainWindow", u"Parar programa", None))
         self.bt_pg_prog_simulacion.setText(QCoreApplication.translate("MainWindow", u"SIMULACI\u00d3N", None))
