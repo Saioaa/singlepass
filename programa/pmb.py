@@ -38,7 +38,6 @@ CMD_RENDERIZAR      = "R,R"
 CMD_CAMBIAR_PARAM_PC = "P,C,P"
 CMD_IMPRIMIR        = "P,P"
 CMD_ESCUCHAR_PC     = "P,L"     # registrar listener del Print Controller (mensajes I,...)
-CMD_PRINT_GO_SW     = "P,SPG"   # print go por software (requiere PrintGoSource = Software)
 CMD_ABORTAR_IMPRESION = "P,A"   # se envia por un socket independiente (manual, 2.2)
 
 PARAM_RENDER_POR_DEFECTO   = "0"
@@ -263,8 +262,8 @@ class ClientePMB(QObject):
 
     def _enviar_por_socket_aparte(self, comando, etiqueta):
         """Comandos que deben llegar mientras el Print Controller esta ocupado con
-        la impresion (aborto, print go por software): el manual pide una conexion
-        nueva. Espera el acuse y vuelca al registro lo que responda el servidor."""
+        la impresion (aborto): el manual pide una conexion nueva. Espera el acuse
+        y vuelca al registro lo que responda el servidor."""
         patron_acuse = re.compile(rf"^{TIPO_ACUSE},\d+,{re.escape(comando)}$", re.MULTILINE)
         recibido = ""
         acusado = False
@@ -290,11 +289,6 @@ class ClientePMB(QObject):
         if not acusado:
             self.mensaje.emit(f"[PMB] {etiqueta} enviado, sin acuse en {TIMEOUT_ACUSE_APARTE} s")
         return True
-
-    def print_go_software(self):
-        """Print go por software a todos los PMB (manual 5.3, P,SPG). Va por socket
-        aparte porque el Print Controller esta ocupado con el P,P armado."""
-        return self._enviar_por_socket_aparte(CMD_PRINT_GO_SW, "print go")
 
     def abortar_impresion(self):
         """Aborta la impresion en curso por una conexion nueva (manual 2.2)."""
