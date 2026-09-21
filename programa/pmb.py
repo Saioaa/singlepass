@@ -265,19 +265,21 @@ class ClientePMB(QObject):
         """Comandos que deben llegar mientras el Print Controller esta ocupado con
         la impresion (aborto, print go por software): el manual pide una conexion
         nueva. Espera el acuse y vuelca al registro lo que responda el servidor."""
+        patron_acuse = re.compile(rf"^{TIPO_ACUSE},\d+,{re.escape(comando)}$", re.MULTILINE)
+        recibido = ""
+        acusado = False
         try:
             with socket.create_connection((self.host, self.puerto), timeout=TIMEOUT_SOCKET) as s:
                 s.sendall((comando + TERMINADOR).encode("utf-8"))
                 s.settimeout(TIMEOUT_ACUSE_APARTE)
-                recibido = ""
-                while TIPO_ACUSE + "," + comando not in recibido:
+                while not acusado:
                     datos = s.recv(TAM_BUFFER)
                     if not datos:
                         break
                     recibido += datos.decode("utf-8", errors="replace")
+                    acusado = patron_acuse.search(recibido) is not None
         except socket.timeout:
-            self.mensaje.emit(f"[PMB] {etiqueta} enviado (sin acuse)")
-            return True
+            pass
         except OSError as e:
             self.mensaje.emit(f"[PMB] No se ha podido enviar {etiqueta}: {e}")
             return False
@@ -285,6 +287,8 @@ class ClientePMB(QObject):
             linea = linea.strip()
             if linea and not linea.startswith(TIPO_RED):
                 self.mensaje.emit(f"[PMB] ({etiqueta}) {linea}")
+        if not acusado:
+            self.mensaje.emit(f"[PMB] {etiqueta} enviado, sin acuse en {TIMEOUT_ACUSE_APARTE} s")
         return True
 
     def print_go_software(self):
