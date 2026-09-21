@@ -50,7 +50,6 @@ class ClienteMDuino(QObject):
         self._hilo = None
         self._activo = False
         self._intentos = 0
-        self._ultimo_por_clave = {}   # ultimo valor recibido por prefijo (SETA, REF...), para la traza
 
     # ----- conexion -----
 
@@ -96,7 +95,6 @@ class ClienteMDuino(QObject):
                     sock.close()
             if self.sock is not None:
                 self.sock = None
-                self._ultimo_por_clave.clear()
                 self.conexion_cambiada.emit(False)
             if self._activo:
                 time.sleep(RETARDO_RECONEXION)
@@ -117,11 +115,7 @@ class ClienteMDuino(QObject):
     def _procesar_linea(self, linea):
         if not linea:
             return
-        # traza en consola solo cuando cambia el valor (el M-Duino repite SETA/REF cada segundo)
-        clave = linea.split(":", 1)[0]
-        if self._ultimo_por_clave.get(clave) != linea:
-            self._ultimo_por_clave[clave] = linea
-            print(f"[MDUINO] <- {linea}")
+        print(f"[MDUINO] <- {linea}")   # el M-Duino repite SETA/REF cada segundo: sirve de latido
         self.linea_recibida.emit(linea)
         # SETA DESACTIVADA: el M-Duino aun no esta conectado fisicamente.
         # Descomentar cuando se pueda probar con la seta real.
