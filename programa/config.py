@@ -22,10 +22,10 @@ FACTOR_SI     = 100   # la D1 trabaja en centesimas de milimetro (0x60A8 = 0xFB0
 # ===== M-DUINO =====
 IP_MDUINO     = "192.168.79.180"
 PUERTO_MDUINO = 5000
-# FALSEADO: mientras el M-Duino no este conectado, el print go se envia por software
-# al Print Controller (P,SPG). Requiere PrintGoSource = Software en el nodo PMB de GIS.
-# Con el M-Duino operativo: False, y PrintGoSource vuelve a External.
-PRINT_GO_POR_SOFTWARE = True
+# Print go: False = pulso electrico del M-Duino (PrintGoSource = TTL/External en el
+# nodo PMB de GIS). True = P,SPG por software (PrintGoSource = Software); solo
+# para pruebas sin M-Duino.
+PRINT_GO_POR_SOFTWARE = False
 
 # ===== GEOMETRIA DEL RECORRIDO =====
 POSICION_REPOSO_MM = 50     # arranque y fin de cada impresion (desde aqui se envia el PULSE)

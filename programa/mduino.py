@@ -30,7 +30,8 @@ MSG_SETA_LIBRE   = "SETA:0"
 
 # ===== CONEXION =====
 TAM_BUFFER         = 64    # bytes por lectura
-RETARDO_RECONEXION = 2     # s
+RETARDO_RECONEXION = 2     # s entre intentos
+TIMEOUT_CONEXION   = 5     # s por intento (Windows tarda ~21 s si no se acota)
 
 
 class ClienteMDuino(QObject):
@@ -46,32 +47,56 @@ class ClienteMDuino(QObject):
         self.puerto = puerto
         self.sock = None
         self._hilo = None
+        self._activo = False
+        self._intentos = 0
 
     # ----- conexion -----
 
     def iniciar(self):
         """Arranca el hilo de lectura. No bloquea."""
+        self._activo = True
         self._hilo = threading.Thread(target=self._bucle, daemon=True)
         self._hilo.start()
+
+    def cerrar(self):
+        """Cierra la conexion de forma ordenada (FIN al M-Duino) al salir de la app.
+        Si se sale sin esto, un Arduino con un unico cliente puede quedarse
+        creyendo que seguimos conectados y rechazar la siguiente conexion."""
+        self._activo = False
+        sock, self.sock = self.sock, None
+        if sock is not None:
+            try:
+                sock.shutdown(socket.SHUT_RDWR)
+            except OSError:
+                pass
+            sock.close()
 
     def esta_conectado(self):
         return self.sock is not None
 
     def _bucle(self):
-        while True:
+        while self._activo:
+            sock = None
             try:
-                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                sock.connect((self.ip, self.puerto))
+                self._intentos += 1
+                sock = socket.create_connection((self.ip, self.puerto), timeout=TIMEOUT_CONEXION)
+                sock.settimeout(None)
                 self.sock = sock
-                print("[MDUINO] Conectado")
+                print(f"[MDUINO] Conectado a {self.ip}:{self.puerto} (intento {self._intentos})")
                 self.conexion_cambiada.emit(True)
                 self._leer(sock)
+                print("[MDUINO] El M-Duino ha cerrado la conexion")
             except OSError as e:
-                print(f"[MDUINO] TCP desconectado, reintentando: {e}")
+                if self._activo:
+                    print(f"[MDUINO] Sin conexion (intento {self._intentos}): {e}")
+            finally:
+                if sock is not None:
+                    sock.close()
             if self.sock is not None:
                 self.sock = None
                 self.conexion_cambiada.emit(False)
-            time.sleep(RETARDO_RECONEXION)
+            if self._activo:
+                time.sleep(RETARDO_RECONEXION)
 
     def _leer(self, sock):
         pendiente = ""
