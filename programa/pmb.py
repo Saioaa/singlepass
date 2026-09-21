@@ -38,6 +38,7 @@ CMD_RENDERIZAR      = "R,R"
 CMD_CAMBIAR_PARAM_PC = "P,C,P"
 CMD_IMPRIMIR        = "P,P"
 CMD_ESCUCHAR_PC     = "P,L"     # registrar listener del Print Controller (mensajes I,...)
+CMD_PRINT_GO_SW     = "P,SPG"   # print go por software (requiere PrintGoSource = Software)
 CMD_ABORTAR_IMPRESION = "P,A"   # se envia por un socket independiente (manual, 2.2)
 
 PARAM_RENDER_POR_DEFECTO   = "0"
@@ -259,6 +260,10 @@ class ClientePMB(QObject):
     def imprimir(self, ruta_bmp):
         self._enviar(f"{CMD_IMPRIMIR},{PARAM_PRIMERA_COPIA},{ruta_bmp},"
                      f"{PARAM_COPIAS_POR_DEFECTO}")
+
+    def print_go_software(self):
+        """Envia un print go por software a todos los PMB (manual 5.3, Send Software Print Go)."""
+        return self._enviar(CMD_PRINT_GO_SW)
 
     def abortar_impresion(self):
         """Aborta la impresion en curso. El manual exige enviar P,A por una
