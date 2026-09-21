@@ -45,7 +45,7 @@ PARAM_RENDER_POR_DEFECTO   = "0"
 PARAM_COPIAS_POR_DEFECTO   = "1"
 PARAM_PRIMERA_COPIA        = "1"
 TERMINADOR                 = "\n"
-TIMEOUT_ACUSE_ABORTO       = 3     # s de espera del acuse A,<id>,P,A en el socket de aborto
+TIMEOUT_ACUSE_APARTE       = 3     # s de espera del acuse en los comandos enviados por socket aparte
 
 # ===== TIPOS DE MENSAJE DE RESPUESTA =====
 TIPO_RED       = "N"   # notificacion de red
@@ -261,34 +261,40 @@ class ClientePMB(QObject):
         self._enviar(f"{CMD_IMPRIMIR},{PARAM_PRIMERA_COPIA},{ruta_bmp},"
                      f"{PARAM_COPIAS_POR_DEFECTO}")
 
-    def print_go_software(self):
-        """Envia un print go por software a todos los PMB (manual 5.3, Send Software Print Go)."""
-        return self._enviar(CMD_PRINT_GO_SW)
-
-    def abortar_impresion(self):
-        """Aborta la impresion en curso. El manual exige enviar P,A por una
-        conexion nueva, distinta de la de impresion. Devuelve True si se envio."""
+    def _enviar_por_socket_aparte(self, comando, etiqueta):
+        """Comandos que deben llegar mientras el Print Controller esta ocupado con
+        la impresion (aborto, print go por software): el manual pide una conexion
+        nueva. Espera el acuse y vuelca al registro lo que responda el servidor."""
         try:
             with socket.create_connection((self.host, self.puerto), timeout=TIMEOUT_SOCKET) as s:
-                s.sendall((CMD_ABORTAR_IMPRESION + TERMINADOR).encode("utf-8"))
-                # esperar el acuse antes de cerrar, para que el servidor no descarte el comando
-                s.settimeout(TIMEOUT_ACUSE_ABORTO)
+                s.sendall((comando + TERMINADOR).encode("utf-8"))
+                s.settimeout(TIMEOUT_ACUSE_APARTE)
                 recibido = ""
-                while TIPO_ACUSE + "," + CMD_ABORTAR_IMPRESION not in recibido:
+                while TIPO_ACUSE + "," + comando not in recibido:
                     datos = s.recv(TAM_BUFFER)
                     if not datos:
                         break
                     recibido += datos.decode("utf-8", errors="replace")
         except socket.timeout:
-            self.mensaje.emit("[PMB] Aborto enviado")
+            self.mensaje.emit(f"[PMB] {etiqueta} enviado (sin acuse)")
             return True
         except OSError as e:
-            self.mensaje.emit(f"[PMB] No se ha podido enviar el aborto: {e}")
+            self.mensaje.emit(f"[PMB] No se ha podido enviar {etiqueta}: {e}")
             return False
         for linea in recibido.split(TERMINADOR):
-            if linea.strip():
-                self.mensaje.emit(f"[PMB] (aborto) {linea.strip()}")
+            linea = linea.strip()
+            if linea and not linea.startswith(TIPO_RED):
+                self.mensaje.emit(f"[PMB] ({etiqueta}) {linea}")
         return True
+
+    def print_go_software(self):
+        """Print go por software a todos los PMB (manual 5.3, P,SPG). Va por socket
+        aparte porque el Print Controller esta ocupado con el P,P armado."""
+        return self._enviar_por_socket_aparte(CMD_PRINT_GO_SW, "print go")
+
+    def abortar_impresion(self):
+        """Aborta la impresion en curso por una conexion nueva (manual 2.2)."""
+        return self._enviar_por_socket_aparte(CMD_ABORTAR_IMPRESION, "aborto")
 
     # ----- recepcion -----
 
@@ -367,8 +373,10 @@ class ClientePMB(QObject):
         # acciones salen por senal y la interfaz decide que escribir.
         if codigo == INFO_ESTADO and datos:
             self.mensaje.emit(f"[PMB] Estado: {datos[0]}")
-        elif codigo in (INFO_SEMAFORO, INFO_ETIQUETA_ACTUAL, INFO_PASADA, INFO_IMPRIMIENDO):
-            pass   # sin interes para el operario: semaforo, etiqueta y pasada en curso, print started
+        elif codigo == INFO_PASADA and datos:
+            self.mensaje.emit(f"[PMB] Pasada {datos[0]} descargada al PMB")
+        elif codigo in (INFO_SEMAFORO, INFO_ETIQUETA_ACTUAL, INFO_IMPRIMIENDO):
+            pass   # sin interes para el operario: semaforo, etiqueta en curso, print started
         elif codigo == INFO_LISTO_IMPRIMIR:
             self.listo_para_imprimir.emit()
         elif codigo == INFO_FIN_IMPRESION:
