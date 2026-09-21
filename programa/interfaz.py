@@ -96,9 +96,14 @@ class VentanaPrincipal(QMainWindow):
 
         # ===== paginas y secuencias =====
         self.pagina_pmb = PaginaPMB(self.ui, self.pmb, self.posicion_cabezal, parent=self)
+        print_go = (self.pmb.print_go_software if config.PRINT_GO_POR_SOFTWARE
+                    else self.mduino.pulso_impresion)
         self.secuencia = SecuenciaImpresion(self.motor, self.mduino,
                                             self.pagina_pmb.esta_lista,
-                                            config.POSICION_REPOSO_MM, parent=self)
+                                            config.POSICION_REPOSO_MM,
+                                            print_go=print_go, parent=self)
+        if config.PRINT_GO_POR_SOFTWARE:
+            print("[CONFIG] Print go por software (P,SPG): el M-Duino no envia el pulso")
         self.mduino.seta_cambiada.connect(self.secuencia.set_seta)
 
         # simulacion: misma secuencia sobre dispositivos simulados, sin PMB
