@@ -3,7 +3,7 @@
 
 Los dispositivos (MotorD1, ClienteMDuino, ClientePMB) los crea main.py y
 llegan por el constructor. La pagina PMB-8 vive en pagina_pmb.py y la pagina
-Programa (secuencia, grafico, simulacion) en pagina_programa.py.
+Programa (secuencia, plan y grafico) en pagina_programa.py.
 
 ui_pantalla_programa.py debe generarse con:
     pyside6-uic pantalla_programa.ui -o ui_pantalla_programa.py
@@ -22,7 +22,6 @@ from d1 import MODO_POSICION
 from pagina_pmb import PaginaPMB
 from pagina_programa import PaginaPrograma
 from secuencia import SecuenciaImpresion
-from simulacion import MDuinoSimulado, MotorSimulado
 from ui_pantalla_programa import Ui_MainWindow
 
 # ===== MODULOS DE LA BARRA (para la persistencia de ajustes) =====
@@ -68,7 +67,7 @@ ICONOS_JOG = {
 # ===== TEMPORIZADORES (ms) =====
 PERIODO_VIGILANCIA_JOG    = 50    # comprobacion de limites durante el jog
 PERIODO_SONDEO_HOMING     = 100   # vigilancia del homing
-PERIODO_REFRESCO_POSICION = 500   # refresco del campo de posicion
+PERIODO_REFRESCO_POSICION = 100   # refresco de la posicion (campo y mesa del grafico)
 PERIODO_LATIDO            = 500   # lectura ligera para que el D1 no cierre la sesion
 
 def _leer_float(campo, por_defecto=None):
@@ -101,18 +100,11 @@ class VentanaPrincipal(QMainWindow):
                                             config.POSICION_REPOSO_MM, parent=self)
         self.mduino.seta_cambiada.connect(self.secuencia.set_seta)
 
-        # simulacion: misma secuencia sobre dispositivos simulados, sin PMB
-        self.motor_sim = MotorSimulado(config.LIMITE_MIN_MM, config.LIMITE_MAX_MM,
-                                       config.POSICION_REPOSO_MM)
-        self.mduino_sim = MDuinoSimulado(self)
-        self.secuencia_sim = SecuenciaImpresion(self.motor_sim, self.mduino_sim, lambda: True,
-                                                config.POSICION_REPOSO_MM, parent=self)
-
         self.homing_en_curso = False   # impide leer la posicion durante el homing
         self.posicion_mm = None        # ultima posicion leida del D1
 
         self.pagina_programa = PaginaPrograma(
-            self.ui, self.secuencia, self.secuencia_sim, self.motor_sim, self.mduino_sim,
+            self.ui, self.secuencia, self.mduino,
             pmb_lista=self.pagina_pmb.esta_lista,
             abortar_pmb=self.pagina_pmb.abortar,
             geometria_imagen=self.pagina_pmb.geometria_imagen,
@@ -233,8 +225,8 @@ class VentanaPrincipal(QMainWindow):
 
     def refrescar_posicion(self):
         """Actualiza el campo de posicion de la interfaz."""
-        if self.homing_en_curso or self.secuencia.en_marcha():
-            return
+        if self.homing_en_curso:
+            return   # durante el homing la posicion no es valida
         try:
             self.posicion_mm = self.motor.leer_posicion()
             self.ui.posicion.setText(f"{self.posicion_mm:.2f}")

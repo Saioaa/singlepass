@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Pagina Programa: parametros de la secuencia, grafico de la barra a escala,
-arranque/parada de la secuencia real y simulacion.
+"""Pagina Programa: parametros de la secuencia, plan de recorrido a partir de
+los modulos, grafico de la barra a escala y arranque/parada de la secuencia.
 
-El grafico dibuja la barra (2200 mm) con sus modulos, los perfiles de
-velocidad y la mesa como un rectangulo que se mueve con la posicion del eje:
-la real cuando hay maquina, la del MotorSimulado durante una simulacion.
+El grafico dibuja la barra (BARRA_MM) con sus modulos, los perfiles de
+velocidad del plan y la mesa como un rectangulo que sigue la posicion real
+del eje leida del D1.
 
-Botones del .ui: bt_pg_prog_start (secuencia real), bt_pg_prog_stop (para las
-dos), bt_pg_prog_simulacion (solo simulada: no toca D1 ni M-Duino ni PMB).
+Botones del .ui: bt_pg_prog_start, bt_pg_prog_stop.
 """
 
 import time
@@ -18,6 +17,7 @@ from PySide6.QtWidgets import (QFrame, QGraphicsRectItem, QGraphicsScene,
                                QGraphicsSimpleTextItem, QGraphicsTextItem)
 
 import config
+from mduino import CMD_PULSO
 from secuencia import ParametrosPrograma
 
 # ===== MODULOS DE LA BARRA =====
@@ -59,7 +59,6 @@ TIPOS_CURADO = (TIPO_NIR, TIPO_SECADOR)
 
 # ===== TEMPORIZACION =====
 PERIODO_ANIMACION_MS   = 40     # refresco de la mesa en el grafico
-RETARDO_VOLVER_REAL_MS = 3000   # tras la simulacion, la mesa del grafico vuelve a la posicion real
 
 
 class PlanInvalido(ValueError):
@@ -76,23 +75,20 @@ def _leer_float(campo, por_defecto=None):
 
 class PaginaPrograma(QObject):
 
-    def __init__(self, ui, secuencia_real, secuencia_sim, motor_sim, mduino_sim,
-                 pmb_lista, abortar_pmb, geometria_imagen, posicion_real, registrar,
-                 parent=None):
+    def __init__(self, ui, secuencia, mduino, pmb_lista, abortar_pmb, geometria_imagen,
+                 posicion_real, registrar, parent=None):
         super().__init__(parent)
         self.ui = ui
-        self.secuencia_real = secuencia_real
-        self.secuencia_sim = secuencia_sim
-        self.motor_sim = motor_sim
-        self.mduino_sim = mduino_sim
+        self.secuencia = secuencia
+        self.mduino = mduino
         self._pmb_lista = pmb_lista              # callable -> bool
         self._abortar_pmb = abortar_pmb          # callable
         self._geometria_imagen = geometria_imagen  # callable -> (x_mm, ancho_mm) | None
         self._posicion_real = posicion_real      # callable -> mm | None
         self.registrar = registrar               # callable(texto)
 
-        self.mostrar_simulada = False   # que posicion mueve la mesa del grafico
         self._t_ultimo_pulso = 0.0
+        self._ultima_posicion = config.POSICION_REPOSO_MM
 
         validador = QDoubleValidator()
         validador.setLocale(QLocale(QLocale.English))
@@ -104,11 +100,9 @@ class PaginaPrograma(QObject):
 
         self.ui.bt_pg_prog_start.clicked.connect(self.start)
         self.ui.bt_pg_prog_stop.clicked.connect(self.stop)
-        self.ui.bt_pg_prog_simulacion.clicked.connect(self.simular)
 
-        self.mduino_sim.pulso_enviado.connect(self._pulso_simulado)
-        self.mduino_sim.lamparas_cambiadas.connect(lambda _pwm: self.actualizar_animacion())
-        self.secuencia_sim.terminada.connect(self._fin_simulacion)
+        self.mduino.mensaje_enviado.connect(self._mensaje_mduino)
+        self.secuencia.terminada.connect(lambda: self.registrar("[PROGRAMA] Secuencia terminada"))
 
         # grafico de la barra a escala
         self.escena = QGraphicsScene(self)
@@ -217,7 +211,7 @@ class PaginaPrograma(QObject):
 
     # ===== arranque / parada =====
     def start(self):
-        """Secuencia real: D1 + M-Duino + PMB armado."""
+        """Arranca la secuencia: D1 + M-Duino, con el PMB armado."""
         try:
             parametros = self.leer_parametros()
         except PlanInvalido as e:
@@ -226,57 +220,25 @@ class PaginaPrograma(QObject):
         except ValueError:
             self.registrar("[PROGRAMA] Faltan parametros de impresion o curado")
             return
-        if self.secuencia_sim.en_marcha():
-            self.registrar("[PROGRAMA] Hay una simulacion en marcha: parala antes")
-            return
         if not self._pmb_lista():
             self.registrar("[PROGRAMA] El PMB no esta armado: pulsa Print en la pagina PMB-8")
             return
-        self.mostrar_simulada = False
-        if not self.secuencia_real.start(parametros):
+        if not self.secuencia.start(parametros):
             self.registrar("[PROGRAMA] No se puede arrancar: seta o referencia pendiente")
             return
         self.registrar(f"[PROGRAMA] Plan: {self.describir_plan(parametros)}")
 
-    def simular(self):
-        """Solo el grafico: mueve el MotorSimulado con la secuencia, sin tocar la maquina."""
-        try:
-            parametros = self.leer_parametros()
-        except PlanInvalido as e:
-            self.registrar(f"[SIMULACION] No se puede planificar: {e}")
-            return
-        except ValueError:
-            self.registrar("[SIMULACION] Faltan parametros de impresion o curado")
-            return
-        if self.secuencia_real.en_marcha():
-            self.registrar("[SIMULACION] La secuencia real esta en marcha")
-            return
-        self.mostrar_simulada = True
-        self.mduino_sim.lamparas(0)
-        if self.secuencia_sim.start(parametros):
-            self.registrar(f"[SIMULACION] Plan: {self.describir_plan(parametros)}")
-
-    def _fin_simulacion(self):
-        self.registrar("[SIMULACION] Secuencia terminada")
-        QTimer.singleShot(RETARDO_VOLVER_REAL_MS, self._volver_a_real)
-
-    def _volver_a_real(self):
-        if not self.secuencia_sim.en_marcha():
-            self.mostrar_simulada = False
-
     def stop(self):
-        if self.secuencia_sim.en_marcha():
-            self.secuencia_sim.stop()
-            self.registrar("[SIMULACION] Parada")
-            QTimer.singleShot(RETARDO_VOLVER_REAL_MS, self._volver_a_real)
-        if self.secuencia_real.en_marcha():
-            self.secuencia_real.stop()
+        if self.secuencia.en_marcha():
+            self.secuencia.stop()
+            self.registrar("[PROGRAMA] Parada")
             if self._pmb_lista():
                 self._abortar_pmb()   # el PMB no debe quedarse esperando un print go que no llegara
 
-    def _pulso_simulado(self):
-        self._t_ultimo_pulso = time.monotonic()
-        self.registrar("[SIMULACION] PULSE (print go)")
+    def _mensaje_mduino(self, mensaje):
+        """Lo que sale hacia el M-Duino: el PULSE se resalta en el grafico."""
+        if mensaje == CMD_PULSO:
+            self._t_ultimo_pulso = time.monotonic()
 
     # ===== modulos =====
     def leer_modulos(self):
@@ -400,11 +362,11 @@ class PaginaPrograma(QObject):
 
     # ===== grafico animado =====
     def posicion_mostrada(self):
-        """Posicion del eje que mueve la mesa del grafico, en mm."""
-        if self.mostrar_simulada:
-            return self.motor_sim.leer_posicion()
+        """Posicion real del eje (ultima lectura del D1), en mm."""
         posicion = self._posicion_real()
-        return posicion if posicion is not None else self.motor_sim.leer_posicion()
+        if posicion is not None:
+            self._ultima_posicion = posicion
+        return self._ultima_posicion
 
     def actualizar_animacion(self):
         if self._mesa_item is None:
@@ -423,17 +385,9 @@ class PaginaPrograma(QObject):
                                      self._y_base + (ALTO_MESA_PX - ALTO_IMAGEN_PX) / 2)
             self._imagen_item.setVisible(True)
 
-        if self.mostrar_simulada:
-            fuente = "SIM"
-            etapa = self.secuencia_sim.etapa
-            pwm = self.mduino_sim.pwm_lamparas
-        else:
-            fuente = "REAL"
-            etapa = self.secuencia_real.etapa
-            pwm = self.secuencia_real.senal_lamparas
         hace_pulso = time.monotonic() - self._t_ultimo_pulso < DURACION_AVISO_PULSO_S
-        texto = (f"{fuente}  pos {self.posicion_mostrada():.1f} mm   etapa {etapa}   "
-                 f"lamparas {pwm}%" + ("   PRINT GO" if hace_pulso else ""))
+        texto = (f"pos {self.posicion_mostrada():.1f} mm   etapa {self.secuencia.etapa}   "
+                 f"lamparas {self.secuencia.senal_lamparas}%" + ("   PRINT GO" if hace_pulso else ""))
         self._texto_estado.setText(texto)
         self._texto_estado.setBrush(QBrush(QColor(COLOR_PULSO if hace_pulso else COLOR_TEXTO)))
         self._texto_estado.setPos(MARGEN_TEXTO_PX, MARGEN_TEXTO_PX)

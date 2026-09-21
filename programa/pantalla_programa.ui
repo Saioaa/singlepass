@@ -1347,9 +1347,9 @@ color: #62CBC9;
       <property name="geometry">
        <rect>
         <x>40</x>
-        <y>360</y>
+        <y>380</y>
         <width>221</width>
-        <height>152</height>
+        <height>111</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -1396,29 +1396,6 @@ QPushButton:pressed {
          </property>
          <property name="text">
           <string>Parar programa</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="bt_pg_prog_simulacion">
-         <property name="styleSheet">
-          <string notr="true">QPushButton {
-    background-color: #62CBC9;
-    border: 2px solid #333333;
-    border-radius: 5px;
-    padding: 10px;
-	font-size: 16px;
-	font-family: nunito;
-}
-QPushButton:hover {
-    background-color: rgb(170, 255, 255);
-}
-QPushButton:pressed {
-    background-color: rgb(206, 255, 252);
-}</string>
-         </property>
-         <property name="text">
-          <string>SIMULACIÓN</string>
          </property>
         </widget>
        </item>

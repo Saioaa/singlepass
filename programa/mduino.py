@@ -40,6 +40,7 @@ class ClienteMDuino(QObject):
     conexion_cambiada = Signal(bool)   # True al conectar, False al perder la conexion
     seta_cambiada     = Signal(bool)   # True = seta pulsada
     linea_recibida    = Signal(str)    # cualquier linea, para el registro de la interfaz
+    mensaje_enviado   = Signal(str)    # cada comando que sale hacia el M-Duino
 
     def __init__(self, ip, puerto, parent=None):
         super().__init__(parent)
@@ -130,6 +131,8 @@ class ClienteMDuino(QObject):
             return False
         try:
             self.sock.sendall((mensaje + TERMINADOR).encode("utf-8"))
+            print(f"[MDUINO] -> {mensaje}")
+            self.mensaje_enviado.emit(mensaje)
             return True
         except OSError as e:
             print(f"[MDUINO] Error enviando {mensaje}: {e}")
