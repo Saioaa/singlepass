@@ -54,10 +54,12 @@ class SecuenciaImpresion(QObject):
 
     terminada = Signal()    # la secuencia ha vuelto a ESPERA
 
-    def __init__(self, motor, mduino, pmb_listo, posicion_reposo, parent=None):
+    def __init__(self, motor, mduino, pmb_listo, posicion_reposo, print_go_extra=None,
+                 parent=None):
         super().__init__(parent)
         self.motor = motor
         self.mduino = mduino
+        self._print_go_extra = print_go_extra   # callable opcional que se lanza junto al PULSE
         self._pmb_listo = pmb_listo   # callable -> bool: el PMB esta armado (se arma en la pagina PMB)
         self.posicion_reposo = posicion_reposo
 
@@ -145,6 +147,12 @@ class SecuenciaImpresion(QObject):
             accion()
 
     # ===== auxiliares =====
+    def print_go(self):
+        """Dispara la impresion: pulso del M-Duino y, si esta configurado, tambien por software."""
+        self.mduino.pulso_impresion()
+        if self._print_go_extra is not None:
+            self._print_go_extra()
+
     def mover_secuencia(self, destino):
         """Lanza un movimiento y marca el instante de arranque."""
         self.motor.mover_a(destino, esperar=False)
@@ -177,7 +185,7 @@ class SecuenciaImpresion(QObject):
         if self.subpaso == 0:
             self.params_impresion()
             self.senal_impresion = True
-            self.mduino.pulso_impresion()
+            self.print_go()
             self.mover_secuencia(self.parametros.fin_impresion)
             self.subpaso = 1
         elif self.subpaso == 1:
@@ -199,7 +207,7 @@ class SecuenciaImpresion(QObject):
                 return
             self.params_impresion()
             self.senal_impresion = True
-            self.mduino.pulso_impresion()
+            self.print_go()
             self.mover_secuencia(self.parametros.fin_impresion)
             self.subpaso = 2
         elif self.subpaso == 2:

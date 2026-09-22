@@ -95,9 +95,13 @@ class VentanaPrincipal(QMainWindow):
 
         # ===== paginas y secuencias =====
         self.pagina_pmb = PaginaPMB(self.ui, self.pmb, self.posicion_cabezal, parent=self)
+        print_go_extra = self.pmb.print_go_software if config.PRINT_GO_TAMBIEN_POR_SOFTWARE else None
         self.secuencia = SecuenciaImpresion(self.motor, self.mduino,
                                             self.pagina_pmb.esta_lista,
-                                            config.POSICION_REPOSO_MM, parent=self)
+                                            config.POSICION_REPOSO_MM,
+                                            print_go_extra=print_go_extra, parent=self)
+        if config.PRINT_GO_TAMBIEN_POR_SOFTWARE:
+            print("[CONFIG] PROVISIONAL: print go tambien por software (P,SPG)")
         self.mduino.seta_cambiada.connect(self.secuencia.set_seta)
 
         self.homing_en_curso = False   # impide leer la posicion durante el homing

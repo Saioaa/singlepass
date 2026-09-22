@@ -31,6 +31,13 @@ MODULO_MM          = 125    # ancho de cada modulo a lo largo de la barra
 # un modulo montado a distancia d ocupa [d, d + MODULO_MM]. Los recorridos de la
 # secuencia se calculan con esto a partir de los modulos de la pagina Programa.
 
+# ===== PRINT GO =====
+# PROVISIONAL: el pulso del rele R1_4 del M-Duino no llega a la entrada TTL del PMB.
+# Mientras se arregla el cableado, la secuencia envia el PULSE al M-Duino y ADEMAS
+# el print go por software al Print Controller (P,SPG). Requiere PrintGoSource =
+# Software en el nodo PMB de GIS. Con el cable arreglado: False y PrintGoSource = TTL.
+PRINT_GO_TAMBIEN_POR_SOFTWARE = True
+
 # ===== MESA DE IMPRESION (A4 apaisado: X = direccion del movimiento) =====
 MESA_ANCHO_MM = 297
 MESA_ALTO_MM  = 210
