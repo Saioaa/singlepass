@@ -27,6 +27,10 @@ CMD_PULSO        = "PULSE"
 CMD_LAMPARAS     = "LAMP"
 MSG_SETA_PULSADA = "SETA:1"
 MSG_SETA_LIBRE   = "SETA:0"
+PWM_APAGADAS     = 0
+# El sketch del M-Duino solo adopta al cliente cuando este envia algo (server.available()).
+# Al conectar se manda una orden inofensiva para que nos adopte y empiece a enviar SETA/REF.
+MENSAJE_PRESENTACION = f"{CMD_LAMPARAS}:{PWM_APAGADAS}"
 
 # ===== CONEXION =====
 TAM_BUFFER         = 64    # bytes por lectura
@@ -85,6 +89,7 @@ class ClienteMDuino(QObject):
                 self.sock = sock
                 print(f"[MDUINO] Conectado a {self.ip}:{self.puerto} (intento {self._intentos})")
                 self.conexion_cambiada.emit(True)
+                self.enviar(MENSAJE_PRESENTACION)
                 self._leer(sock)
                 print("[MDUINO] El M-Duino ha cerrado la conexion")
             except OSError as e:
