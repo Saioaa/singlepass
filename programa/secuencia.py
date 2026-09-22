@@ -30,6 +30,7 @@ ETAPA_ESPERA        = "espera"        # secuencia parada (antes "etapa1")
 ETAPA_REPOSO        = "reposo"        # E0: ir a reposo antes de empezar
 ETAPA_SIN_CURADO    = "sin_curado"    # E2: ida y vuelta a velocidad de impresion
 ETAPA_IDA_IMPRESION = "ida_impresion" # E3: lamparas on + ida de impresion
+ETAPA_SOLO_CURADO   = "solo_curado"   # E3b: lamparas on y primera pasada de curado, sin imprimir
 ETAPA_CURADO        = "curado"        # E4: pasadas de curado
 ETAPA_FIN           = "fin"           # E5: lamparas off + vuelta a reposo
 ETAPA_PARADA        = "parada"        # E6: parada ordenada por el operario
@@ -48,6 +49,7 @@ class ParametrosPrograma:
     inicio_curado: float           # mm: mesa entera antes del primer modulo de curado
     fin_curado: float              # mm: mesa entera despues del ultimo modulo de curado
     hay_curado: bool = False       # hay modulo NIR/secador y pasadas > 0
+    hay_impresion: bool = True     # hay cabezal: la secuencia arma PMB, envia PULSE e imprime
 
 
 class SecuenciaImpresion(QObject):
@@ -71,6 +73,7 @@ class SecuenciaImpresion(QObject):
             ETAPA_REPOSO:        self.etapa_reposo,
             ETAPA_SIN_CURADO:    self.etapa_sin_curado,
             ETAPA_IDA_IMPRESION: self.etapa_ida_impresion,
+            ETAPA_SOLO_CURADO:   self.etapa_solo_curado,
             ETAPA_CURADO:        self.etapa_curado,
             ETAPA_FIN:           self.etapa_fin,
             ETAPA_PARADA:        self.etapa_parada,
@@ -103,7 +106,9 @@ class SecuenciaImpresion(QObject):
 
     # ===== arranque / parada =====
     def start(self, parametros):
-        if self.referencia_pendiente or self.seta or not self._pmb_listo():
+        if self.referencia_pendiente or self.seta:
+            return False
+        if parametros.hay_impresion and not self._pmb_listo():
             return False
         self.parametros = parametros
         self.contpas = parametros.pasadas_curado
@@ -177,7 +182,24 @@ class SecuenciaImpresion(QObject):
             self.subpaso = 1
         elif self.subpaso == 1:
             curando = self.parametros.hay_curado and self.contpas > 0
-            self.etapa = ETAPA_IDA_IMPRESION if curando else ETAPA_SIN_CURADO
+            if not self.parametros.hay_impresion:
+                self.etapa = ETAPA_SOLO_CURADO
+            else:
+                self.etapa = ETAPA_IDA_IMPRESION if curando else ETAPA_SIN_CURADO
+            self.subpaso = 0
+
+    def etapa_solo_curado(self):
+        """E3b: sin cabezal -> encender lamparas, esperar y lanzar las pasadas de curado."""
+        if self.subpaso == 0:
+            self.senal_lamparas = PWM_CURADO
+            self.mduino.lamparas(PWM_CURADO)
+            self.t_espera = time.time() + T_LAMPARAS_ON
+            self.subpaso = 1
+        elif self.subpaso == 1:
+            if time.time() < self.t_espera:
+                return
+            self.destino_curado = self.parametros.fin_curado   # primera pasada: reposo -> fin
+            self.etapa = ETAPA_CURADO
             self.subpaso = 0
 
     def etapa_sin_curado(self):

@@ -149,33 +149,38 @@ class PaginaPrograma(QObject):
     # ===== plan de recorrido =====
     def calcular_plan(self, pasadas_curado):
         """Recorridos (mm) a partir de los modulos montados.
-        Devuelve (fin_impresion, inicio_curado, fin_curado, hay_curado, avisos)."""
+        Devuelve (fin_impresion, inicio_curado, fin_curado, hay_curado, hay_impresion, avisos).
+        Casos: solo impresion, impresion + curado, solo curado (sin cabezal)."""
         modulos = self.leer_modulos()
         cabezal = self.posicion_cabezal()
-        if cabezal is None:
-            raise PlanInvalido("no hay ningun cabezal de impresion en los modulos")
+        curado = [d for _i, tipo, d in modulos if tipo in TIPOS_CURADO]
+        hay_impresion = cabezal is not None
+        hay_curado = bool(curado) and pasadas_curado > 0
+        if not hay_impresion and not hay_curado:
+            if curado:
+                raise PlanInvalido("sin cabezal solo se puede curar, y las pasadas de curado son 0")
+            raise PlanInvalido("no hay ningun cabezal ni modulo de curado en los modulos")
         avisos = []
         reposo = config.POSICION_REPOSO_MM
         mesa = config.MESA_ANCHO_MM
         ancho_modulo = config.MODULO_MM
 
-        fin_impresion = cabezal + ancho_modulo         # la mesa entera ha pasado el cabezal
-        if reposo + mesa > cabezal:
-            avisos.append(f"en reposo ({reposo} mm) la mesa ya alcanza el cabezal ({cabezal} mm)")
+        fin_impresion = reposo
+        if hay_impresion:
+            fin_impresion = cabezal + ancho_modulo         # la mesa entera ha pasado el cabezal
+            if reposo + mesa > cabezal:
+                avisos.append(f"en reposo ({reposo} mm) la mesa ya alcanza el cabezal ({cabezal} mm)")
+            # el PMB cuenta XOffset + ancho de imagen de encoder tras el PULSE: la pasada
+            # tiene que llegar al menos hasta donde termina la imagen, con margen
+            geometria = self._geometria_imagen()
+            if geometria is not None:
+                x_imagen, ancho_imagen = geometria
+                fin_pmb = recorrido_impresion_mm(cabezal, x_imagen, ancho_imagen) + MARGEN_FIN_IMPRESION_MM
+                if fin_pmb > fin_impresion:
+                    avisos.append(f"la imagen termina de imprimirse en {fin_pmb - MARGEN_FIN_IMPRESION_MM:.0f} mm, "
+                                  f"mas alla del modulo: se alarga la pasada")
+                    fin_impresion = fin_pmb
 
-        # el PMB cuenta XOffset + ancho de imagen de encoder tras el PULSE: la pasada
-        # tiene que llegar al menos hasta donde termina la imagen, con margen
-        geometria = self._geometria_imagen()
-        if geometria is not None:
-            x_imagen, ancho_imagen = geometria
-            fin_pmb = recorrido_impresion_mm(cabezal, x_imagen, ancho_imagen) + MARGEN_FIN_IMPRESION_MM
-            if fin_pmb > fin_impresion:
-                avisos.append(f"la imagen termina de imprimirse en {fin_pmb - MARGEN_FIN_IMPRESION_MM:.0f} mm, "
-                              f"mas alla del modulo: se alarga la pasada")
-                fin_impresion = fin_pmb
-
-        curado = [d for _i, tipo, d in modulos if tipo in TIPOS_CURADO]
-        hay_curado = bool(curado) and pasadas_curado > 0
         if pasadas_curado > 0 and not curado:
             avisos.append("se han pedido pasadas de curado pero no hay modulo NIR/secador")
         if hay_curado:
@@ -191,13 +196,13 @@ class PaginaPrograma(QObject):
                           f"supera el limite del eje ({maximo} mm): se recorta")
             fin_impresion = min(fin_impresion, maximo)
             fin_curado = min(fin_curado, maximo)
-        return fin_impresion, inicio_curado, fin_curado, hay_curado, avisos
+        return fin_impresion, inicio_curado, fin_curado, hay_curado, hay_impresion, avisos
 
     # ===== parametros =====
     def leer_parametros(self):
         """ParametrosPrograma listo para la secuencia. Lanza ValueError si falta algo."""
         pasadas = int(_leer_float(self.ui.pg_prog_cant_pasadas_curado, por_defecto=0))
-        fin_impresion, inicio_curado, fin_curado, hay_curado, avisos = self.calcular_plan(pasadas)
+        fin_impresion, inicio_curado, fin_curado, hay_curado, hay_impresion, avisos = self.calcular_plan(pasadas)
         for aviso in avisos:
             self.registrar(f"[PROGRAMA] Aviso: {aviso}")
         return ParametrosPrograma(
@@ -212,16 +217,20 @@ class PaginaPrograma(QObject):
             inicio_curado=inicio_curado,
             fin_curado=fin_curado,
             hay_curado=hay_curado,
+            hay_impresion=hay_impresion,
         )
 
     def describir_plan(self, parametros):
-        texto = (f"impresion {config.POSICION_REPOSO_MM:.0f} -> {parametros.fin_impresion:.0f} mm "
-                 f"a {parametros.vel_impresion:.0f} mm/s")
+        partes = []
+        if parametros.hay_impresion:
+            partes.append(f"impresion {config.POSICION_REPOSO_MM:.0f} -> {parametros.fin_impresion:.0f} mm "
+                          f"a {parametros.vel_impresion:.0f} mm/s")
         if parametros.hay_curado:
-            texto += (f"; curado {parametros.pasadas_curado} pasadas entre "
-                      f"{parametros.inicio_curado:.0f} y {parametros.fin_curado:.0f} mm "
-                      f"a {parametros.vel_curado:.0f} mm/s")
-        return texto
+            partes.append(f"curado {parametros.pasadas_curado} pasadas entre "
+                          f"{parametros.inicio_curado:.0f} y {parametros.fin_curado:.0f} mm "
+                          f"a {parametros.vel_curado:.0f} mm/s"
+                          + ("" if parametros.hay_impresion else " (sin impresion)"))
+        return "; ".join(partes)
 
     # ===== arranque / parada =====
     def start(self):
@@ -234,7 +243,7 @@ class PaginaPrograma(QObject):
         except ValueError:
             self.registrar("[PROGRAMA] Faltan parametros de impresion o curado")
             return
-        if not self._pmb_lista():
+        if parametros.hay_impresion and not self._pmb_lista():
             self.registrar("[PROGRAMA] El PMB no esta armado: pulsa Print en la pagina PMB-8")
             return
         if not self.secuencia.start(parametros):
@@ -351,16 +360,18 @@ class PaginaPrograma(QObject):
         d_cur = _leer_float(self.ui.pg_prog_decel_curado, por_defecto=0)
         pasadas = int(_leer_float(self.ui.pg_prog_cant_pasadas_curado, por_defecto=0))
         try:
-            fin_impresion, inicio_curado, fin_curado, hay_curado, _avisos = self.calcular_plan(pasadas)
+            (fin_impresion, inicio_curado, fin_curado,
+             hay_curado, hay_impresion, _avisos) = self.calcular_plan(pasadas)
         except PlanInvalido:
-            fin_impresion = hay_curado = None
-        if v_impr > 0 and fin_impresion is not None:
+            hay_curado = hay_impresion = False
+        v_ref = v_impr if hay_impresion and v_impr > 0 else v_cur   # la altura maxima es la mayor velocidad
+        if hay_impresion and v_impr > 0:
             self._dibujar_perfil(v_impr, a_impr, d_impr, config.POSICION_REPOSO_MM, fin_impresion,
                                  escala, y_base, altura_max, COLOR_PERFIL_IMPRESION)
-            if hay_curado and v_cur > 0:
-                altura_cur = altura_max * min(1.0, v_cur / v_impr)
-                self._dibujar_perfil(v_cur, a_cur, d_cur, inicio_curado, fin_curado,
-                                     escala, y_base, altura_cur, COLOR_PERFIL_CURADO)
+        if hay_curado and v_cur > 0 and v_ref > 0:
+            altura_cur = altura_max * min(1.0, v_cur / v_ref)
+            self._dibujar_perfil(v_cur, a_cur, d_cur, inicio_curado, fin_curado,
+                                 escala, y_base, altura_cur, COLOR_PERFIL_CURADO)
 
         # elementos animados: mesa, imagen sobre la mesa y texto de estado
         self._mesa_item = self.escena.addRect(
