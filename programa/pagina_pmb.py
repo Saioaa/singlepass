@@ -45,6 +45,9 @@ COLORES_PLANOS = ("#00AEEF", "#EC008C", "#FFF100", "#000000")
 # ===== REGISTRO =====
 NOMBRE_OFFSET_X = "XOffset"   # como se llama en los mensajes al parametro del Print Controller
 VENTANA_DUPLICADOS_S = 2.0    # un mensaje identico al anterior dentro de esta ventana no se repite
+# Con print go por software el servidor dispara al ARMAR (P,P), no cuando la secuencia
+# envia el pulso: la mesa tiene que estar ya en la posicion de pulso al pulsar Print.
+TOLERANCIA_ARMADO_MM = 2.0
 
 # ===== ESTADOS DEL BOTON PRINT =====
 ESTADO_SIN_TRABAJO  = "sin_trabajo"
@@ -81,11 +84,12 @@ def recorrido_impresion_mm(x_cabezal_mm, x_imagen_mm, ancho_imagen_mm):
 
 class PaginaPMB(QObject):
 
-    def __init__(self, ui, pmb, posicion_cabezal, parent=None):
+    def __init__(self, ui, pmb, posicion_cabezal, posicion_eje, parent=None):
         super().__init__(parent)
         self.ui = ui
         self.pmb = pmb
         self._posicion_cabezal = posicion_cabezal   # callable -> mm o None
+        self._posicion_eje = posicion_eje           # callable -> mm o None (ultima lectura del D1)
 
         self.dpi_actual = None
         self.ruta_imagen = None
@@ -501,6 +505,13 @@ class PaginaPMB(QObject):
             return False
         if self.estado == ESTADO_LISTO:
             return True   # ya armado, no repetir P,P (daria -201 Print Controller busy)
+        if config.PRINT_GO_TAMBIEN_POR_SOFTWARE:
+            posicion = self._posicion_eje()
+            if posicion is None or abs(posicion - config.POSICION_PULSE_MM) > TOLERANCIA_ARMADO_MM:
+                self.registrar(f"[PMB] Con print go por software el PMB empieza a contar al armar: "
+                               f"lleva la mesa a {config.POSICION_PULSE_MM:.0f} mm (reposo) antes de pulsar Print"
+                               + (f"; ahora esta en {posicion:.1f} mm" if posicion is not None else ""))
+                return False
         self._poner_estado(ESTADO_ARMANDO)
         if not self._enviar_offset_y_luego(self._enviar_print):
             self._poner_estado(ESTADO_RENDER_LISTO)

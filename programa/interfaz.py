@@ -94,7 +94,8 @@ class VentanaPrincipal(QMainWindow):
         self.pmb = pmb
 
         # ===== paginas y secuencias =====
-        self.pagina_pmb = PaginaPMB(self.ui, self.pmb, self.posicion_cabezal, parent=self)
+        self.pagina_pmb = PaginaPMB(self.ui, self.pmb, self.posicion_cabezal,
+                                    posicion_eje=lambda: self.posicion_mm, parent=self)
         print_go_extra = self.pmb.print_go_software if config.PRINT_GO_TAMBIEN_POR_SOFTWARE else None
         self.secuencia = SecuenciaImpresion(self.motor, self.mduino,
                                             self.pagina_pmb.esta_lista,

@@ -36,6 +36,7 @@ MENSAJE_PRESENTACION = f"{CMD_LAMPARAS}:{PWM_APAGADAS}"
 TAM_BUFFER         = 64    # bytes por lectura
 RETARDO_RECONEXION = 2     # s entre intentos
 TIMEOUT_CONEXION   = 5     # s por intento (Windows tarda ~21 s si no se acota)
+PERIODO_TRAZA_S    = 5     # s entre trazas en consola de un mismo mensaje repetido (latido)
 
 
 class ClienteMDuino(QObject):
@@ -54,6 +55,7 @@ class ClienteMDuino(QObject):
         self._hilo = None
         self._activo = False
         self._intentos = 0
+        self._traza = {}   # clave (SETA, REF...) -> (ultimo valor, instante de la ultima traza)
 
     # ----- conexion -----
 
@@ -100,6 +102,7 @@ class ClienteMDuino(QObject):
                     sock.close()
             if self.sock is not None:
                 self.sock = None
+                self._traza.clear()
                 self.conexion_cambiada.emit(False)
             if self._activo:
                 time.sleep(RETARDO_RECONEXION)
@@ -120,7 +123,13 @@ class ClienteMDuino(QObject):
     def _procesar_linea(self, linea):
         if not linea:
             return
-        print(f"[MDUINO] <- {linea}")   # el M-Duino repite SETA/REF cada segundo: sirve de latido
+        # el M-Duino repite SETA/REF cada segundo: se traza si cambia o cada PERIODO_TRAZA_S
+        clave = linea.split(":", 1)[0]
+        valor_anterior, instante = self._traza.get(clave, (None, 0.0))
+        ahora = time.monotonic()
+        if linea != valor_anterior or ahora - instante >= PERIODO_TRAZA_S:
+            self._traza[clave] = (linea, ahora)
+            print(f"[MDUINO] <- {linea}")
         self.linea_recibida.emit(linea)
         # SETA DESACTIVADA: el M-Duino aun no esta conectado fisicamente.
         # Descomentar cuando se pueda probar con la seta real.
