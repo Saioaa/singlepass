@@ -61,6 +61,7 @@ INFO_IMPRIMIENDO     = "P"
 INFO_LISTO_IMPRIMIR  = "RTP"
 INFO_FIN_IMPRESION   = "EP"
 INFO_ETIQUETA_ACTUAL = "L"    # numero de etiqueta/pasada en curso (informativo, no se registra)
+INFO_PASADA_IMPRESA  = "SPI"  # no documentado en el manual; llega al terminar cada pasada
 INFO_REGISTRO        = "G"
 INFO_CABEZALES       = "H"    # XML de estado de cabezales (llega cada PrintHeadStatusReadDelay ms)
 
@@ -379,7 +380,7 @@ class ClientePMB(QObject):
             self.mensaje.emit(f"[PMB] Estado: {datos[0]}")
         elif codigo == INFO_PASADA and datos:
             self.mensaje.emit(f"[PMB] Pasada {datos[0]} descargada al PMB")
-        elif codigo in (INFO_SEMAFORO, INFO_ETIQUETA_ACTUAL, INFO_IMPRIMIENDO):
+        elif codigo in (INFO_SEMAFORO, INFO_ETIQUETA_ACTUAL, INFO_IMPRIMIENDO, INFO_PASADA_IMPRESA):
             pass   # sin interes para el operario: semaforo, etiqueta en curso, print started
         elif codigo == INFO_LISTO_IMPRIMIR:
             self.listo_para_imprimir.emit()
