@@ -62,10 +62,21 @@ POSICION_INICIAL_X_MM = 0.0   # donde aparece una imagen recien cargada
 POSICION_INICIAL_Y_MM = 0.0
 
 
-def calcular_offset_x(x_cabezal_mm, x_imagen_mm):
-    """Distancia que recorre el carro desde el PULSE hasta que el borde de la
-    imagen pasa bajo el cabezal."""
-    return x_cabezal_mm - x_imagen_mm - config.POSICION_PULSE_MM
+def calcular_offset_x(x_cabezal_mm, x_imagen_mm, ancho_imagen_mm):
+    """Distancia (mm) que recorre el carro desde el PULSE hasta que la imagen
+    empieza a pasar bajo el cabezal.
+
+    La mesa avanza hacia +X y el cabezal esta mas adelante, asi que el borde de
+    la imagen que llega primero es el mas lejano: x_imagen + ancho. El PMB
+    imprime a partir de ahi durante ancho_imagen_mm de encoder.
+    """
+    return x_cabezal_mm - (x_imagen_mm + ancho_imagen_mm) - config.POSICION_PULSE_MM
+
+
+def recorrido_impresion_mm(x_cabezal_mm, x_imagen_mm, ancho_imagen_mm):
+    """Posicion del eje en la que el PMB termina de imprimir: el borde cercano
+    de la imagen (x_imagen) pasa bajo el cabezal."""
+    return x_cabezal_mm - x_imagen_mm
 
 
 class PaginaPMB(QObject):
@@ -291,7 +302,12 @@ class PaginaPMB(QObject):
             return
 
         x_mesa_mm, y_mesa_mm = self.mesa.posicion_imagen_mm()
-        offset_x_mm = calcular_offset_x(posicion_x, x_mesa_mm)
+        offset_x_mm = calcular_offset_x(posicion_x, x_mesa_mm, self.ancho_imagen_mm)
+        if offset_x_mm < 0:
+            self.registrar(f"[PMB] La imagen ya esta bajo el cabezal en reposo "
+                           f"({NOMBRE_OFFSET_X} = {offset_x_mm:.{DECIMALES_POSICION}f} mm): "
+                           f"aleja el reposo o acerca la imagen al 0 de la mesa")
+            return
         self.registrar(f"[PMB] Imagen en mesa: X={x_mesa_mm:.{DECIMALES_POSICION}f} mm, "
                        f"Y={y_mesa_mm:.{DECIMALES_POSICION}f} mm; "
                        f"cabezal a {posicion_x:.{DECIMALES_POSICION}f} mm -> "

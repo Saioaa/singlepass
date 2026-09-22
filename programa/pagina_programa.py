@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (QFrame, QGraphicsRectItem, QGraphicsScene,
 
 import config
 from mduino import CMD_PULSO
+from pagina_pmb import recorrido_impresion_mm
 from secuencia import ParametrosPrograma
 
 # ===== MODULOS DE LA BARRA =====
@@ -56,6 +57,8 @@ DURACION_AVISO_PULSO_S = 0.6
 COLOR_PERFIL_IMPRESION = "#2E86C1"
 COLOR_PERFIL_CURADO    = "#27AE60"
 TIPOS_CURADO = (TIPO_NIR, TIPO_SECADOR)
+
+MARGEN_FIN_IMPRESION_MM = 20   # recorrido extra tras el fin de la imagen, por deceleracion y holgura
 
 # ===== TEMPORIZACION =====
 PERIODO_ANIMACION_MS   = 40     # refresco de la mesa en el grafico
@@ -159,6 +162,17 @@ class PaginaPrograma(QObject):
         fin_impresion = cabezal + ancho_modulo         # la mesa entera ha pasado el cabezal
         if reposo + mesa > cabezal:
             avisos.append(f"en reposo ({reposo} mm) la mesa ya alcanza el cabezal ({cabezal} mm)")
+
+        # el PMB cuenta XOffset + ancho de imagen de encoder tras el PULSE: la pasada
+        # tiene que llegar al menos hasta donde termina la imagen, con margen
+        geometria = self._geometria_imagen()
+        if geometria is not None:
+            x_imagen, ancho_imagen = geometria
+            fin_pmb = recorrido_impresion_mm(cabezal, x_imagen, ancho_imagen) + MARGEN_FIN_IMPRESION_MM
+            if fin_pmb > fin_impresion:
+                avisos.append(f"la imagen termina de imprimirse en {fin_pmb - MARGEN_FIN_IMPRESION_MM:.0f} mm, "
+                              f"mas alla del modulo: se alarga la pasada")
+                fin_impresion = fin_pmb
 
         curado = [d for _i, tipo, d in modulos if tipo in TIPOS_CURADO]
         hay_curado = bool(curado) and pasadas_curado > 0
