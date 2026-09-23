@@ -1594,11 +1594,38 @@ font-family: nunito;
          </item>
         </widget>
        </item>
+       <item row="0" column="1" alignment="Qt::AlignmentFlag::AlignHCenter">
+        <widget class="QCheckBox" name="M2Check">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <fontweight>ExtraBold</fontweight>
+          </font>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::LayoutDirection::LeftToRight</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QCheckBox::indicator {
+    width: 24px;
+    height: 24px;
+}</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_17">
          <property name="styleSheet">
           <string notr="true">color: #62CBC9;
-font-size: 16px;
+font-size: 20px;
 font-family: nunito;
 font-weight: bold;</string>
          </property>
@@ -1719,7 +1746,7 @@ color: #62CBC9;
         <widget class="QLabel" name="label_18">
          <property name="styleSheet">
           <string notr="true">color: #62CBC9;
-font-size: 16px;
+font-size: 18px;
 font-family: nunito;
 font-weight: bold;</string>
          </property>
@@ -2030,7 +2057,7 @@ font-weight: bold;</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="0" alignment="Qt::AlignmentFlag::AlignHCenter">
+       <item row="0" column="0" alignment="Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignVCenter">
         <widget class="QCheckBox" name="M1Check">
          <property name="minimumSize">
           <size>
@@ -2038,27 +2065,13 @@ font-weight: bold;</string>
            <height>0</height>
           </size>
          </property>
-         <property name="layoutDirection">
-          <enum>Qt::LayoutDirection::LeftToRight</enum>
+         <property name="font">
+          <font>
+           <fontweight>Black</fontweight>
+          </font>
          </property>
-         <property name="styleSheet">
-          <string notr="true">QCheckBox::indicator {
-    width: 24px;
-    height: 24px;
-}</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1" alignment="Qt::AlignmentFlag::AlignHCenter">
-        <widget class="QCheckBox" name="M2Check">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
+         <property name="acceptDrops">
+          <bool>false</bool>
          </property>
          <property name="layoutDirection">
           <enum>Qt::LayoutDirection::LeftToRight</enum>
@@ -2071,6 +2084,9 @@ font-weight: bold;</string>
          </property>
          <property name="text">
           <string/>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
          </property>
         </widget>
        </item>

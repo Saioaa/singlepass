@@ -912,10 +912,24 @@ class Ui_MainWindow(object):
 
         self.gridLayout_2.addWidget(self.modulo2, 3, 1, 1, 1)
 
+        self.M2Check = QCheckBox(self.gridLayoutWidget_2)
+        self.M2Check.setObjectName(u"M2Check")
+        self.M2Check.setMinimumSize(QSize(0, 0))
+        font1 = QFont()
+        font1.setWeight(QFont.ExtraBold)
+        self.M2Check.setFont(font1)
+        self.M2Check.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        self.M2Check.setStyleSheet(u"QCheckBox::indicator {\n"
+"    width: 24px;\n"
+"    height: 24px;\n"
+"}")
+
+        self.gridLayout_2.addWidget(self.M2Check, 0, 1, 1, 1, Qt.AlignmentFlag.AlignHCenter)
+
         self.label_17 = QLabel(self.gridLayoutWidget_2)
         self.label_17.setObjectName(u"label_17")
         self.label_17.setStyleSheet(u"color: #62CBC9;\n"
-"font-size: 16px;\n"
+"font-size: 20px;\n"
 "font-family: nunito;\n"
 "font-weight: bold;")
         self.label_17.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -971,7 +985,7 @@ class Ui_MainWindow(object):
         self.label_18 = QLabel(self.gridLayoutWidget_2)
         self.label_18.setObjectName(u"label_18")
         self.label_18.setStyleSheet(u"color: #62CBC9;\n"
-"font-size: 16px;\n"
+"font-size: 18px;\n"
 "font-family: nunito;\n"
 "font-weight: bold;")
         self.label_18.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -1152,24 +1166,18 @@ class Ui_MainWindow(object):
         self.M1Check = QCheckBox(self.gridLayoutWidget_2)
         self.M1Check.setObjectName(u"M1Check")
         self.M1Check.setMinimumSize(QSize(0, 0))
+        font2 = QFont()
+        font2.setWeight(QFont.Black)
+        self.M1Check.setFont(font2)
+        self.M1Check.setAcceptDrops(False)
         self.M1Check.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
         self.M1Check.setStyleSheet(u"QCheckBox::indicator {\n"
 "    width: 24px;\n"
 "    height: 24px;\n"
 "}")
+        self.M1Check.setCheckable(False)
 
-        self.gridLayout_2.addWidget(self.M1Check, 0, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter)
-
-        self.M2Check = QCheckBox(self.gridLayoutWidget_2)
-        self.M2Check.setObjectName(u"M2Check")
-        self.M2Check.setMinimumSize(QSize(0, 0))
-        self.M2Check.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.M2Check.setStyleSheet(u"QCheckBox::indicator {\n"
-"    width: 24px;\n"
-"    height: 24px;\n"
-"}")
-
-        self.gridLayout_2.addWidget(self.M2Check, 0, 1, 1, 1, Qt.AlignmentFlag.AlignHCenter)
+        self.gridLayout_2.addWidget(self.M1Check, 0, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter|Qt.AlignmentFlag.AlignVCenter)
 
         self.label_26 = QLabel(self.programa)
         self.label_26.setObjectName(u"label_26")
@@ -1280,10 +1288,10 @@ class Ui_MainWindow(object):
         self.label_27 = QLabel(self.programa)
         self.label_27.setObjectName(u"label_27")
         self.label_27.setGeometry(QRect(1530, 200, 251, 31))
-        font1 = QFont()
-        font1.setFamilies([u"nunito"])
-        font1.setBold(True)
-        self.label_27.setFont(font1)
+        font3 = QFont()
+        font3.setFamilies([u"nunito"])
+        font3.setBold(True)
+        self.label_27.setFont(font3)
         self.label_27.setStyleSheet(u"color: #62CBC9;\n"
 "	font-size: 20px;\n"
 "	font-family: nunito;")
@@ -1291,7 +1299,7 @@ class Ui_MainWindow(object):
         self.label_32 = QLabel(self.programa)
         self.label_32.setObjectName(u"label_32")
         self.label_32.setGeometry(QRect(1530, 480, 251, 31))
-        self.label_32.setFont(font1)
+        self.label_32.setFont(font3)
         self.label_32.setStyleSheet(u"color: #62CBC9;\n"
 "	font-size: 20px;\n"
 "	font-family: nunito;")
@@ -1488,6 +1496,7 @@ class Ui_MainWindow(object):
         self.modulo2.setItemText(5, QCoreApplication.translate("MainWindow", u"NIR", None))
         self.modulo2.setItemText(6, QCoreApplication.translate("MainWindow", u"Air dryver", None))
 
+        self.M2Check.setText("")
         self.label_17.setText(QCoreApplication.translate("MainWindow", u"1", None))
         self.modulo8.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
         self.modulo8.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
@@ -1537,7 +1546,6 @@ class Ui_MainWindow(object):
 
         self.label_23.setText(QCoreApplication.translate("MainWindow", u"6", None))
         self.M1Check.setText("")
-        self.M2Check.setText("")
         self.label_26.setText(QCoreApplication.translate("MainWindow", u"Configuraci\u00f3n de m\u00f3dulos", None))
         self.label_13.setText(QCoreApplication.translate("MainWindow", u"Velocidad", None))
         self.label_16.setText(QCoreApplication.translate("MainWindow", u"Aceleraci\u00f3n", None))
