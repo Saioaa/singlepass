@@ -1441,11 +1441,11 @@ QPushButton:pressed {
     font-size: 20px;
     font-family: nunito;
     font-weight: bold;
-    spacing: 6px;
+    spacing: 8px;
 }
 QCheckBox::indicator {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
 }</string>
          </property>
          <property name="text">
@@ -1936,11 +1936,11 @@ font-family: nunito;
     font-size: 20px;
     font-family: nunito;
     font-weight: bold;
-    spacing: 6px;
+    spacing: 8px;
 }
 QCheckBox::indicator {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
 }</string>
          </property>
          <property name="text">
@@ -1959,11 +1959,11 @@ QCheckBox::indicator {
     font-size: 20px;
     font-family: nunito;
     font-weight: bold;
-    spacing: 6px;
+    spacing: 8px;
 }
 QCheckBox::indicator {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
 }</string>
          </property>
          <property name="text">
@@ -1982,11 +1982,11 @@ QCheckBox::indicator {
     font-size: 20px;
     font-family: nunito;
     font-weight: bold;
-    spacing: 6px;
+    spacing: 8px;
 }
 QCheckBox::indicator {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
 }</string>
          </property>
          <property name="text">
@@ -2005,11 +2005,11 @@ QCheckBox::indicator {
     font-size: 20px;
     font-family: nunito;
     font-weight: bold;
-    spacing: 6px;
+    spacing: 8px;
 }
 QCheckBox::indicator {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
 }</string>
          </property>
          <property name="text">
@@ -2028,11 +2028,11 @@ QCheckBox::indicator {
     font-size: 20px;
     font-family: nunito;
     font-weight: bold;
-    spacing: 6px;
+    spacing: 8px;
 }
 QCheckBox::indicator {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
 }</string>
          </property>
          <property name="text">
@@ -2051,11 +2051,11 @@ QCheckBox::indicator {
     font-size: 20px;
     font-family: nunito;
     font-weight: bold;
-    spacing: 6px;
+    spacing: 8px;
 }
 QCheckBox::indicator {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
 }</string>
          </property>
          <property name="text">
@@ -2074,11 +2074,11 @@ QCheckBox::indicator {
     font-size: 20px;
     font-family: nunito;
     font-weight: bold;
-    spacing: 6px;
+    spacing: 8px;
 }
 QCheckBox::indicator {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
 }</string>
          </property>
          <property name="text">

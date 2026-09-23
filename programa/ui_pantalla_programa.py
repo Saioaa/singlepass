@@ -845,11 +845,11 @@ class Ui_MainWindow(object):
 "    font-size: 20px;\n"
 "    font-family: nunito;\n"
 "    font-weight: bold;\n"
-"    spacing: 6px;\n"
+"    spacing: 8px;\n"
 "}\n"
 "QCheckBox::indicator {\n"
-"    width: 24px;\n"
-"    height: 24px;\n"
+"    width: 20px;\n"
+"    height: 20px;\n"
 "}")
 
         self.gridLayout_2.addWidget(self.M1Check, 0, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter)
@@ -1094,11 +1094,11 @@ class Ui_MainWindow(object):
 "    font-size: 20px;\n"
 "    font-family: nunito;\n"
 "    font-weight: bold;\n"
-"    spacing: 6px;\n"
+"    spacing: 8px;\n"
 "}\n"
 "QCheckBox::indicator {\n"
-"    width: 24px;\n"
-"    height: 24px;\n"
+"    width: 20px;\n"
+"    height: 20px;\n"
 "}")
 
         self.gridLayout_2.addWidget(self.M2Check, 0, 1, 1, 1, Qt.AlignmentFlag.AlignHCenter)
@@ -1111,11 +1111,11 @@ class Ui_MainWindow(object):
 "    font-size: 20px;\n"
 "    font-family: nunito;\n"
 "    font-weight: bold;\n"
-"    spacing: 6px;\n"
+"    spacing: 8px;\n"
 "}\n"
 "QCheckBox::indicator {\n"
-"    width: 24px;\n"
-"    height: 24px;\n"
+"    width: 20px;\n"
+"    height: 20px;\n"
 "}")
 
         self.gridLayout_2.addWidget(self.M3Check, 0, 2, 1, 1, Qt.AlignmentFlag.AlignHCenter)
@@ -1128,11 +1128,11 @@ class Ui_MainWindow(object):
 "    font-size: 20px;\n"
 "    font-family: nunito;\n"
 "    font-weight: bold;\n"
-"    spacing: 6px;\n"
+"    spacing: 8px;\n"
 "}\n"
 "QCheckBox::indicator {\n"
-"    width: 24px;\n"
-"    height: 24px;\n"
+"    width: 20px;\n"
+"    height: 20px;\n"
 "}")
 
         self.gridLayout_2.addWidget(self.M4Check, 0, 3, 1, 1, Qt.AlignmentFlag.AlignHCenter)
@@ -1145,11 +1145,11 @@ class Ui_MainWindow(object):
 "    font-size: 20px;\n"
 "    font-family: nunito;\n"
 "    font-weight: bold;\n"
-"    spacing: 6px;\n"
+"    spacing: 8px;\n"
 "}\n"
 "QCheckBox::indicator {\n"
-"    width: 24px;\n"
-"    height: 24px;\n"
+"    width: 20px;\n"
+"    height: 20px;\n"
 "}")
 
         self.gridLayout_2.addWidget(self.M5Check, 0, 4, 1, 1, Qt.AlignmentFlag.AlignHCenter)
@@ -1162,11 +1162,11 @@ class Ui_MainWindow(object):
 "    font-size: 20px;\n"
 "    font-family: nunito;\n"
 "    font-weight: bold;\n"
-"    spacing: 6px;\n"
+"    spacing: 8px;\n"
 "}\n"
 "QCheckBox::indicator {\n"
-"    width: 24px;\n"
-"    height: 24px;\n"
+"    width: 20px;\n"
+"    height: 20px;\n"
 "}")
 
         self.gridLayout_2.addWidget(self.M6Check, 0, 5, 1, 1, Qt.AlignmentFlag.AlignHCenter)
@@ -1179,11 +1179,11 @@ class Ui_MainWindow(object):
 "    font-size: 20px;\n"
 "    font-family: nunito;\n"
 "    font-weight: bold;\n"
-"    spacing: 6px;\n"
+"    spacing: 8px;\n"
 "}\n"
 "QCheckBox::indicator {\n"
-"    width: 24px;\n"
-"    height: 24px;\n"
+"    width: 20px;\n"
+"    height: 20px;\n"
 "}")
 
         self.gridLayout_2.addWidget(self.M7Check, 0, 6, 1, 1, Qt.AlignmentFlag.AlignHCenter)
@@ -1196,11 +1196,11 @@ class Ui_MainWindow(object):
 "    font-size: 20px;\n"
 "    font-family: nunito;\n"
 "    font-weight: bold;\n"
-"    spacing: 6px;\n"
+"    spacing: 8px;\n"
 "}\n"
 "QCheckBox::indicator {\n"
-"    width: 24px;\n"
-"    height: 24px;\n"
+"    width: 20px;\n"
+"    height: 20px;\n"
 "}")
 
         self.gridLayout_2.addWidget(self.M8Check, 0, 7, 1, 1, Qt.AlignmentFlag.AlignHCenter)
