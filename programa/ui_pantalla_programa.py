@@ -15,17 +15,17 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QFormLayout, QGraphicsView,
-    QGridLayout, QHBoxLayout, QLabel, QLineEdit,
-    QMainWindow, QMenuBar, QPushButton, QSizePolicy,
-    QStackedWidget, QStatusBar, QTextEdit, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFormLayout,
+    QGraphicsView, QGridLayout, QHBoxLayout, QLabel,
+    QLineEdit, QMainWindow, QMenuBar, QPushButton,
+    QSizePolicy, QStackedWidget, QStatusBar, QTextEdit,
+    QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1958, 1072)
+        MainWindow.resize(1957, 1072)
         MainWindow.setStyleSheet(u"background-color: #62CBC9")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
@@ -388,6 +388,14 @@ class Ui_MainWindow(object):
 "font-family: nunito;\n"
 "font-weight: bold;")
         self.label_6.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.txtMessage_2 = QTextEdit(self.movimientos)
+        self.txtMessage_2.setObjectName(u"txtMessage_2")
+        self.txtMessage_2.setGeometry(QRect(240, 870, 1131, 151))
+        self.txtMessage_2.setStyleSheet(u"background-color: rgb(174, 199, 232);\n"
+"color: rgb(0, 0, 0);\n"
+"border: 2px solid #62CBC9;\n"
+"border-radius: 5px;")
+        self.txtMessage_2.setReadOnly(True)
         self.stackedWidget.addWidget(self.movimientos)
         self.PMB8 = QWidget()
         self.PMB8.setObjectName(u"PMB8")
@@ -825,173 +833,26 @@ class Ui_MainWindow(object):
 
         self.gridLayoutWidget_2 = QWidget(self.programa)
         self.gridLayoutWidget_2.setObjectName(u"gridLayoutWidget_2")
-        self.gridLayoutWidget_2.setGeometry(QRect(480, 720, 851, 121))
+        self.gridLayoutWidget_2.setGeometry(QRect(480, 670, 851, 171))
         self.gridLayout_2 = QGridLayout(self.gridLayoutWidget_2)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.M8D = QLineEdit(self.gridLayoutWidget_2)
-        self.M8D.setObjectName(u"M8D")
-        self.M8D.setStyleSheet(u"  background-color: #3F4D4C;\n"
-"color: #62CBC9;\n"
-"    border: 2px solid #62CBC9;\n"
-"    border-radius: 5px;\n"
-"    padding: 10px;\n"
-"	font-size: 24px;\n"
-"	font-family: nunito;")
-
-        self.gridLayout_2.addWidget(self.M8D, 1, 7, 1, 1)
-
-        self.M5D = QLineEdit(self.gridLayoutWidget_2)
-        self.M5D.setObjectName(u"M5D")
-        self.M5D.setStyleSheet(u"  background-color: #3F4D4C;\n"
-"color: #62CBC9;\n"
-"    border: 2px solid #62CBC9;\n"
-"    border-radius: 5px;\n"
-"    padding: 10px;\n"
-"	font-size: 24px;\n"
-"	font-family: nunito;")
-
-        self.gridLayout_2.addWidget(self.M5D, 1, 4, 1, 1)
-
-        self.M6D = QLineEdit(self.gridLayoutWidget_2)
-        self.M6D.setObjectName(u"M6D")
-        self.M6D.setStyleSheet(u"  background-color: #3F4D4C;\n"
-"color: #62CBC9;\n"
-"    border: 2px solid #62CBC9;\n"
-"    border-radius: 5px;\n"
-"    padding: 10px;\n"
-"	font-size: 24px;\n"
-"	font-family: nunito;")
-
-        self.gridLayout_2.addWidget(self.M6D, 1, 5, 1, 1)
-
-        self.M7D = QLineEdit(self.gridLayoutWidget_2)
-        self.M7D.setObjectName(u"M7D")
-        self.M7D.setStyleSheet(u"  background-color: #3F4D4C;\n"
-"color: #62CBC9;\n"
-"    border: 2px solid #62CBC9;\n"
-"    border-radius: 5px;\n"
-"    padding: 10px;\n"
-"	font-size: 24px;\n"
-"	font-family: nunito;")
-
-        self.gridLayout_2.addWidget(self.M7D, 1, 6, 1, 1)
-
-        self.M1D = QLineEdit(self.gridLayoutWidget_2)
-        self.M1D.setObjectName(u"M1D")
-        self.M1D.setStyleSheet(u"  background-color: #3F4D4C;\n"
-"  color: #62CBC9;\n"
-"    border: 2px solid #62CBC9;\n"
-"    border-radius: 5px;\n"
-"    padding: 10px;\n"
-"	font-size: 24px;\n"
-"	font-family: nunito;")
-
-        self.gridLayout_2.addWidget(self.M1D, 1, 0, 1, 1)
-
-        self.M4D = QLineEdit(self.gridLayoutWidget_2)
-        self.M4D.setObjectName(u"M4D")
-        self.M4D.setStyleSheet(u"  background-color: #3F4D4C;\n"
-"color: #62CBC9;\n"
-"    border: 2px solid #62CBC9;\n"
-"    border-radius: 5px;\n"
-"    padding: 10px;\n"
-"	font-size: 24px;\n"
-"	font-family: nunito;")
-
-        self.gridLayout_2.addWidget(self.M4D, 1, 3, 1, 1)
-
-        self.M2D = QLineEdit(self.gridLayoutWidget_2)
-        self.M2D.setObjectName(u"M2D")
-        self.M2D.setStyleSheet(u"  background-color: #3F4D4C;\n"
-"color: #62CBC9;\n"
-"    border: 2px solid #62CBC9;\n"
-"    border-radius: 5px;\n"
-"    padding: 10px;\n"
-"	font-size: 24px;\n"
-"	font-family: nunito;")
-
-        self.gridLayout_2.addWidget(self.M2D, 1, 1, 1, 1)
-
-        self.M3D = QLineEdit(self.gridLayoutWidget_2)
-        self.M3D.setObjectName(u"M3D")
-        self.M3D.setStyleSheet(u"  background-color: #3F4D4C;\n"
-"color: #62CBC9;\n"
-"    border: 2px solid #62CBC9;\n"
-"    border-radius: 5px;\n"
-"    padding: 10px;\n"
-"	font-size: 24px;\n"
-"	font-family: nunito;")
-
-        self.gridLayout_2.addWidget(self.M3D, 1, 2, 1, 1)
-
-        self.modulo1 = QComboBox(self.gridLayoutWidget_2)
-        self.modulo1.addItem("")
-        self.modulo1.addItem("")
-        self.modulo1.addItem("")
-        self.modulo1.addItem("")
-        self.modulo1.addItem("")
-        self.modulo1.addItem("")
-        self.modulo1.addItem("")
-        self.modulo1.setObjectName(u"modulo1")
-        self.modulo1.setStyleSheet(u" border: 1px solid #62CBC9;\n"
+        self.modulo7 = QComboBox(self.gridLayoutWidget_2)
+        self.modulo7.addItem("")
+        self.modulo7.addItem("")
+        self.modulo7.addItem("")
+        self.modulo7.addItem("")
+        self.modulo7.addItem("")
+        self.modulo7.addItem("")
+        self.modulo7.addItem("")
+        self.modulo7.setObjectName(u"modulo7")
+        self.modulo7.setStyleSheet(u" border: 1px solid #62CBC9;\n"
 "color: #62CBC9;\n"
 "font-size: 16px;\n"
 "font-family: nunito;\n"
 "")
 
-        self.gridLayout_2.addWidget(self.modulo1, 2, 0, 1, 1)
-
-        self.modulo2 = QComboBox(self.gridLayoutWidget_2)
-        self.modulo2.addItem("")
-        self.modulo2.addItem("")
-        self.modulo2.addItem("")
-        self.modulo2.addItem("")
-        self.modulo2.addItem("")
-        self.modulo2.addItem("")
-        self.modulo2.addItem("")
-        self.modulo2.setObjectName(u"modulo2")
-        self.modulo2.setStyleSheet(u" border: 1px solid #62CBC9;\n"
-"color: #62CBC9;\n"
-"font-size: 16px;\n"
-"font-family: nunito;\n"
-"")
-
-        self.gridLayout_2.addWidget(self.modulo2, 2, 1, 1, 1)
-
-        self.modulo3 = QComboBox(self.gridLayoutWidget_2)
-        self.modulo3.addItem("")
-        self.modulo3.addItem("")
-        self.modulo3.addItem("")
-        self.modulo3.addItem("")
-        self.modulo3.addItem("")
-        self.modulo3.addItem("")
-        self.modulo3.addItem("")
-        self.modulo3.setObjectName(u"modulo3")
-        self.modulo3.setStyleSheet(u" border: 1px solid #62CBC9;\n"
-"color: #62CBC9;\n"
-"font-size: 16px;\n"
-"font-family: nunito;\n"
-"")
-
-        self.gridLayout_2.addWidget(self.modulo3, 2, 2, 1, 1)
-
-        self.modulo4 = QComboBox(self.gridLayoutWidget_2)
-        self.modulo4.addItem("")
-        self.modulo4.addItem("")
-        self.modulo4.addItem("")
-        self.modulo4.addItem("")
-        self.modulo4.addItem("")
-        self.modulo4.addItem("")
-        self.modulo4.addItem("")
-        self.modulo4.setObjectName(u"modulo4")
-        self.modulo4.setStyleSheet(u" border: 1px solid #62CBC9;\n"
-"color: #62CBC9;\n"
-"font-size: 16px;\n"
-"font-family: nunito;\n"
-"")
-
-        self.gridLayout_2.addWidget(self.modulo4, 2, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.modulo7, 3, 6, 1, 1)
 
         self.modulo5 = QComboBox(self.gridLayoutWidget_2)
         self.modulo5.addItem("")
@@ -1008,41 +869,58 @@ class Ui_MainWindow(object):
 "font-family: nunito;\n"
 "")
 
-        self.gridLayout_2.addWidget(self.modulo5, 2, 4, 1, 1)
+        self.gridLayout_2.addWidget(self.modulo5, 3, 4, 1, 1)
 
-        self.modulo6 = QComboBox(self.gridLayoutWidget_2)
-        self.modulo6.addItem("")
-        self.modulo6.addItem("")
-        self.modulo6.addItem("")
-        self.modulo6.addItem("")
-        self.modulo6.addItem("")
-        self.modulo6.addItem("")
-        self.modulo6.addItem("")
-        self.modulo6.setObjectName(u"modulo6")
-        self.modulo6.setStyleSheet(u" border: 1px solid #62CBC9;\n"
+        self.M6D = QLineEdit(self.gridLayoutWidget_2)
+        self.M6D.setObjectName(u"M6D")
+        self.M6D.setStyleSheet(u"  background-color: #3F4D4C;\n"
+"color: #62CBC9;\n"
+"    border: 2px solid #62CBC9;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 24px;\n"
+"	font-family: nunito;")
+
+        self.gridLayout_2.addWidget(self.M6D, 2, 5, 1, 1)
+
+        self.M2D = QLineEdit(self.gridLayoutWidget_2)
+        self.M2D.setObjectName(u"M2D")
+        self.M2D.setStyleSheet(u"  background-color: #3F4D4C;\n"
+"color: #62CBC9;\n"
+"    border: 2px solid #62CBC9;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 24px;\n"
+"	font-family: nunito;")
+
+        self.gridLayout_2.addWidget(self.M2D, 2, 1, 1, 1)
+
+        self.modulo2 = QComboBox(self.gridLayoutWidget_2)
+        self.modulo2.addItem("")
+        self.modulo2.addItem("")
+        self.modulo2.addItem("")
+        self.modulo2.addItem("")
+        self.modulo2.addItem("")
+        self.modulo2.addItem("")
+        self.modulo2.addItem("")
+        self.modulo2.setObjectName(u"modulo2")
+        self.modulo2.setStyleSheet(u" border: 1px solid #62CBC9;\n"
 "color: #62CBC9;\n"
 "font-size: 16px;\n"
 "font-family: nunito;\n"
 "")
 
-        self.gridLayout_2.addWidget(self.modulo6, 2, 5, 1, 1)
+        self.gridLayout_2.addWidget(self.modulo2, 3, 1, 1, 1)
 
-        self.modulo7 = QComboBox(self.gridLayoutWidget_2)
-        self.modulo7.addItem("")
-        self.modulo7.addItem("")
-        self.modulo7.addItem("")
-        self.modulo7.addItem("")
-        self.modulo7.addItem("")
-        self.modulo7.addItem("")
-        self.modulo7.addItem("")
-        self.modulo7.setObjectName(u"modulo7")
-        self.modulo7.setStyleSheet(u" border: 1px solid #62CBC9;\n"
-"color: #62CBC9;\n"
+        self.label_17 = QLabel(self.gridLayoutWidget_2)
+        self.label_17.setObjectName(u"label_17")
+        self.label_17.setStyleSheet(u"color: #62CBC9;\n"
 "font-size: 16px;\n"
 "font-family: nunito;\n"
-"")
+"font-weight: bold;")
+        self.label_17.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.gridLayout_2.addWidget(self.modulo7, 2, 6, 1, 1)
+        self.gridLayout_2.addWidget(self.label_17, 1, 0, 1, 1)
 
         self.modulo8 = QComboBox(self.gridLayoutWidget_2)
         self.modulo8.addItem("")
@@ -1059,17 +937,36 @@ class Ui_MainWindow(object):
 "font-family: nunito;\n"
 "")
 
-        self.gridLayout_2.addWidget(self.modulo8, 2, 7, 1, 1)
+        self.gridLayout_2.addWidget(self.modulo8, 3, 7, 1, 1)
 
-        self.label_17 = QLabel(self.gridLayoutWidget_2)
-        self.label_17.setObjectName(u"label_17")
-        self.label_17.setStyleSheet(u"color: #62CBC9;\n"
+        self.modulo6 = QComboBox(self.gridLayoutWidget_2)
+        self.modulo6.addItem("")
+        self.modulo6.addItem("")
+        self.modulo6.addItem("")
+        self.modulo6.addItem("")
+        self.modulo6.addItem("")
+        self.modulo6.addItem("")
+        self.modulo6.addItem("")
+        self.modulo6.setObjectName(u"modulo6")
+        self.modulo6.setStyleSheet(u" border: 1px solid #62CBC9;\n"
+"color: #62CBC9;\n"
 "font-size: 16px;\n"
 "font-family: nunito;\n"
-"font-weight: bold;")
-        self.label_17.setAlignment(Qt.AlignmentFlag.AlignCenter)
+"")
 
-        self.gridLayout_2.addWidget(self.label_17, 0, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.modulo6, 3, 5, 1, 1)
+
+        self.M5D = QLineEdit(self.gridLayoutWidget_2)
+        self.M5D.setObjectName(u"M5D")
+        self.M5D.setStyleSheet(u"  background-color: #3F4D4C;\n"
+"color: #62CBC9;\n"
+"    border: 2px solid #62CBC9;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 24px;\n"
+"	font-family: nunito;")
+
+        self.gridLayout_2.addWidget(self.M5D, 2, 4, 1, 1)
 
         self.label_18 = QLabel(self.gridLayoutWidget_2)
         self.label_18.setObjectName(u"label_18")
@@ -1079,7 +976,7 @@ class Ui_MainWindow(object):
 "font-weight: bold;")
         self.label_18.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.gridLayout_2.addWidget(self.label_18, 0, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.label_18, 1, 1, 1, 1)
 
         self.label_19 = QLabel(self.gridLayoutWidget_2)
         self.label_19.setObjectName(u"label_19")
@@ -1089,37 +986,43 @@ class Ui_MainWindow(object):
 "font-weight: bold;")
         self.label_19.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.gridLayout_2.addWidget(self.label_19, 0, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.label_19, 1, 2, 1, 1)
 
-        self.label_20 = QLabel(self.gridLayoutWidget_2)
-        self.label_20.setObjectName(u"label_20")
-        self.label_20.setStyleSheet(u"color: #62CBC9;\n"
-"font-size: 16px;\n"
-"font-family: nunito;\n"
-"font-weight: bold;")
-        self.label_20.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.M3D = QLineEdit(self.gridLayoutWidget_2)
+        self.M3D.setObjectName(u"M3D")
+        self.M3D.setStyleSheet(u"  background-color: #3F4D4C;\n"
+"color: #62CBC9;\n"
+"    border: 2px solid #62CBC9;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 24px;\n"
+"	font-family: nunito;")
 
-        self.gridLayout_2.addWidget(self.label_20, 0, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.M3D, 2, 2, 1, 1)
 
-        self.label_21 = QLabel(self.gridLayoutWidget_2)
-        self.label_21.setObjectName(u"label_21")
-        self.label_21.setStyleSheet(u"color: #62CBC9;\n"
-"font-size: 16px;\n"
-"font-family: nunito;\n"
-"font-weight: bold;")
-        self.label_21.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.M4D = QLineEdit(self.gridLayoutWidget_2)
+        self.M4D.setObjectName(u"M4D")
+        self.M4D.setStyleSheet(u"  background-color: #3F4D4C;\n"
+"color: #62CBC9;\n"
+"    border: 2px solid #62CBC9;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 24px;\n"
+"	font-family: nunito;")
 
-        self.gridLayout_2.addWidget(self.label_21, 0, 4, 1, 1)
+        self.gridLayout_2.addWidget(self.M4D, 2, 3, 1, 1)
 
-        self.label_23 = QLabel(self.gridLayoutWidget_2)
-        self.label_23.setObjectName(u"label_23")
-        self.label_23.setStyleSheet(u"color: #62CBC9;\n"
-"font-size: 16px;\n"
-"font-family: nunito;\n"
-"font-weight: bold;")
-        self.label_23.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.M1D = QLineEdit(self.gridLayoutWidget_2)
+        self.M1D.setObjectName(u"M1D")
+        self.M1D.setStyleSheet(u"  background-color: #3F4D4C;\n"
+"  color: #62CBC9;\n"
+"    border: 2px solid #62CBC9;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 24px;\n"
+"	font-family: nunito;")
 
-        self.gridLayout_2.addWidget(self.label_23, 0, 5, 1, 1)
+        self.gridLayout_2.addWidget(self.M1D, 2, 0, 1, 1)
 
         self.label_24 = QLabel(self.gridLayoutWidget_2)
         self.label_24.setObjectName(u"label_24")
@@ -1129,7 +1032,46 @@ class Ui_MainWindow(object):
 "font-weight: bold;")
         self.label_24.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.gridLayout_2.addWidget(self.label_24, 0, 6, 1, 1)
+        self.gridLayout_2.addWidget(self.label_24, 1, 6, 1, 1)
+
+        self.M8D = QLineEdit(self.gridLayoutWidget_2)
+        self.M8D.setObjectName(u"M8D")
+        self.M8D.setStyleSheet(u"  background-color: #3F4D4C;\n"
+"color: #62CBC9;\n"
+"    border: 2px solid #62CBC9;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 24px;\n"
+"	font-family: nunito;")
+
+        self.gridLayout_2.addWidget(self.M8D, 2, 7, 1, 1)
+
+        self.modulo3 = QComboBox(self.gridLayoutWidget_2)
+        self.modulo3.addItem("")
+        self.modulo3.addItem("")
+        self.modulo3.addItem("")
+        self.modulo3.addItem("")
+        self.modulo3.addItem("")
+        self.modulo3.addItem("")
+        self.modulo3.addItem("")
+        self.modulo3.setObjectName(u"modulo3")
+        self.modulo3.setStyleSheet(u" border: 1px solid #62CBC9;\n"
+"color: #62CBC9;\n"
+"font-size: 16px;\n"
+"font-family: nunito;\n"
+"")
+
+        self.gridLayout_2.addWidget(self.modulo3, 3, 2, 1, 1)
+
+        self.label_21 = QLabel(self.gridLayoutWidget_2)
+        self.label_21.setObjectName(u"label_21")
+        self.label_21.setStyleSheet(u"color: #62CBC9;\n"
+"font-size: 16px;\n"
+"font-family: nunito;\n"
+"font-weight: bold;")
+        self.label_21.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayout_2.addWidget(self.label_21, 1, 4, 1, 1)
 
         self.label_25 = QLabel(self.gridLayoutWidget_2)
         self.label_25.setObjectName(u"label_25")
@@ -1139,11 +1081,99 @@ class Ui_MainWindow(object):
 "font-weight: bold;")
         self.label_25.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.gridLayout_2.addWidget(self.label_25, 0, 7, 1, 1)
+        self.gridLayout_2.addWidget(self.label_25, 1, 7, 1, 1)
+
+        self.label_20 = QLabel(self.gridLayoutWidget_2)
+        self.label_20.setObjectName(u"label_20")
+        self.label_20.setStyleSheet(u"color: #62CBC9;\n"
+"font-size: 16px;\n"
+"font-family: nunito;\n"
+"font-weight: bold;")
+        self.label_20.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayout_2.addWidget(self.label_20, 1, 3, 1, 1)
+
+        self.modulo4 = QComboBox(self.gridLayoutWidget_2)
+        self.modulo4.addItem("")
+        self.modulo4.addItem("")
+        self.modulo4.addItem("")
+        self.modulo4.addItem("")
+        self.modulo4.addItem("")
+        self.modulo4.addItem("")
+        self.modulo4.addItem("")
+        self.modulo4.setObjectName(u"modulo4")
+        self.modulo4.setStyleSheet(u" border: 1px solid #62CBC9;\n"
+"color: #62CBC9;\n"
+"font-size: 16px;\n"
+"font-family: nunito;\n"
+"")
+
+        self.gridLayout_2.addWidget(self.modulo4, 3, 3, 1, 1)
+
+        self.M7D = QLineEdit(self.gridLayoutWidget_2)
+        self.M7D.setObjectName(u"M7D")
+        self.M7D.setStyleSheet(u"  background-color: #3F4D4C;\n"
+"color: #62CBC9;\n"
+"    border: 2px solid #62CBC9;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 24px;\n"
+"	font-family: nunito;")
+
+        self.gridLayout_2.addWidget(self.M7D, 2, 6, 1, 1)
+
+        self.modulo1 = QComboBox(self.gridLayoutWidget_2)
+        self.modulo1.addItem("")
+        self.modulo1.addItem("")
+        self.modulo1.addItem("")
+        self.modulo1.addItem("")
+        self.modulo1.addItem("")
+        self.modulo1.addItem("")
+        self.modulo1.addItem("")
+        self.modulo1.setObjectName(u"modulo1")
+        self.modulo1.setStyleSheet(u" border: 1px solid #62CBC9;\n"
+"color: #62CBC9;\n"
+"font-size: 16px;\n"
+"font-family: nunito;\n"
+"")
+
+        self.gridLayout_2.addWidget(self.modulo1, 3, 0, 1, 1)
+
+        self.label_23 = QLabel(self.gridLayoutWidget_2)
+        self.label_23.setObjectName(u"label_23")
+        self.label_23.setStyleSheet(u"color: #62CBC9;\n"
+"font-size: 16px;\n"
+"font-family: nunito;\n"
+"font-weight: bold;")
+        self.label_23.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayout_2.addWidget(self.label_23, 1, 5, 1, 1)
+
+        self.M1Check = QCheckBox(self.gridLayoutWidget_2)
+        self.M1Check.setObjectName(u"M1Check")
+        self.M1Check.setMinimumSize(QSize(0, 0))
+        self.M1Check.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        self.M1Check.setStyleSheet(u"QCheckBox::indicator {\n"
+"    width: 24px;\n"
+"    height: 24px;\n"
+"}")
+
+        self.gridLayout_2.addWidget(self.M1Check, 0, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter)
+
+        self.M2Check = QCheckBox(self.gridLayoutWidget_2)
+        self.M2Check.setObjectName(u"M2Check")
+        self.M2Check.setMinimumSize(QSize(0, 0))
+        self.M2Check.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        self.M2Check.setStyleSheet(u"QCheckBox::indicator {\n"
+"    width: 24px;\n"
+"    height: 24px;\n"
+"}")
+
+        self.gridLayout_2.addWidget(self.M2Check, 0, 1, 1, 1, Qt.AlignmentFlag.AlignHCenter)
 
         self.label_26 = QLabel(self.programa)
         self.label_26.setObjectName(u"label_26")
-        self.label_26.setGeometry(QRect(790, 660, 231, 29))
+        self.label_26.setGeometry(QRect(790, 620, 231, 29))
         self.label_26.setStyleSheet(u"color: #62CBC9;\n"
 "font-size: 16px;\n"
 "font-family: nunito;\n"
@@ -1266,6 +1296,14 @@ class Ui_MainWindow(object):
 "	font-size: 20px;\n"
 "	font-family: nunito;")
         self.label_32.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.txtMessage_3 = QTextEdit(self.programa)
+        self.txtMessage_3.setObjectName(u"txtMessage_3")
+        self.txtMessage_3.setGeometry(QRect(240, 870, 1131, 151))
+        self.txtMessage_3.setStyleSheet(u"background-color: rgb(174, 199, 232);\n"
+"color: rgb(0, 0, 0);\n"
+"border: 2px solid #62CBC9;\n"
+"border-radius: 5px;")
+        self.txtMessage_3.setReadOnly(True)
         self.stackedWidget.addWidget(self.programa)
         self.verticalLayoutWidget_2 = QWidget(self.centralwidget)
         self.verticalLayoutWidget_2.setObjectName(u"verticalLayoutWidget_2")
@@ -1360,7 +1398,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1958, 23))
+        self.menubar.setGeometry(QRect(0, 0, 1957, 23))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -1426,37 +1464,13 @@ class Ui_MainWindow(object):
         self.label_14.setText(QCoreApplication.translate("MainWindow", u"Deceleraci\u00f3n", None))
         self.bt_pg_prog_start.setText(QCoreApplication.translate("MainWindow", u"Iniciar programa", None))
         self.bt_pg_prog_stop.setText(QCoreApplication.translate("MainWindow", u"Parar programa", None))
-        self.modulo1.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
-        self.modulo1.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
-        self.modulo1.setItemText(2, QCoreApplication.translate("MainWindow", u"PMB-C2", None))
-        self.modulo1.setItemText(3, QCoreApplication.translate("MainWindow", u"APMB4", None))
-        self.modulo1.setItemText(4, QCoreApplication.translate("MainWindow", u"SM-200", None))
-        self.modulo1.setItemText(5, QCoreApplication.translate("MainWindow", u"NIR", None))
-        self.modulo1.setItemText(6, QCoreApplication.translate("MainWindow", u"Air dryver", None))
-
-        self.modulo2.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
-        self.modulo2.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
-        self.modulo2.setItemText(2, QCoreApplication.translate("MainWindow", u"PMB-C2", None))
-        self.modulo2.setItemText(3, QCoreApplication.translate("MainWindow", u"APMB4", None))
-        self.modulo2.setItemText(4, QCoreApplication.translate("MainWindow", u"SM-200", None))
-        self.modulo2.setItemText(5, QCoreApplication.translate("MainWindow", u"NIR", None))
-        self.modulo2.setItemText(6, QCoreApplication.translate("MainWindow", u"Air dryver", None))
-
-        self.modulo3.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
-        self.modulo3.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
-        self.modulo3.setItemText(2, QCoreApplication.translate("MainWindow", u"PMB-C2", None))
-        self.modulo3.setItemText(3, QCoreApplication.translate("MainWindow", u"APMB4", None))
-        self.modulo3.setItemText(4, QCoreApplication.translate("MainWindow", u"SM-200", None))
-        self.modulo3.setItemText(5, QCoreApplication.translate("MainWindow", u"NIR", None))
-        self.modulo3.setItemText(6, QCoreApplication.translate("MainWindow", u"Air dryver", None))
-
-        self.modulo4.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
-        self.modulo4.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
-        self.modulo4.setItemText(2, QCoreApplication.translate("MainWindow", u"PMB-C2", None))
-        self.modulo4.setItemText(3, QCoreApplication.translate("MainWindow", u"APMB4", None))
-        self.modulo4.setItemText(4, QCoreApplication.translate("MainWindow", u"SM-200", None))
-        self.modulo4.setItemText(5, QCoreApplication.translate("MainWindow", u"NIR", None))
-        self.modulo4.setItemText(6, QCoreApplication.translate("MainWindow", u"Air dryver", None))
+        self.modulo7.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
+        self.modulo7.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
+        self.modulo7.setItemText(2, QCoreApplication.translate("MainWindow", u"PMB-C2", None))
+        self.modulo7.setItemText(3, QCoreApplication.translate("MainWindow", u"APMB4", None))
+        self.modulo7.setItemText(4, QCoreApplication.translate("MainWindow", u"SM-200", None))
+        self.modulo7.setItemText(5, QCoreApplication.translate("MainWindow", u"NIR", None))
+        self.modulo7.setItemText(6, QCoreApplication.translate("MainWindow", u"Air dryver", None))
 
         self.modulo5.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
         self.modulo5.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
@@ -1466,22 +1480,15 @@ class Ui_MainWindow(object):
         self.modulo5.setItemText(5, QCoreApplication.translate("MainWindow", u"NIR", None))
         self.modulo5.setItemText(6, QCoreApplication.translate("MainWindow", u"Air dryver", None))
 
-        self.modulo6.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
-        self.modulo6.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
-        self.modulo6.setItemText(2, QCoreApplication.translate("MainWindow", u"PMB-C2", None))
-        self.modulo6.setItemText(3, QCoreApplication.translate("MainWindow", u"APMB4", None))
-        self.modulo6.setItemText(4, QCoreApplication.translate("MainWindow", u"SM-200", None))
-        self.modulo6.setItemText(5, QCoreApplication.translate("MainWindow", u"NIR", None))
-        self.modulo6.setItemText(6, QCoreApplication.translate("MainWindow", u"Air dryver", None))
+        self.modulo2.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
+        self.modulo2.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
+        self.modulo2.setItemText(2, QCoreApplication.translate("MainWindow", u"PMB-C2", None))
+        self.modulo2.setItemText(3, QCoreApplication.translate("MainWindow", u"APMB4", None))
+        self.modulo2.setItemText(4, QCoreApplication.translate("MainWindow", u"SM-200", None))
+        self.modulo2.setItemText(5, QCoreApplication.translate("MainWindow", u"NIR", None))
+        self.modulo2.setItemText(6, QCoreApplication.translate("MainWindow", u"Air dryver", None))
 
-        self.modulo7.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
-        self.modulo7.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
-        self.modulo7.setItemText(2, QCoreApplication.translate("MainWindow", u"PMB-C2", None))
-        self.modulo7.setItemText(3, QCoreApplication.translate("MainWindow", u"APMB4", None))
-        self.modulo7.setItemText(4, QCoreApplication.translate("MainWindow", u"SM-200", None))
-        self.modulo7.setItemText(5, QCoreApplication.translate("MainWindow", u"NIR", None))
-        self.modulo7.setItemText(6, QCoreApplication.translate("MainWindow", u"Air dryver", None))
-
+        self.label_17.setText(QCoreApplication.translate("MainWindow", u"1", None))
         self.modulo8.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
         self.modulo8.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
         self.modulo8.setItemText(2, QCoreApplication.translate("MainWindow", u"PMB-C2", None))
@@ -1490,14 +1497,47 @@ class Ui_MainWindow(object):
         self.modulo8.setItemText(5, QCoreApplication.translate("MainWindow", u"NIR", None))
         self.modulo8.setItemText(6, QCoreApplication.translate("MainWindow", u"Air dryver", None))
 
-        self.label_17.setText(QCoreApplication.translate("MainWindow", u"1", None))
+        self.modulo6.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
+        self.modulo6.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
+        self.modulo6.setItemText(2, QCoreApplication.translate("MainWindow", u"PMB-C2", None))
+        self.modulo6.setItemText(3, QCoreApplication.translate("MainWindow", u"APMB4", None))
+        self.modulo6.setItemText(4, QCoreApplication.translate("MainWindow", u"SM-200", None))
+        self.modulo6.setItemText(5, QCoreApplication.translate("MainWindow", u"NIR", None))
+        self.modulo6.setItemText(6, QCoreApplication.translate("MainWindow", u"Air dryver", None))
+
         self.label_18.setText(QCoreApplication.translate("MainWindow", u"2", None))
         self.label_19.setText(QCoreApplication.translate("MainWindow", u"3", None))
-        self.label_20.setText(QCoreApplication.translate("MainWindow", u"4", None))
-        self.label_21.setText(QCoreApplication.translate("MainWindow", u"5", None))
-        self.label_23.setText(QCoreApplication.translate("MainWindow", u"6", None))
         self.label_24.setText(QCoreApplication.translate("MainWindow", u"7", None))
+        self.modulo3.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
+        self.modulo3.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
+        self.modulo3.setItemText(2, QCoreApplication.translate("MainWindow", u"PMB-C2", None))
+        self.modulo3.setItemText(3, QCoreApplication.translate("MainWindow", u"APMB4", None))
+        self.modulo3.setItemText(4, QCoreApplication.translate("MainWindow", u"SM-200", None))
+        self.modulo3.setItemText(5, QCoreApplication.translate("MainWindow", u"NIR", None))
+        self.modulo3.setItemText(6, QCoreApplication.translate("MainWindow", u"Air dryver", None))
+
+        self.label_21.setText(QCoreApplication.translate("MainWindow", u"5", None))
         self.label_25.setText(QCoreApplication.translate("MainWindow", u"8", None))
+        self.label_20.setText(QCoreApplication.translate("MainWindow", u"4", None))
+        self.modulo4.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
+        self.modulo4.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
+        self.modulo4.setItemText(2, QCoreApplication.translate("MainWindow", u"PMB-C2", None))
+        self.modulo4.setItemText(3, QCoreApplication.translate("MainWindow", u"APMB4", None))
+        self.modulo4.setItemText(4, QCoreApplication.translate("MainWindow", u"SM-200", None))
+        self.modulo4.setItemText(5, QCoreApplication.translate("MainWindow", u"NIR", None))
+        self.modulo4.setItemText(6, QCoreApplication.translate("MainWindow", u"Air dryver", None))
+
+        self.modulo1.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
+        self.modulo1.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
+        self.modulo1.setItemText(2, QCoreApplication.translate("MainWindow", u"PMB-C2", None))
+        self.modulo1.setItemText(3, QCoreApplication.translate("MainWindow", u"APMB4", None))
+        self.modulo1.setItemText(4, QCoreApplication.translate("MainWindow", u"SM-200", None))
+        self.modulo1.setItemText(5, QCoreApplication.translate("MainWindow", u"NIR", None))
+        self.modulo1.setItemText(6, QCoreApplication.translate("MainWindow", u"Air dryver", None))
+
+        self.label_23.setText(QCoreApplication.translate("MainWindow", u"6", None))
+        self.M1Check.setText("")
+        self.M2Check.setText("")
         self.label_26.setText(QCoreApplication.translate("MainWindow", u"Configuraci\u00f3n de m\u00f3dulos", None))
         self.label_13.setText(QCoreApplication.translate("MainWindow", u"Velocidad", None))
         self.label_16.setText(QCoreApplication.translate("MainWindow", u"Aceleraci\u00f3n", None))
