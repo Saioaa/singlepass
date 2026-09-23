@@ -22,18 +22,20 @@ T_LAMPARAS_ON        = 4.0    # s que tardan en encender
 T_LAMPARAS_OFF       = 2.0    # s que tardan en apagar
 
 # ===== LAMPARAS =====
-PWM_CURADO   = 50   # PWM de las lamparas durante el curado (%)
-PWM_APAGADAS = 0
+PWM_APAGADAS = 0    # la potencia de curado llega en ParametrosPrograma.potencia_nir (%)
 
 # ===== ETAPAS =====
-ETAPA_ESPERA        = "espera"        # secuencia parada (antes "etapa1")
-ETAPA_REPOSO        = "reposo"        # E0: ir a reposo antes de empezar
-ETAPA_SIN_CURADO    = "sin_curado"    # E2: ida y vuelta a velocidad de impresion
-ETAPA_IDA_IMPRESION = "ida_impresion" # E3: lamparas on + ida de impresion
-ETAPA_SOLO_CURADO   = "solo_curado"   # E3b: lamparas on y primera pasada de curado, sin imprimir
-ETAPA_CURADO        = "curado"        # E4: pasadas de curado
-ETAPA_FIN           = "fin"           # E5: lamparas off + vuelta a reposo
-ETAPA_PARADA        = "parada"        # E6: parada ordenada por el operario
+# Transiciones: start -> reposo -> (sin_curado | ida_impresion | solo_curado) ...
+#   sin_curado -> espera; ida_impresion -> curado | fin; solo_curado -> curado;
+#   curado -> curado | fin; fin -> espera; stop -> parada -> espera
+ETAPA_ESPERA        = "espera"        # secuencia parada
+ETAPA_REPOSO        = "reposo"        # ir a reposo antes de empezar
+ETAPA_SIN_CURADO    = "sin_curado"    # ida de impresion y vuelta, sin lamparas
+ETAPA_IDA_IMPRESION = "ida_impresion" # lamparas on + ida de impresion (cuenta como pasada 1 de curado)
+ETAPA_SOLO_CURADO   = "solo_curado"   # sin cabezal: lamparas on y primera pasada de curado
+ETAPA_CURADO        = "curado"        # pasadas de curado entre inicio_curado y fin_curado
+ETAPA_FIN           = "fin"           # lamparas off + vuelta a reposo
+ETAPA_PARADA        = "parada"        # parada ordenada por el operario
 
 
 @dataclass
@@ -49,7 +51,10 @@ class ParametrosPrograma:
     inicio_curado: float           # mm: mesa entera antes del primer modulo de curado
     fin_curado: float              # mm: mesa entera despues del ultimo modulo de curado
     hay_curado: bool = False       # hay modulo NIR/secador y pasadas > 0
-    hay_impresion: bool = True     # hay cabezal: la secuencia arma PMB, envia PULSE e imprime
+    hay_impresion: bool = True     # hay cabezal activo: la secuencia envia PULSE e imprime
+    usa_pmb: bool = True           # el cabezal activo es de la familia PMB: exige el PMB armado
+    potencia_nir: int = 0          # % de las lamparas NIR durante el curado (LAMP:<n> al M-Duino)
+    potencia_secador: int = 0      # % del secador; sin salida en el M-Duino todavia, solo se guarda
 
 
 class SecuenciaImpresion(QObject):
@@ -90,7 +95,6 @@ class SecuenciaImpresion(QObject):
         self.t_ultimo_mov = 0.0
         self.t_espera = 0.0
         self.senal_lamparas = PWM_APAGADAS
-        self.senal_impresion = False
 
     # ===== entradas externas =====
     def set_seta(self, pulsada):
@@ -108,7 +112,7 @@ class SecuenciaImpresion(QObject):
     def start(self, parametros):
         if self.referencia_pendiente or self.seta:
             return False
-        if parametros.hay_impresion and not self._pmb_listo():
+        if parametros.hay_impresion and parametros.usa_pmb and not self._pmb_listo():
             return False
         self.parametros = parametros
         self.contpas = parametros.pasadas_curado
@@ -118,7 +122,8 @@ class SecuenciaImpresion(QObject):
         return True
 
     def stop(self):
-        self.senal_lamparas = PWM_APAGADAS   # TODO: apagar senal real
+        self.senal_lamparas = PWM_APAGADAS
+        self.mduino.lamparas(PWM_APAGADAS)
         self.motor.parar()
         self.etapa = ETAPA_PARADA
         self.subpaso = 0
@@ -128,7 +133,6 @@ class SecuenciaImpresion(QObject):
         self.timer.stop()
         self.senal_lamparas = PWM_APAGADAS
         self.mduino.lamparas(PWM_APAGADAS)
-        self.senal_impresion = False
         self._terminar()
         self.referencia_pendiente = True   # obliga a re-referenciar antes del proximo start
 
@@ -175,7 +179,7 @@ class SecuenciaImpresion(QObject):
 
     # ===== etapas =====
     def etapa_reposo(self):
-        """E0: asegurar la posicion de reposo antes de empezar la pasada."""
+        """asegurar la posicion de reposo antes de empezar la pasada."""
         if self.subpaso == 0:
             self.params_impresion()
             self.mover_secuencia(self.posicion_reposo)
@@ -189,10 +193,10 @@ class SecuenciaImpresion(QObject):
             self.subpaso = 0
 
     def etapa_solo_curado(self):
-        """E3b: sin cabezal -> encender lamparas, esperar y lanzar las pasadas de curado."""
+        """sin cabezal -> encender lamparas, esperar y lanzar las pasadas de curado."""
         if self.subpaso == 0:
-            self.senal_lamparas = PWM_CURADO
-            self.mduino.lamparas(PWM_CURADO)
+            self.senal_lamparas = self.parametros.potencia_nir
+            self.mduino.lamparas(self.parametros.potencia_nir)
             self.t_espera = time.time() + T_LAMPARAS_ON
             self.subpaso = 1
         elif self.subpaso == 1:
@@ -203,10 +207,9 @@ class SecuenciaImpresion(QObject):
             self.subpaso = 0
 
     def etapa_sin_curado(self):
-        """E2: sin curado -> ida y vuelta a velocidad de impresion."""
+        """sin curado -> ida y vuelta a velocidad de impresion."""
         if self.subpaso == 0:
             self.params_impresion()
-            self.senal_impresion = True
             self.print_go()
             self.mover_secuencia(self.parametros.fin_impresion)
             self.subpaso = 1
@@ -214,26 +217,23 @@ class SecuenciaImpresion(QObject):
             self.mover_secuencia(self.posicion_reposo)
             self.subpaso = 2
         elif self.subpaso == 2:
-            self.senal_impresion = False
             self._terminar()
 
     def etapa_ida_impresion(self):
-        """E3: encender lamparas, esperar, e ida de impresion (= pasada 1)."""
+        """encender lamparas, esperar, e ida de impresion (= pasada 1)."""
         if self.subpaso == 0:
-            self.senal_lamparas = PWM_CURADO
-            self.mduino.lamparas(PWM_CURADO)
+            self.senal_lamparas = self.parametros.potencia_nir
+            self.mduino.lamparas(self.parametros.potencia_nir)
             self.t_espera = time.time() + T_LAMPARAS_ON
             self.subpaso = 1
         elif self.subpaso == 1:
             if time.time() < self.t_espera:   # esperando encendido
                 return
             self.params_impresion()
-            self.senal_impresion = True
             self.print_go()
             self.mover_secuencia(self.parametros.fin_impresion)
             self.subpaso = 2
         elif self.subpaso == 2:
-            self.senal_impresion = False
             self.destino_curado = self.parametros.fin_curado   # la ida ha acabado en el extremo lejano
             self.contpas -= 1   # la ida ya fue la pasada 1
             if self.contpas > 0:
@@ -244,7 +244,7 @@ class SecuenciaImpresion(QObject):
             self.subpaso = 0
 
     def etapa_curado(self):
-        """E4: pasadas de curado alternando entre inicio_curado y fin_curado."""
+        """pasadas de curado alternando entre inicio_curado y fin_curado."""
         if self.subpaso == 0:
             self.params_curado()
             self.mover_secuencia(self.destino_curado)
@@ -262,7 +262,7 @@ class SecuenciaImpresion(QObject):
                 self.subpaso = 0
 
     def etapa_fin(self):
-        """E5: apagar lamparas y volver a reposo."""
+        """apagar lamparas y volver a reposo."""
         if self.subpaso == 0:
             self.senal_lamparas = PWM_APAGADAS
             self.mduino.lamparas(PWM_APAGADAS)
@@ -285,10 +285,10 @@ class SecuenciaImpresion(QObject):
             self._terminar()
 
     def etapa_parada(self):
-        """E6: parada -> apagar lamparas, reposo y apagar la secuencia."""
+        """parada -> apagar lamparas, reposo y apagar la secuencia."""
         if self.subpaso == 0:
-            self.senal_lamparas = PWM_APAGADAS   # TODO: apagar senal real
-            self.senal_impresion = False
+            self.senal_lamparas = PWM_APAGADAS
+            self.mduino.lamparas(PWM_APAGADAS)
             self.motor.reanudar()
             self.mover_secuencia(self.posicion_reposo)
             self.subpaso = 1

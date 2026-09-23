@@ -33,7 +33,7 @@ CAMPOS_TEXTO = [
     "objetivo", "vel_objetivo", "aceleracion", "deceleracion",
     "pg_prog_vel_impresion", "pg_prog_acel_impresion", "pg_prog_decel_impresion",
     "pg_prog_vel_curado", "pg_prog_acel_curado", "pg_prog_decel_curado",
-    "pg_prog_cant_pasadas_curado",
+    "pg_prog_cant_pasadas_curado", "pg_prog_potencia_NIR", "pg_prog_potencia_secador",
 ]
 
 # ===== ESCALADO A LA PANTALLA =====
@@ -241,7 +241,8 @@ class VentanaPrincipal(QMainWindow):
             self.timer_posicion.stop()
 
     def posicion_cabezal(self):
-        return self.pagina_programa.posicion_cabezal()
+        """Cabezal PMB activo, para el XOffset de la pagina PMB-8."""
+        return self.pagina_programa.posicion_cabezal_pmb()
 
     # ===== pagina movimientos =====
     def ir_objetivo(self):

@@ -308,7 +308,7 @@ class PaginaPMB(QObject):
 
         posicion_x = self._posicion_cabezal()
         if posicion_x is None:
-            self.registrar("[PMB] No hay ningun cabezal configurado en la pagina de programa")
+            self.registrar("[PMB] No hay ningun cabezal PMB activo en la pagina de programa")
             return
 
         x_mesa_mm, y_mesa_mm = self.mesa.posicion_imagen_mm()

@@ -12,7 +12,7 @@ Botones del .ui: bt_pg_prog_start, bt_pg_prog_stop.
 import time
 
 from PySide6.QtCore import QEvent, QLocale, QObject, QRectF, Qt, QTimer
-from PySide6.QtGui import QBrush, QColor, QDoubleValidator, QFont, QPen
+from PySide6.QtGui import QBrush, QColor, QDoubleValidator, QFont, QIntValidator, QPen
 from PySide6.QtWidgets import (QFrame, QGraphicsRectItem, QGraphicsScene,
                                QGraphicsSimpleTextItem, QGraphicsTextItem)
 
@@ -24,7 +24,9 @@ from secuencia import ParametrosPrograma
 # ===== MODULOS DE LA BARRA =====
 PRIMER_MODULO = 1
 ULTIMO_MODULO = 8
-TIPOS_CABEZAL = ("PMB-C8", "PMB-C2", "APMB4")   # confirmar si SM-200 imprime
+TIPOS_CABEZAL_PMB   = ("PMB-C8", "PMB-C2", "APMB4")   # cabezales gobernados por el PMB / Print Server
+TIPOS_CABEZAL_OTROS = ()                                # otros cabezales (p. ej. SM-200): logica pendiente
+TIPOS_CABEZAL = TIPOS_CABEZAL_PMB + TIPOS_CABEZAL_OTROS
 MODULO_VACIO  = "-"
 TIPO_NIR      = "NIR"
 TIPO_SECADOR  = "Air dryver"
@@ -60,6 +62,10 @@ COLOR_PERFIL_CURADO    = "#27AE60"
 TIPOS_CURADO = (TIPO_NIR, TIPO_SECADOR)
 
 MARGEN_FIN_IMPRESION_MM = 20   # recorrido extra tras el fin de la imagen, por deceleracion y holgura
+
+# ===== POTENCIAS (%) =====
+POTENCIA_MIN = 0
+POTENCIA_MAX = 100
 
 # ===== TEMPORIZACION =====
 PERIODO_ANIMACION_MS   = 40     # refresco de la mesa en el grafico
@@ -101,6 +107,9 @@ class PaginaPrograma(QObject):
                       self.ui.pg_prog_decel_impresion, self.ui.pg_prog_vel_impresion,
                       self.ui.pg_prog_vel_curado):
             campo.setValidator(validador)
+        validador_potencia = QIntValidator(POTENCIA_MIN, POTENCIA_MAX)
+        self.ui.pg_prog_potencia_NIR.setValidator(validador_potencia)
+        self.ui.pg_prog_potencia_secador.setValidator(validador_potencia)
 
         self.ui.bt_pg_prog_start.clicked.connect(self.start)
         self.ui.bt_pg_prog_stop.clicked.connect(self.stop)
@@ -167,6 +176,7 @@ class PaginaPrograma(QObject):
         cabezal = self.posicion_cabezal()
         curado = [d for _i, tipo, d in modulos if tipo in TIPOS_CURADO]
         hay_impresion = cabezal is not None
+        usa_pmb = self.tipo_cabezal() in TIPOS_CABEZAL_PMB
         hay_curado = bool(curado) and pasadas_curado > 0
         if not hay_impresion and not hay_curado:
             if curado:
@@ -208,13 +218,23 @@ class PaginaPrograma(QObject):
                           f"supera el limite del eje ({maximo} mm): se recorta")
             fin_impresion = min(fin_impresion, maximo)
             fin_curado = min(fin_curado, maximo)
-        return fin_impresion, inicio_curado, fin_curado, hay_curado, hay_impresion, avisos
+        return fin_impresion, inicio_curado, fin_curado, hay_curado, hay_impresion, usa_pmb, avisos
 
     # ===== parametros =====
+    def leer_potencia(self, campo):
+        """Potencia en % recortada a [POTENCIA_MIN, POTENCIA_MAX]; vacio = 0."""
+        valor = int(_leer_float(campo, por_defecto=0))
+        return max(POTENCIA_MIN, min(POTENCIA_MAX, valor))
+
     def leer_parametros(self):
         """ParametrosPrograma listo para la secuencia. Lanza ValueError si falta algo."""
         pasadas = int(_leer_float(self.ui.pg_prog_cant_pasadas_curado, por_defecto=0))
-        fin_impresion, inicio_curado, fin_curado, hay_curado, hay_impresion, avisos = self.calcular_plan(pasadas)
+        (fin_impresion, inicio_curado, fin_curado,
+         hay_curado, hay_impresion, usa_pmb, avisos) = self.calcular_plan(pasadas)
+        potencia_nir = self.leer_potencia(self.ui.pg_prog_potencia_NIR)
+        potencia_secador = self.leer_potencia(self.ui.pg_prog_potencia_secador)
+        if hay_curado and potencia_nir == 0:
+            avisos.append("hay curado pero la potencia NIR es 0 %: las lamparas no se encenderan")
         for aviso in avisos:
             self.registrar(f"[PROGRAMA] Aviso: {aviso}")
         return ParametrosPrograma(
@@ -230,6 +250,9 @@ class PaginaPrograma(QObject):
             fin_curado=fin_curado,
             hay_curado=hay_curado,
             hay_impresion=hay_impresion,
+            usa_pmb=usa_pmb,
+            potencia_nir=potencia_nir,
+            potencia_secador=potencia_secador,
         )
 
     def describir_plan(self, parametros):
@@ -240,7 +263,7 @@ class PaginaPrograma(QObject):
         if parametros.hay_curado:
             partes.append(f"curado {parametros.pasadas_curado} pasadas entre "
                           f"{parametros.inicio_curado:.0f} y {parametros.fin_curado:.0f} mm "
-                          f"a {parametros.vel_curado:.0f} mm/s"
+                          f"a {parametros.vel_curado:.0f} mm/s, NIR {parametros.potencia_nir} %"
                           + ("" if parametros.hay_impresion else " (sin impresion)"))
         return "; ".join(partes)
 
@@ -255,7 +278,7 @@ class PaginaPrograma(QObject):
         except ValueError:
             self.registrar("[PROGRAMA] Faltan parametros de impresion o curado")
             return
-        if parametros.hay_impresion and not self._pmb_lista():
+        if parametros.hay_impresion and parametros.usa_pmb and not self._pmb_lista():
             self.registrar("[PROGRAMA] El PMB no esta armado: pulsa Print en la pagina PMB-8")
             return
         if not self.secuencia.start(parametros):
@@ -291,11 +314,24 @@ class PaginaPrograma(QObject):
             modulos.append((i, tipo, distancia))
         return modulos
 
+    def _cabezal_activo(self, tipos=TIPOS_CABEZAL):
+        """(tipo, posicion_mm) del primer cabezal activo de esos tipos, o None."""
+        cabezales = sorted((m for m in self.leer_modulos() if m[1] in tipos), key=lambda m: m[2])
+        return (cabezales[0][1], cabezales[0][2]) if cabezales else None
+
     def posicion_cabezal(self):
-        """Posicion del primer cabezal de impresion sobre el recorrido, en mm."""
-        cabezales = sorted((m for m in self.leer_modulos() if m[1] in TIPOS_CABEZAL),
-                           key=lambda m: m[2])
-        return cabezales[0][2] if cabezales else None
+        """Posicion del primer cabezal de impresion activo sobre el recorrido, en mm."""
+        cabezal = self._cabezal_activo()
+        return cabezal[1] if cabezal else None
+
+    def tipo_cabezal(self):
+        cabezal = self._cabezal_activo()
+        return cabezal[0] if cabezal else None
+
+    def posicion_cabezal_pmb(self):
+        """Posicion del cabezal PMB activo, para el XOffset de la pagina PMB-8; None si no lo hay."""
+        cabezal = self._cabezal_activo(TIPOS_CABEZAL_PMB)
+        return cabezal[1] if cabezal else None
 
     # ===== grafico estatico =====
     def _dibujar_perfil(self, v, a, dec, inicio_mm, fin_mm, escala, y_base, altura, color):
@@ -379,7 +415,7 @@ class PaginaPrograma(QObject):
         pasadas = int(_leer_float(self.ui.pg_prog_cant_pasadas_curado, por_defecto=0))
         try:
             (fin_impresion, inicio_curado, fin_curado,
-             hay_curado, hay_impresion, _avisos) = self.calcular_plan(pasadas)
+             hay_curado, hay_impresion, _usa_pmb, _avisos) = self.calcular_plan(pasadas)
         except PlanInvalido:
             hay_curado = hay_impresion = False
         v_ref = v_impr if hay_impresion and v_impr > 0 else v_cur   # la altura maxima es la mayor velocidad

@@ -2133,7 +2133,7 @@ font-weight: bold;</string>
         <x>1530</x>
         <y>530</y>
         <width>251</width>
-        <height>261</height>
+        <height>381</height>
        </rect>
       </property>
       <layout class="QFormLayout" name="formLayout_3">
@@ -2246,6 +2246,64 @@ color: #62CBC9;
     padding: 10px;
 	font-size: 24px;
 	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="pg_prog_potencia_NIR">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="pg_prog_potencia_secador">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_23">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+	font-size: 16px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Potencia 
+ NIR</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_24">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;
+	font-size: 16px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Potencia 
+ Secador</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
          </property>
         </widget>
        </item>

@@ -1223,7 +1223,7 @@ class Ui_MainWindow(object):
 "}")
         self.formLayoutWidget_3 = QWidget(self.programa)
         self.formLayoutWidget_3.setObjectName(u"formLayoutWidget_3")
-        self.formLayoutWidget_3.setGeometry(QRect(1530, 530, 251, 261))
+        self.formLayoutWidget_3.setGeometry(QRect(1530, 530, 251, 381))
         self.formLayout_3 = QFormLayout(self.formLayoutWidget_3)
         self.formLayout_3.setObjectName(u"formLayout_3")
         self.formLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -1310,6 +1310,48 @@ class Ui_MainWindow(object):
 "	font-family: nunito;")
 
         self.formLayout_3.setWidget(3, QFormLayout.ItemRole.FieldRole, self.pg_prog_cant_pasadas_curado)
+
+        self.pg_prog_potencia_NIR = QLineEdit(self.formLayoutWidget_3)
+        self.pg_prog_potencia_NIR.setObjectName(u"pg_prog_potencia_NIR")
+        self.pg_prog_potencia_NIR.setStyleSheet(u"  background-color: #3F4D4C;\n"
+"color: #62CBC9;\n"
+"    border: 2px solid #62CBC9;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 24px;\n"
+"	font-family: nunito;")
+
+        self.formLayout_3.setWidget(4, QFormLayout.ItemRole.FieldRole, self.pg_prog_potencia_NIR)
+
+        self.pg_prog_potencia_secador = QLineEdit(self.formLayoutWidget_3)
+        self.pg_prog_potencia_secador.setObjectName(u"pg_prog_potencia_secador")
+        self.pg_prog_potencia_secador.setStyleSheet(u"  background-color: #3F4D4C;\n"
+"color: #62CBC9;\n"
+"    border: 2px solid #62CBC9;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 24px;\n"
+"	font-family: nunito;")
+
+        self.formLayout_3.setWidget(5, QFormLayout.ItemRole.FieldRole, self.pg_prog_potencia_secador)
+
+        self.label_23 = QLabel(self.formLayoutWidget_3)
+        self.label_23.setObjectName(u"label_23")
+        self.label_23.setStyleSheet(u"color: #62CBC9;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.label_23.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
+
+        self.formLayout_3.setWidget(4, QFormLayout.ItemRole.LabelRole, self.label_23)
+
+        self.label_24 = QLabel(self.formLayoutWidget_3)
+        self.label_24.setObjectName(u"label_24")
+        self.label_24.setStyleSheet(u"color: #62CBC9;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.label_24.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
+
+        self.formLayout_3.setWidget(5, QFormLayout.ItemRole.LabelRole, self.label_24)
 
         self.label_27 = QLabel(self.programa)
         self.label_27.setObjectName(u"label_27")
@@ -1575,6 +1617,10 @@ class Ui_MainWindow(object):
         self.label_16.setText(QCoreApplication.translate("MainWindow", u"Aceleraci\u00f3n", None))
         self.label_15.setText(QCoreApplication.translate("MainWindow", u"Deceleraci\u00f3n", None))
         self.label_22.setText(QCoreApplication.translate("MainWindow", u"Pasadas", None))
+        self.label_23.setText(QCoreApplication.translate("MainWindow", u"Potencia \n"
+" NIR", None))
+        self.label_24.setText(QCoreApplication.translate("MainWindow", u"Potencia \n"
+" Secador", None))
         self.label_27.setText(QCoreApplication.translate("MainWindow", u"IMPRESI\u00d3N", None))
         self.label_32.setText(QCoreApplication.translate("MainWindow", u"CURADO", None))
         self.bt_pg_menu.setText(QCoreApplication.translate("MainWindow", u"Menu", None))
