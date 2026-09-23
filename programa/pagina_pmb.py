@@ -44,6 +44,8 @@ COLORES_PLANOS = ("#00AEEF", "#EC008C", "#FFF100", "#000000")
 
 # ===== REGISTRO =====
 NOMBRE_OFFSET_X = "XOffset"   # como se llama en los mensajes al parametro del Print Controller
+# cuadros de mensajes de las distintas ventanas; se escribe en todos los que existan en el .ui
+NOMBRES_REGISTRO = ("txtMessage", "txtMessage_2", "txtMessage_3")
 VENTANA_DUPLICADOS_S = 2.0    # un mensaje identico al anterior dentro de esta ventana no se repite
 # Con print go por software el servidor dispara al ARMAR (P,P), no cuando la secuencia
 # envia el pulso: la mesa tiene que estar ya en la posicion de pulso al pulsar Print.
@@ -109,7 +111,10 @@ class PaginaPMB(QObject):
         self.timer_parpadeo.timeout.connect(self._parpadear)
         self.estado = ESTADO_SIN_TRABAJO
 
-        self.ui.txtMessage.setReadOnly(True)
+        self._registros = [getattr(self.ui, nombre) for nombre in NOMBRES_REGISTRO
+                           if hasattr(self.ui, nombre)]
+        for registro in self._registros:
+            registro.setReadOnly(True)
 
         # mesa de impresion en lugar del QLabel del disenador
         self.mesa = MesaImpresion(config.MESA_ANCHO_MM, config.MESA_ALTO_MM, self.ui.PMB8)
@@ -160,7 +165,8 @@ class PaginaPMB(QObject):
         if texto == anterior and ahora - instante < VENTANA_DUPLICADOS_S:
             return   # el PMB repite los avisos (listener + comando): se muestra uno
         self._ultimo_mensaje = (texto, ahora)
-        self.ui.txtMessage.append(texto)
+        for registro in self._registros:
+            registro.append(texto)
 
     def entrar(self):
         """Muestra la pagina y conecta con el PMB si aun no lo esta."""

@@ -1,27 +1,19 @@
 - Seguridades falseadas tanto en el programa de arduino como en el programa de python asta que este conectado tanto la seta de seguridad como los sensores de puerta abierta.
 
-- Longitud de eje X: habra que modificarla cuando se ponga la nueva longitud de la mesa, las distancias de inicio de impresión y de final del carro estan de momento con medidas provisionales.
+- Longitud de eje X: habra que modificarla cuando se ponga la nueva longitud de la mesa, las distancias de inicio de impresión y de final del carro están de momento con medidas provisionales.
 
-- Envio de posicion al PMB falta programarlo, puede que haya que modificar el programa principal de python y el programa del PMB de python. La idea es que en la pestaña de programa al poner que es el PMB-8C y ponerle la posicion en la que esta, que le envie al Gis el parametro que modifica la distancia desde el 0ofset, esto hara que en caso de meter otros modulos con otra tecnologia como el aprint, a cada modulo le mande la distancia a la que esta desde el 0ofset de la mesa.
-
-- Se queda por modificar en el Ui del programa la pestaña del PMB y quitar cosas que no sirven, en la parte del Ui programa es el que se encarga de hablar con el PMB y hacer que se inicie la impresión, todo esto lo hace con comandos hablando directamente con el PMB.
-
-- Falta modificar el visor del Ui de la parte del PMB para que salga la escala real de la imagen y crear la forma de modificar la posición con los limites reales de la zona de impresión.
-
-- Faltaria crear la configuración en el Ui y conectar con el arduino para dar la intensidad de la lampara que si no me equivoco esta pensado para que le mande un valor de 0 a 100 al arduino y este hace la conversión de 0 a 255 para sacar un voltage de 0 a 5V que es lo que define la intensidad de la lampara.
+- Faltaría crear la configuración en el Ui y conectar con el arduino para dar la intensidad de la lampara que si no me equivoco esta pensado para que le mande un valor de 0 a 100 al arduino y este hace la conversión de 0 a 255 para sacar un voltage de 0 a 5V que es lo que define la intensidad de la lampara.
 
 - Seguramente haya que cambiar en el programa principal de python los parametros del boton de ir a reposo dado que la aceleración y la deceleracion estan muy bajas, y seguramente la velocidad tambien.
 
 - Habra que dejar en condiciones la pestaña de menu del programa.
 
-- A la hora de meter otras tarjetas, dado que la señal de iniciar la impresión esta puesto a un relé del Mduino y hará falta sacar mas señales habra que poner que esa misma señal que le pide el python active tambien otros relés.
+- A la hora de meter otras tarjetas, dado que la señal de iniciar la impresión esta puesto a un relé del Mduino y hará falta sacar mas señales habrá que poner que esa misma señal que le pide el python active también otros relés.
 
-- Todo lo que esta en la carpeta de programa tiene que estar junto para que el programa de python encuentre lo que necesita, aparte si no esta el drive D1 conectado o falta algo el programa no arrancara.
 
-- En la pestaña del PMB todavia no e programado la parte de los previews ni el boton de clear.
 
 Funcionamiento del programa:
-    -Para ejecutar el programa, ahora mismo con ejecutar dando doble click en el prgrama de python llamado "program_impresora" bastaria para ejecutar todo lo que es la logica del programa, aparte de esto habria que ejecutar el programa "Launch Gis print server 2" para hacer funcionar el PMB.
+    -Para ejecutar el programa, ahora mismo con ejecutar dando doble click en el programa de python llamado "program_impresora" bastaria para ejecutar todo lo que es la logica del programa, aparte de esto habria que ejecutar el programa "Launch Gis print server 2" para hacer funcionar el PMB.
 
     - Inicialmente hay que ir a la pestaña de movimientos y hacer un home, posteriormente al home ya se puede mover manualmente la mesa e incluso darle a iniciar impresión.
 

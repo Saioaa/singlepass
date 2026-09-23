@@ -31,6 +31,7 @@ TIPO_SECADOR  = "Air dryver"
 COLOR_NIR     = "#CC9B62"
 COLOR_SECADOR = "#CC7662"
 COLOR_CABEZAL = "#62CBC9"
+OPACIDAD_MODULO_INACTIVO = 0.3   # modulo montado pero desmarcado: se dibuja atenuado
 GRADOS_POR_GIRO = 90   # rotacion del nombre del modulo en el grafico
 
 # ===== GRAFICO DE LA BARRA (px) =====
@@ -123,6 +124,9 @@ class PaginaPrograma(QObject):
         for i in range(PRIMER_MODULO, ULTIMO_MODULO + 1):
             self.combo_modulo(i).currentIndexChanged.connect(self.dibujar_modulos)
             self.campo_distancia(i).textChanged.connect(self.dibujar_modulos)
+            check = self.check_modulo(i)
+            if check is not None:
+                check.toggled.connect(self.dibujar_modulos)
         for campo in (self.ui.pg_prog_vel_impresion, self.ui.pg_prog_acel_impresion,
                       self.ui.pg_prog_decel_impresion, self.ui.pg_prog_vel_curado,
                       self.ui.pg_prog_acel_curado, self.ui.pg_prog_decel_curado,
@@ -145,6 +149,14 @@ class PaginaPrograma(QObject):
 
     def campo_distancia(self, i):
         return getattr(self.ui, f"M{i}D")
+
+    def check_modulo(self, i):
+        """QCheckBox que activa el modulo en la secuencia, o None si el .ui no lo tiene."""
+        return getattr(self.ui, f"M{i}Check", None)
+
+    def modulo_activo(self, i):
+        check = self.check_modulo(i)
+        return check is None or check.isChecked()
 
     # ===== plan de recorrido =====
     def calcular_plan(self, pasadas_curado):
@@ -264,13 +276,17 @@ class PaginaPrograma(QObject):
             self._t_ultimo_pulso = time.monotonic()
 
     # ===== modulos =====
-    def leer_modulos(self):
-        """[(indice, tipo, posicion_mm), ...] de las ranuras ocupadas."""
+    def leer_modulos(self, solo_activos=True):
+        """[(indice, tipo, posicion_mm), ...] de las ranuras ocupadas.
+        Por defecto solo los marcados con su checkbox: los demas estan montados
+        pero no intervienen en la secuencia."""
         modulos = []
         for i in range(PRIMER_MODULO, ULTIMO_MODULO + 1):
             tipo = self.combo_modulo(i).currentText()
             distancia = _leer_float(self.campo_distancia(i))
             if tipo in (MODULO_VACIO, "") or distancia is None:
+                continue
+            if solo_activos and not self.modulo_activo(i):
                 continue
             modulos.append((i, tipo, distancia))
         return modulos
@@ -332,12 +348,14 @@ class PaginaPrograma(QObject):
         self.escena.addItem(etiqueta)
 
         alto_rect = self._y_base - ALTO_RESERVADO_MODULO
-        for i, tipo, distancia in self.leer_modulos():
+        for i, tipo, distancia in self.leer_modulos(solo_activos=False):
             x = distancia * escala
             w = config.MODULO_MM * escala
             color = {TIPO_NIR: COLOR_NIR, TIPO_SECADOR: COLOR_SECADOR}.get(tipo, COLOR_CABEZAL)
             rect = QGraphicsRectItem(QRectF(x, MARGEN_SUPERIOR_MODULO, w, alto_rect))
             rect.setBrush(QBrush(QColor(color)))
+            if not self.modulo_activo(i):
+                rect.setOpacity(OPACIDAD_MODULO_INACTIVO)
             self.escena.addItem(rect)
             num = QGraphicsTextItem(str(i))
             num.setPos(x + (w - num.boundingRect().width()) / 2, Y_NUMERO_MODULO)

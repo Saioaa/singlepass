@@ -331,12 +331,15 @@ class VentanaPrincipal(QMainWindow):
     # ===== persistencia de los campos de la interfaz =====
     def guardar_ajustes(self):
         """Vuelca los campos rellenables a disco."""
-        ajustes = {"campos": {}, "modulos": {}, "distancias": {}}
+        ajustes = {"campos": {}, "modulos": {}, "distancias": {}, "activos": {}}
         for nombre in CAMPOS_TEXTO:
             ajustes["campos"][nombre] = getattr(self.ui, nombre).text()
         for i in range(PRIMER_MODULO, ULTIMO_MODULO + 1):
             ajustes["modulos"][str(i)] = self._combo_modulo(i).currentIndex()
             ajustes["distancias"][str(i)] = self._campo_distancia(i).text()
+            check = self.pagina_programa.check_modulo(i)
+            if check is not None:
+                ajustes["activos"][str(i)] = check.isChecked()
         try:
             with open(config.RUTA_AJUSTES, "w", encoding="utf-8") as f:
                 json.dump(ajustes, f, indent=2)
@@ -366,3 +369,7 @@ class VentanaPrincipal(QMainWindow):
             widget = getattr(self.ui, f"M{clave}D", None)
             if widget is not None:
                 widget.setText(valor)
+        for clave, activo in ajustes.get("activos", {}).items():
+            widget = getattr(self.ui, f"M{clave}Check", None)
+            if widget is not None:
+                widget.setChecked(bool(activo))
