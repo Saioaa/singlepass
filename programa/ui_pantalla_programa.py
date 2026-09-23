@@ -833,10 +833,27 @@ class Ui_MainWindow(object):
 
         self.gridLayoutWidget_2 = QWidget(self.programa)
         self.gridLayoutWidget_2.setObjectName(u"gridLayoutWidget_2")
-        self.gridLayoutWidget_2.setGeometry(QRect(480, 670, 851, 171))
+        self.gridLayoutWidget_2.setGeometry(QRect(480, 670, 851, 131))
         self.gridLayout_2 = QGridLayout(self.gridLayoutWidget_2)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.M1Check = QCheckBox(self.gridLayoutWidget_2)
+        self.M1Check.setObjectName(u"M1Check")
+        self.M1Check.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+        self.M1Check.setStyleSheet(u"QCheckBox {\n"
+"    color: #62CBC9;\n"
+"    font-size: 20px;\n"
+"    font-family: nunito;\n"
+"    font-weight: bold;\n"
+"    spacing: 6px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 24px;\n"
+"    height: 24px;\n"
+"}")
+
+        self.gridLayout_2.addWidget(self.M1Check, 0, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter)
+
         self.modulo7 = QComboBox(self.gridLayoutWidget_2)
         self.modulo7.addItem("")
         self.modulo7.addItem("")
@@ -852,7 +869,7 @@ class Ui_MainWindow(object):
 "font-family: nunito;\n"
 "")
 
-        self.gridLayout_2.addWidget(self.modulo7, 3, 6, 1, 1)
+        self.gridLayout_2.addWidget(self.modulo7, 2, 6, 1, 1)
 
         self.modulo5 = QComboBox(self.gridLayoutWidget_2)
         self.modulo5.addItem("")
@@ -869,7 +886,7 @@ class Ui_MainWindow(object):
 "font-family: nunito;\n"
 "")
 
-        self.gridLayout_2.addWidget(self.modulo5, 3, 4, 1, 1)
+        self.gridLayout_2.addWidget(self.modulo5, 2, 4, 1, 1)
 
         self.M6D = QLineEdit(self.gridLayoutWidget_2)
         self.M6D.setObjectName(u"M6D")
@@ -881,7 +898,7 @@ class Ui_MainWindow(object):
 "	font-size: 24px;\n"
 "	font-family: nunito;")
 
-        self.gridLayout_2.addWidget(self.M6D, 2, 5, 1, 1)
+        self.gridLayout_2.addWidget(self.M6D, 1, 5, 1, 1)
 
         self.M2D = QLineEdit(self.gridLayoutWidget_2)
         self.M2D.setObjectName(u"M2D")
@@ -893,7 +910,7 @@ class Ui_MainWindow(object):
 "	font-size: 24px;\n"
 "	font-family: nunito;")
 
-        self.gridLayout_2.addWidget(self.M2D, 2, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.M2D, 1, 1, 1, 1)
 
         self.modulo2 = QComboBox(self.gridLayoutWidget_2)
         self.modulo2.addItem("")
@@ -910,31 +927,7 @@ class Ui_MainWindow(object):
 "font-family: nunito;\n"
 "")
 
-        self.gridLayout_2.addWidget(self.modulo2, 3, 1, 1, 1)
-
-        self.M2Check = QCheckBox(self.gridLayoutWidget_2)
-        self.M2Check.setObjectName(u"M2Check")
-        self.M2Check.setMinimumSize(QSize(0, 0))
-        font1 = QFont()
-        font1.setWeight(QFont.ExtraBold)
-        self.M2Check.setFont(font1)
-        self.M2Check.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.M2Check.setStyleSheet(u"QCheckBox::indicator {\n"
-"    width: 24px;\n"
-"    height: 24px;\n"
-"}")
-
-        self.gridLayout_2.addWidget(self.M2Check, 0, 1, 1, 1, Qt.AlignmentFlag.AlignHCenter)
-
-        self.label_17 = QLabel(self.gridLayoutWidget_2)
-        self.label_17.setObjectName(u"label_17")
-        self.label_17.setStyleSheet(u"color: #62CBC9;\n"
-"font-size: 20px;\n"
-"font-family: nunito;\n"
-"font-weight: bold;")
-        self.label_17.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.gridLayout_2.addWidget(self.label_17, 1, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.modulo2, 2, 1, 1, 1)
 
         self.modulo8 = QComboBox(self.gridLayoutWidget_2)
         self.modulo8.addItem("")
@@ -951,7 +944,7 @@ class Ui_MainWindow(object):
 "font-family: nunito;\n"
 "")
 
-        self.gridLayout_2.addWidget(self.modulo8, 3, 7, 1, 1)
+        self.gridLayout_2.addWidget(self.modulo8, 2, 7, 1, 1)
 
         self.modulo6 = QComboBox(self.gridLayoutWidget_2)
         self.modulo6.addItem("")
@@ -968,7 +961,7 @@ class Ui_MainWindow(object):
 "font-family: nunito;\n"
 "")
 
-        self.gridLayout_2.addWidget(self.modulo6, 3, 5, 1, 1)
+        self.gridLayout_2.addWidget(self.modulo6, 2, 5, 1, 1)
 
         self.M5D = QLineEdit(self.gridLayoutWidget_2)
         self.M5D.setObjectName(u"M5D")
@@ -980,27 +973,7 @@ class Ui_MainWindow(object):
 "	font-size: 24px;\n"
 "	font-family: nunito;")
 
-        self.gridLayout_2.addWidget(self.M5D, 2, 4, 1, 1)
-
-        self.label_18 = QLabel(self.gridLayoutWidget_2)
-        self.label_18.setObjectName(u"label_18")
-        self.label_18.setStyleSheet(u"color: #62CBC9;\n"
-"font-size: 18px;\n"
-"font-family: nunito;\n"
-"font-weight: bold;")
-        self.label_18.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.gridLayout_2.addWidget(self.label_18, 1, 1, 1, 1)
-
-        self.label_19 = QLabel(self.gridLayoutWidget_2)
-        self.label_19.setObjectName(u"label_19")
-        self.label_19.setStyleSheet(u"color: #62CBC9;\n"
-"font-size: 16px;\n"
-"font-family: nunito;\n"
-"font-weight: bold;")
-        self.label_19.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.gridLayout_2.addWidget(self.label_19, 1, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.M5D, 1, 4, 1, 1)
 
         self.M3D = QLineEdit(self.gridLayoutWidget_2)
         self.M3D.setObjectName(u"M3D")
@@ -1012,7 +985,7 @@ class Ui_MainWindow(object):
 "	font-size: 24px;\n"
 "	font-family: nunito;")
 
-        self.gridLayout_2.addWidget(self.M3D, 2, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.M3D, 1, 2, 1, 1)
 
         self.M4D = QLineEdit(self.gridLayoutWidget_2)
         self.M4D.setObjectName(u"M4D")
@@ -1024,7 +997,7 @@ class Ui_MainWindow(object):
 "	font-size: 24px;\n"
 "	font-family: nunito;")
 
-        self.gridLayout_2.addWidget(self.M4D, 2, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.M4D, 1, 3, 1, 1)
 
         self.M1D = QLineEdit(self.gridLayoutWidget_2)
         self.M1D.setObjectName(u"M1D")
@@ -1036,17 +1009,7 @@ class Ui_MainWindow(object):
 "	font-size: 24px;\n"
 "	font-family: nunito;")
 
-        self.gridLayout_2.addWidget(self.M1D, 2, 0, 1, 1)
-
-        self.label_24 = QLabel(self.gridLayoutWidget_2)
-        self.label_24.setObjectName(u"label_24")
-        self.label_24.setStyleSheet(u"color: #62CBC9;\n"
-"font-size: 16px;\n"
-"font-family: nunito;\n"
-"font-weight: bold;")
-        self.label_24.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.gridLayout_2.addWidget(self.label_24, 1, 6, 1, 1)
+        self.gridLayout_2.addWidget(self.M1D, 1, 0, 1, 1)
 
         self.M8D = QLineEdit(self.gridLayoutWidget_2)
         self.M8D.setObjectName(u"M8D")
@@ -1058,7 +1021,7 @@ class Ui_MainWindow(object):
 "	font-size: 24px;\n"
 "	font-family: nunito;")
 
-        self.gridLayout_2.addWidget(self.M8D, 2, 7, 1, 1)
+        self.gridLayout_2.addWidget(self.M8D, 1, 7, 1, 1)
 
         self.modulo3 = QComboBox(self.gridLayoutWidget_2)
         self.modulo3.addItem("")
@@ -1075,37 +1038,7 @@ class Ui_MainWindow(object):
 "font-family: nunito;\n"
 "")
 
-        self.gridLayout_2.addWidget(self.modulo3, 3, 2, 1, 1)
-
-        self.label_21 = QLabel(self.gridLayoutWidget_2)
-        self.label_21.setObjectName(u"label_21")
-        self.label_21.setStyleSheet(u"color: #62CBC9;\n"
-"font-size: 16px;\n"
-"font-family: nunito;\n"
-"font-weight: bold;")
-        self.label_21.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.gridLayout_2.addWidget(self.label_21, 1, 4, 1, 1)
-
-        self.label_25 = QLabel(self.gridLayoutWidget_2)
-        self.label_25.setObjectName(u"label_25")
-        self.label_25.setStyleSheet(u"color: #62CBC9;\n"
-"font-size: 16px;\n"
-"font-family: nunito;\n"
-"font-weight: bold;")
-        self.label_25.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.gridLayout_2.addWidget(self.label_25, 1, 7, 1, 1)
-
-        self.label_20 = QLabel(self.gridLayoutWidget_2)
-        self.label_20.setObjectName(u"label_20")
-        self.label_20.setStyleSheet(u"color: #62CBC9;\n"
-"font-size: 16px;\n"
-"font-family: nunito;\n"
-"font-weight: bold;")
-        self.label_20.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.gridLayout_2.addWidget(self.label_20, 1, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.modulo3, 2, 2, 1, 1)
 
         self.modulo4 = QComboBox(self.gridLayoutWidget_2)
         self.modulo4.addItem("")
@@ -1122,7 +1055,7 @@ class Ui_MainWindow(object):
 "font-family: nunito;\n"
 "")
 
-        self.gridLayout_2.addWidget(self.modulo4, 3, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.modulo4, 2, 3, 1, 1)
 
         self.M7D = QLineEdit(self.gridLayoutWidget_2)
         self.M7D.setObjectName(u"M7D")
@@ -1134,7 +1067,7 @@ class Ui_MainWindow(object):
 "	font-size: 24px;\n"
 "	font-family: nunito;")
 
-        self.gridLayout_2.addWidget(self.M7D, 2, 6, 1, 1)
+        self.gridLayout_2.addWidget(self.M7D, 1, 6, 1, 1)
 
         self.modulo1 = QComboBox(self.gridLayoutWidget_2)
         self.modulo1.addItem("")
@@ -1151,33 +1084,126 @@ class Ui_MainWindow(object):
 "font-family: nunito;\n"
 "")
 
-        self.gridLayout_2.addWidget(self.modulo1, 3, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.modulo1, 2, 0, 1, 1)
 
-        self.label_23 = QLabel(self.gridLayoutWidget_2)
-        self.label_23.setObjectName(u"label_23")
-        self.label_23.setStyleSheet(u"color: #62CBC9;\n"
-"font-size: 16px;\n"
-"font-family: nunito;\n"
-"font-weight: bold;")
-        self.label_23.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.gridLayout_2.addWidget(self.label_23, 1, 5, 1, 1)
-
-        self.M1Check = QCheckBox(self.gridLayoutWidget_2)
-        self.M1Check.setObjectName(u"M1Check")
-        self.M1Check.setMinimumSize(QSize(0, 0))
-        font2 = QFont()
-        font2.setWeight(QFont.Black)
-        self.M1Check.setFont(font2)
-        self.M1Check.setAcceptDrops(False)
-        self.M1Check.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.M1Check.setStyleSheet(u"QCheckBox::indicator {\n"
+        self.M2Check = QCheckBox(self.gridLayoutWidget_2)
+        self.M2Check.setObjectName(u"M2Check")
+        self.M2Check.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+        self.M2Check.setStyleSheet(u"QCheckBox {\n"
+"    color: #62CBC9;\n"
+"    font-size: 20px;\n"
+"    font-family: nunito;\n"
+"    font-weight: bold;\n"
+"    spacing: 6px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
 "    width: 24px;\n"
 "    height: 24px;\n"
 "}")
-        self.M1Check.setCheckable(False)
 
-        self.gridLayout_2.addWidget(self.M1Check, 0, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter|Qt.AlignmentFlag.AlignVCenter)
+        self.gridLayout_2.addWidget(self.M2Check, 0, 1, 1, 1, Qt.AlignmentFlag.AlignHCenter)
+
+        self.M3Check = QCheckBox(self.gridLayoutWidget_2)
+        self.M3Check.setObjectName(u"M3Check")
+        self.M3Check.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+        self.M3Check.setStyleSheet(u"QCheckBox {\n"
+"    color: #62CBC9;\n"
+"    font-size: 20px;\n"
+"    font-family: nunito;\n"
+"    font-weight: bold;\n"
+"    spacing: 6px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 24px;\n"
+"    height: 24px;\n"
+"}")
+
+        self.gridLayout_2.addWidget(self.M3Check, 0, 2, 1, 1, Qt.AlignmentFlag.AlignHCenter)
+
+        self.M4Check = QCheckBox(self.gridLayoutWidget_2)
+        self.M4Check.setObjectName(u"M4Check")
+        self.M4Check.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+        self.M4Check.setStyleSheet(u"QCheckBox {\n"
+"    color: #62CBC9;\n"
+"    font-size: 20px;\n"
+"    font-family: nunito;\n"
+"    font-weight: bold;\n"
+"    spacing: 6px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 24px;\n"
+"    height: 24px;\n"
+"}")
+
+        self.gridLayout_2.addWidget(self.M4Check, 0, 3, 1, 1, Qt.AlignmentFlag.AlignHCenter)
+
+        self.M5Check = QCheckBox(self.gridLayoutWidget_2)
+        self.M5Check.setObjectName(u"M5Check")
+        self.M5Check.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+        self.M5Check.setStyleSheet(u"QCheckBox {\n"
+"    color: #62CBC9;\n"
+"    font-size: 20px;\n"
+"    font-family: nunito;\n"
+"    font-weight: bold;\n"
+"    spacing: 6px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 24px;\n"
+"    height: 24px;\n"
+"}")
+
+        self.gridLayout_2.addWidget(self.M5Check, 0, 4, 1, 1, Qt.AlignmentFlag.AlignHCenter)
+
+        self.M6Check = QCheckBox(self.gridLayoutWidget_2)
+        self.M6Check.setObjectName(u"M6Check")
+        self.M6Check.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+        self.M6Check.setStyleSheet(u"QCheckBox {\n"
+"    color: #62CBC9;\n"
+"    font-size: 20px;\n"
+"    font-family: nunito;\n"
+"    font-weight: bold;\n"
+"    spacing: 6px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 24px;\n"
+"    height: 24px;\n"
+"}")
+
+        self.gridLayout_2.addWidget(self.M6Check, 0, 5, 1, 1, Qt.AlignmentFlag.AlignHCenter)
+
+        self.M7Check = QCheckBox(self.gridLayoutWidget_2)
+        self.M7Check.setObjectName(u"M7Check")
+        self.M7Check.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+        self.M7Check.setStyleSheet(u"QCheckBox {\n"
+"    color: #62CBC9;\n"
+"    font-size: 20px;\n"
+"    font-family: nunito;\n"
+"    font-weight: bold;\n"
+"    spacing: 6px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 24px;\n"
+"    height: 24px;\n"
+"}")
+
+        self.gridLayout_2.addWidget(self.M7Check, 0, 6, 1, 1, Qt.AlignmentFlag.AlignHCenter)
+
+        self.M8Check = QCheckBox(self.gridLayoutWidget_2)
+        self.M8Check.setObjectName(u"M8Check")
+        self.M8Check.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+        self.M8Check.setStyleSheet(u"QCheckBox {\n"
+"    color: #62CBC9;\n"
+"    font-size: 20px;\n"
+"    font-family: nunito;\n"
+"    font-weight: bold;\n"
+"    spacing: 6px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 24px;\n"
+"    height: 24px;\n"
+"}")
+
+        self.gridLayout_2.addWidget(self.M8Check, 0, 7, 1, 1, Qt.AlignmentFlag.AlignHCenter)
 
         self.label_26 = QLabel(self.programa)
         self.label_26.setObjectName(u"label_26")
@@ -1288,10 +1314,10 @@ class Ui_MainWindow(object):
         self.label_27 = QLabel(self.programa)
         self.label_27.setObjectName(u"label_27")
         self.label_27.setGeometry(QRect(1530, 200, 251, 31))
-        font3 = QFont()
-        font3.setFamilies([u"nunito"])
-        font3.setBold(True)
-        self.label_27.setFont(font3)
+        font1 = QFont()
+        font1.setFamilies([u"nunito"])
+        font1.setBold(True)
+        self.label_27.setFont(font1)
         self.label_27.setStyleSheet(u"color: #62CBC9;\n"
 "	font-size: 20px;\n"
 "	font-family: nunito;")
@@ -1299,7 +1325,7 @@ class Ui_MainWindow(object):
         self.label_32 = QLabel(self.programa)
         self.label_32.setObjectName(u"label_32")
         self.label_32.setGeometry(QRect(1530, 480, 251, 31))
-        self.label_32.setFont(font3)
+        self.label_32.setFont(font1)
         self.label_32.setStyleSheet(u"color: #62CBC9;\n"
 "	font-size: 20px;\n"
 "	font-family: nunito;")
@@ -1472,6 +1498,7 @@ class Ui_MainWindow(object):
         self.label_14.setText(QCoreApplication.translate("MainWindow", u"Deceleraci\u00f3n", None))
         self.bt_pg_prog_start.setText(QCoreApplication.translate("MainWindow", u"Iniciar programa", None))
         self.bt_pg_prog_stop.setText(QCoreApplication.translate("MainWindow", u"Parar programa", None))
+        self.M1Check.setText(QCoreApplication.translate("MainWindow", u"1", None))
         self.modulo7.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
         self.modulo7.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
         self.modulo7.setItemText(2, QCoreApplication.translate("MainWindow", u"PMB-C2", None))
@@ -1496,8 +1523,6 @@ class Ui_MainWindow(object):
         self.modulo2.setItemText(5, QCoreApplication.translate("MainWindow", u"NIR", None))
         self.modulo2.setItemText(6, QCoreApplication.translate("MainWindow", u"Air dryver", None))
 
-        self.M2Check.setText("")
-        self.label_17.setText(QCoreApplication.translate("MainWindow", u"1", None))
         self.modulo8.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
         self.modulo8.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
         self.modulo8.setItemText(2, QCoreApplication.translate("MainWindow", u"PMB-C2", None))
@@ -1514,9 +1539,6 @@ class Ui_MainWindow(object):
         self.modulo6.setItemText(5, QCoreApplication.translate("MainWindow", u"NIR", None))
         self.modulo6.setItemText(6, QCoreApplication.translate("MainWindow", u"Air dryver", None))
 
-        self.label_18.setText(QCoreApplication.translate("MainWindow", u"2", None))
-        self.label_19.setText(QCoreApplication.translate("MainWindow", u"3", None))
-        self.label_24.setText(QCoreApplication.translate("MainWindow", u"7", None))
         self.modulo3.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
         self.modulo3.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
         self.modulo3.setItemText(2, QCoreApplication.translate("MainWindow", u"PMB-C2", None))
@@ -1525,9 +1547,6 @@ class Ui_MainWindow(object):
         self.modulo3.setItemText(5, QCoreApplication.translate("MainWindow", u"NIR", None))
         self.modulo3.setItemText(6, QCoreApplication.translate("MainWindow", u"Air dryver", None))
 
-        self.label_21.setText(QCoreApplication.translate("MainWindow", u"5", None))
-        self.label_25.setText(QCoreApplication.translate("MainWindow", u"8", None))
-        self.label_20.setText(QCoreApplication.translate("MainWindow", u"4", None))
         self.modulo4.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
         self.modulo4.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))
         self.modulo4.setItemText(2, QCoreApplication.translate("MainWindow", u"PMB-C2", None))
@@ -1544,8 +1563,13 @@ class Ui_MainWindow(object):
         self.modulo1.setItemText(5, QCoreApplication.translate("MainWindow", u"NIR", None))
         self.modulo1.setItemText(6, QCoreApplication.translate("MainWindow", u"Air dryver", None))
 
-        self.label_23.setText(QCoreApplication.translate("MainWindow", u"6", None))
-        self.M1Check.setText("")
+        self.M2Check.setText(QCoreApplication.translate("MainWindow", u"2", None))
+        self.M3Check.setText(QCoreApplication.translate("MainWindow", u"3", None))
+        self.M4Check.setText(QCoreApplication.translate("MainWindow", u"4", None))
+        self.M5Check.setText(QCoreApplication.translate("MainWindow", u"5", None))
+        self.M6Check.setText(QCoreApplication.translate("MainWindow", u"6", None))
+        self.M7Check.setText(QCoreApplication.translate("MainWindow", u"7", None))
+        self.M8Check.setText(QCoreApplication.translate("MainWindow", u"8", None))
         self.label_26.setText(QCoreApplication.translate("MainWindow", u"Configuraci\u00f3n de m\u00f3dulos", None))
         self.label_13.setText(QCoreApplication.translate("MainWindow", u"Velocidad", None))
         self.label_16.setText(QCoreApplication.translate("MainWindow", u"Aceleraci\u00f3n", None))

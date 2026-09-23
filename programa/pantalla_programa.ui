@@ -1426,11 +1426,34 @@ QPushButton:pressed {
         <x>480</x>
         <y>670</y>
         <width>851</width>
-        <height>171</height>
+        <height>131</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="3" column="6">
+       <item row="0" column="0" alignment="Qt::AlignmentFlag::AlignHCenter">
+        <widget class="QCheckBox" name="M1Check">
+         <property name="layoutDirection">
+          <enum>Qt::LayoutDirection::RightToLeft</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QCheckBox {
+    color: #62CBC9;
+    font-size: 20px;
+    font-family: nunito;
+    font-weight: bold;
+    spacing: 6px;
+}
+QCheckBox::indicator {
+    width: 24px;
+    height: 24px;
+}</string>
+         </property>
+         <property name="text">
+          <string>1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="6">
         <widget class="QComboBox" name="modulo7">
          <property name="styleSheet">
           <string notr="true"> border: 1px solid #62CBC9;
@@ -1476,7 +1499,7 @@ font-family: nunito;
          </item>
         </widget>
        </item>
-       <item row="3" column="4">
+       <item row="2" column="4">
         <widget class="QComboBox" name="modulo5">
          <property name="styleSheet">
           <string notr="true"> border: 1px solid #62CBC9;
@@ -1522,7 +1545,7 @@ font-family: nunito;
          </item>
         </widget>
        </item>
-       <item row="2" column="5">
+       <item row="1" column="5">
         <widget class="QLineEdit" name="M6D">
          <property name="styleSheet">
           <string notr="true">  background-color: #3F4D4C;
@@ -1535,7 +1558,7 @@ color: #62CBC9;
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="1" column="1">
         <widget class="QLineEdit" name="M2D">
          <property name="styleSheet">
           <string notr="true">  background-color: #3F4D4C;
@@ -1548,8 +1571,316 @@ color: #62CBC9;
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
+       <item row="2" column="1">
         <widget class="QComboBox" name="modulo2">
+         <property name="styleSheet">
+          <string notr="true"> border: 1px solid #62CBC9;
+color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>-</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>APMB4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SM-200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>NIR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Air dryver</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="7">
+        <widget class="QComboBox" name="modulo8">
+         <property name="styleSheet">
+          <string notr="true"> border: 1px solid #62CBC9;
+color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>-</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>APMB4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SM-200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>NIR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Air dryver</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="5">
+        <widget class="QComboBox" name="modulo6">
+         <property name="styleSheet">
+          <string notr="true"> border: 1px solid #62CBC9;
+color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>-</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>APMB4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SM-200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>NIR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Air dryver</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="4">
+        <widget class="QLineEdit" name="M5D">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLineEdit" name="M3D">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLineEdit" name="M4D">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLineEdit" name="M1D">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+  color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="7">
+        <widget class="QLineEdit" name="M8D">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QComboBox" name="modulo3">
+         <property name="styleSheet">
+          <string notr="true"> border: 1px solid #62CBC9;
+color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>-</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>APMB4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SM-200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>NIR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Air dryver</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QComboBox" name="modulo4">
+         <property name="styleSheet">
+          <string notr="true"> border: 1px solid #62CBC9;
+color: #62CBC9;
+font-size: 16px;
+font-family: nunito;
+</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>-</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PMB-C2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>APMB4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SM-200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>NIR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Air dryver</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="6">
+        <widget class="QLineEdit" name="M7D">
+         <property name="styleSheet">
+          <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 24px;
+	font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QComboBox" name="modulo1">
          <property name="styleSheet">
           <string notr="true"> border: 1px solid #62CBC9;
 color: #62CBC9;
@@ -1596,497 +1927,162 @@ font-family: nunito;
        </item>
        <item row="0" column="1" alignment="Qt::AlignmentFlag::AlignHCenter">
         <widget class="QCheckBox" name="M2Check">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <fontweight>ExtraBold</fontweight>
-          </font>
-         </property>
          <property name="layoutDirection">
-          <enum>Qt::LayoutDirection::LeftToRight</enum>
+          <enum>Qt::LayoutDirection::RightToLeft</enum>
          </property>
          <property name="styleSheet">
-          <string notr="true">QCheckBox::indicator {
+          <string notr="true">QCheckBox {
+    color: #62CBC9;
+    font-size: 20px;
+    font-family: nunito;
+    font-weight: bold;
+    spacing: 6px;
+}
+QCheckBox::indicator {
     width: 24px;
     height: 24px;
 }</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_17">
-         <property name="styleSheet">
-          <string notr="true">color: #62CBC9;
-font-size: 20px;
-font-family: nunito;
-font-weight: bold;</string>
-         </property>
-         <property name="text">
-          <string>1</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="7">
-        <widget class="QComboBox" name="modulo8">
-         <property name="styleSheet">
-          <string notr="true"> border: 1px solid #62CBC9;
-color: #62CBC9;
-font-size: 16px;
-font-family: nunito;
-</string>
-         </property>
-         <item>
-          <property name="text">
-           <string>-</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>PMB-C8</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>PMB-C2</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>APMB4</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>SM-200</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>NIR</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Air dryver</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="3" column="5">
-        <widget class="QComboBox" name="modulo6">
-         <property name="styleSheet">
-          <string notr="true"> border: 1px solid #62CBC9;
-color: #62CBC9;
-font-size: 16px;
-font-family: nunito;
-</string>
-         </property>
-         <item>
-          <property name="text">
-           <string>-</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>PMB-C8</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>PMB-C2</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>APMB4</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>SM-200</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>NIR</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Air dryver</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="2" column="4">
-        <widget class="QLineEdit" name="M5D">
-         <property name="styleSheet">
-          <string notr="true">  background-color: #3F4D4C;
-color: #62CBC9;
-    border: 2px solid #62CBC9;
-    border-radius: 5px;
-    padding: 10px;
-	font-size: 24px;
-	font-family: nunito;</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLabel" name="label_18">
-         <property name="styleSheet">
-          <string notr="true">color: #62CBC9;
-font-size: 18px;
-font-family: nunito;
-font-weight: bold;</string>
          </property>
          <property name="text">
           <string>2</string>
          </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
         </widget>
        </item>
-       <item row="1" column="2">
-        <widget class="QLabel" name="label_19">
-         <property name="styleSheet">
-          <string notr="true">color: #62CBC9;
-font-size: 16px;
-font-family: nunito;
-font-weight: bold;</string>
-         </property>
-         <property name="text">
-          <string>3</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QLineEdit" name="M3D">
-         <property name="styleSheet">
-          <string notr="true">  background-color: #3F4D4C;
-color: #62CBC9;
-    border: 2px solid #62CBC9;
-    border-radius: 5px;
-    padding: 10px;
-	font-size: 24px;
-	font-family: nunito;</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3">
-        <widget class="QLineEdit" name="M4D">
-         <property name="styleSheet">
-          <string notr="true">  background-color: #3F4D4C;
-color: #62CBC9;
-    border: 2px solid #62CBC9;
-    border-radius: 5px;
-    padding: 10px;
-	font-size: 24px;
-	font-family: nunito;</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLineEdit" name="M1D">
-         <property name="styleSheet">
-          <string notr="true">  background-color: #3F4D4C;
-  color: #62CBC9;
-    border: 2px solid #62CBC9;
-    border-radius: 5px;
-    padding: 10px;
-	font-size: 24px;
-	font-family: nunito;</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="6">
-        <widget class="QLabel" name="label_24">
-         <property name="styleSheet">
-          <string notr="true">color: #62CBC9;
-font-size: 16px;
-font-family: nunito;
-font-weight: bold;</string>
-         </property>
-         <property name="text">
-          <string>7</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="7">
-        <widget class="QLineEdit" name="M8D">
-         <property name="styleSheet">
-          <string notr="true">  background-color: #3F4D4C;
-color: #62CBC9;
-    border: 2px solid #62CBC9;
-    border-radius: 5px;
-    padding: 10px;
-	font-size: 24px;
-	font-family: nunito;</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="2">
-        <widget class="QComboBox" name="modulo3">
-         <property name="styleSheet">
-          <string notr="true"> border: 1px solid #62CBC9;
-color: #62CBC9;
-font-size: 16px;
-font-family: nunito;
-</string>
-         </property>
-         <item>
-          <property name="text">
-           <string>-</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>PMB-C8</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>PMB-C2</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>APMB4</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>SM-200</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>NIR</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Air dryver</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="1" column="4">
-        <widget class="QLabel" name="label_21">
-         <property name="styleSheet">
-          <string notr="true">color: #62CBC9;
-font-size: 16px;
-font-family: nunito;
-font-weight: bold;</string>
-         </property>
-         <property name="text">
-          <string>5</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="7">
-        <widget class="QLabel" name="label_25">
-         <property name="styleSheet">
-          <string notr="true">color: #62CBC9;
-font-size: 16px;
-font-family: nunito;
-font-weight: bold;</string>
-         </property>
-         <property name="text">
-          <string>8</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QLabel" name="label_20">
-         <property name="styleSheet">
-          <string notr="true">color: #62CBC9;
-font-size: 16px;
-font-family: nunito;
-font-weight: bold;</string>
-         </property>
-         <property name="text">
-          <string>4</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="3">
-        <widget class="QComboBox" name="modulo4">
-         <property name="styleSheet">
-          <string notr="true"> border: 1px solid #62CBC9;
-color: #62CBC9;
-font-size: 16px;
-font-family: nunito;
-</string>
-         </property>
-         <item>
-          <property name="text">
-           <string>-</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>PMB-C8</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>PMB-C2</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>APMB4</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>SM-200</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>NIR</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Air dryver</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="2" column="6">
-        <widget class="QLineEdit" name="M7D">
-         <property name="styleSheet">
-          <string notr="true">  background-color: #3F4D4C;
-color: #62CBC9;
-    border: 2px solid #62CBC9;
-    border-radius: 5px;
-    padding: 10px;
-	font-size: 24px;
-	font-family: nunito;</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QComboBox" name="modulo1">
-         <property name="styleSheet">
-          <string notr="true"> border: 1px solid #62CBC9;
-color: #62CBC9;
-font-size: 16px;
-font-family: nunito;
-</string>
-         </property>
-         <item>
-          <property name="text">
-           <string>-</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>PMB-C8</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>PMB-C2</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>APMB4</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>SM-200</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>NIR</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Air dryver</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="1" column="5">
-        <widget class="QLabel" name="label_23">
-         <property name="styleSheet">
-          <string notr="true">color: #62CBC9;
-font-size: 16px;
-font-family: nunito;
-font-weight: bold;</string>
-         </property>
-         <property name="text">
-          <string>6</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0" alignment="Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignVCenter">
-        <widget class="QCheckBox" name="M1Check">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <fontweight>Black</fontweight>
-          </font>
-         </property>
-         <property name="acceptDrops">
-          <bool>false</bool>
-         </property>
+       <item row="0" column="2" alignment="Qt::AlignmentFlag::AlignHCenter">
+        <widget class="QCheckBox" name="M3Check">
          <property name="layoutDirection">
-          <enum>Qt::LayoutDirection::LeftToRight</enum>
+          <enum>Qt::LayoutDirection::RightToLeft</enum>
          </property>
          <property name="styleSheet">
-          <string notr="true">QCheckBox::indicator {
+          <string notr="true">QCheckBox {
+    color: #62CBC9;
+    font-size: 20px;
+    font-family: nunito;
+    font-weight: bold;
+    spacing: 6px;
+}
+QCheckBox::indicator {
     width: 24px;
     height: 24px;
 }</string>
          </property>
          <property name="text">
-          <string/>
+          <string>3</string>
          </property>
-         <property name="checkable">
-          <bool>false</bool>
+        </widget>
+       </item>
+       <item row="0" column="3" alignment="Qt::AlignmentFlag::AlignHCenter">
+        <widget class="QCheckBox" name="M4Check">
+         <property name="layoutDirection">
+          <enum>Qt::LayoutDirection::RightToLeft</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QCheckBox {
+    color: #62CBC9;
+    font-size: 20px;
+    font-family: nunito;
+    font-weight: bold;
+    spacing: 6px;
+}
+QCheckBox::indicator {
+    width: 24px;
+    height: 24px;
+}</string>
+         </property>
+         <property name="text">
+          <string>4</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4" alignment="Qt::AlignmentFlag::AlignHCenter">
+        <widget class="QCheckBox" name="M5Check">
+         <property name="layoutDirection">
+          <enum>Qt::LayoutDirection::RightToLeft</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QCheckBox {
+    color: #62CBC9;
+    font-size: 20px;
+    font-family: nunito;
+    font-weight: bold;
+    spacing: 6px;
+}
+QCheckBox::indicator {
+    width: 24px;
+    height: 24px;
+}</string>
+         </property>
+         <property name="text">
+          <string>5</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5" alignment="Qt::AlignmentFlag::AlignHCenter">
+        <widget class="QCheckBox" name="M6Check">
+         <property name="layoutDirection">
+          <enum>Qt::LayoutDirection::RightToLeft</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QCheckBox {
+    color: #62CBC9;
+    font-size: 20px;
+    font-family: nunito;
+    font-weight: bold;
+    spacing: 6px;
+}
+QCheckBox::indicator {
+    width: 24px;
+    height: 24px;
+}</string>
+         </property>
+         <property name="text">
+          <string>6</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="6" alignment="Qt::AlignmentFlag::AlignHCenter">
+        <widget class="QCheckBox" name="M7Check">
+         <property name="layoutDirection">
+          <enum>Qt::LayoutDirection::RightToLeft</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QCheckBox {
+    color: #62CBC9;
+    font-size: 20px;
+    font-family: nunito;
+    font-weight: bold;
+    spacing: 6px;
+}
+QCheckBox::indicator {
+    width: 24px;
+    height: 24px;
+}</string>
+         </property>
+         <property name="text">
+          <string>7</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="7" alignment="Qt::AlignmentFlag::AlignHCenter">
+        <widget class="QCheckBox" name="M8Check">
+         <property name="layoutDirection">
+          <enum>Qt::LayoutDirection::RightToLeft</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QCheckBox {
+    color: #62CBC9;
+    font-size: 20px;
+    font-family: nunito;
+    font-weight: bold;
+    spacing: 6px;
+}
+QCheckBox::indicator {
+    width: 24px;
+    height: 24px;
+}</string>
+         </property>
+         <property name="text">
+          <string>8</string>
          </property>
         </widget>
        </item>
