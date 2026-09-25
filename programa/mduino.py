@@ -6,8 +6,7 @@ y convertido a QObject con senales, igual que pmb.py.
 
 Mensajes que envia el programa:   "PULSE", "LAMP:<pwm>"
 Mensajes que recibe del M-Duino:  "SETA:1", "SETA:0"
-    (la emision de seta_cambiada esta comentada en _procesar_linea hasta
-     que el M-Duino este conectado fisicamente)
+    seta_cambiada(True/False) se emite al cambiar y con cada latido
 
 Uso:
     self.mduino = ClienteMDuino()
@@ -131,12 +130,10 @@ class ClienteMDuino(QObject):
             self._traza[clave] = (linea, ahora)
             print(f"[MDUINO] <- {linea}")
         self.linea_recibida.emit(linea)
-        # SETA DESACTIVADA: el M-Duino aun no esta conectado fisicamente.
-        # Descomentar cuando se pueda probar con la seta real.
-        # if linea == MSG_SETA_PULSADA:
-        #     self.seta_cambiada.emit(True)
-        # elif linea == MSG_SETA_LIBRE:
-        #     self.seta_cambiada.emit(False)
+        if linea == MSG_SETA_PULSADA:
+            self.seta_cambiada.emit(True)
+        elif linea == MSG_SETA_LIBRE:
+            self.seta_cambiada.emit(False)
 
     # ----- envio -----
 

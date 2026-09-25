@@ -109,6 +109,8 @@ class VentanaPrincipal(QMainWindow):
         if config.PRINT_GO_TAMBIEN_POR_SOFTWARE:
             print("[CONFIG] PROVISIONAL: print go tambien por software (P,SPG)")
         self.mduino.seta_cambiada.connect(self.secuencia.set_seta)
+        self.mduino.seta_cambiada.connect(self.seta_cambiada)
+        self.seta_pulsada = False
 
         self.homing_en_curso = False   # impide leer la posicion durante el homing
         self.posicion_mm = None        # ultima posicion leida del D1
@@ -245,8 +247,31 @@ class VentanaPrincipal(QMainWindow):
             print(f"[POSICION] Lectura fallida: {e}")
             self.timer_posicion.stop()
 
+    # ===== seta de emergencia =====
+    def seta_cambiada(self, pulsada):
+        """La secuencia se para sola (paro_seta); aqui se paran los movimientos
+        manuales y se bloquean hasta liberar la seta y volver a referenciar."""
+        if pulsada == self.seta_pulsada:
+            return   # el M-Duino repite el estado cada segundo
+        self.seta_pulsada = pulsada
+        if pulsada:
+            self.stop_motor()
+            self.timer_home.stop()
+            self.homing_en_curso = False
+            self.print_server.registrar("[SETA] Seta pulsada: movimientos bloqueados")
+        else:
+            self.print_server.registrar("[SETA] Seta liberada: haz Home antes de continuar")
+
+    def _movimiento_permitido(self):
+        if self.seta_pulsada:
+            self.print_server.registrar("[SETA] Movimiento ignorado: seta pulsada")
+            return False
+        return True
+
     # ===== pagina movimientos =====
     def ir_objetivo(self):
+        if not self._movimiento_permitido():
+            return
         posicion = _leer_float(self.ui.objetivo)
         velocidad = _leer_float(self.ui.vel_objetivo)
         acel = _leer_float(self.ui.aceleracion)
@@ -259,6 +284,8 @@ class VentanaPrincipal(QMainWindow):
         self.motor.mover_a(posicion)
 
     def home(self):
+        if not self._movimiento_permitido():
+            return
         self.homing_en_curso = True
         self.motor.habilitar()
         self.motor.home()
@@ -282,6 +309,8 @@ class VentanaPrincipal(QMainWindow):
             print(f"[HOME] Referenciado. Posicion = {self.motor.leer_posicion():.2f} mm")
 
     def _jog(self, velocidad, aceleracion, deceleracion, sentido):
+        if not self._movimiento_permitido():
+            return
         self.motor.set_velocidad(velocidad)
         self.motor.set_aceleracion(aceleracion)
         self.motor.set_deceleracion(deceleracion)
@@ -325,6 +354,8 @@ class VentanaPrincipal(QMainWindow):
             pass
 
     def mov_reposo(self):
+        if not self._movimiento_permitido():
+            return
         self.motor.set_velocidad(VELOCIDAD_REPOSO)
         self.motor.set_aceleracion(ACELERACION_REPOSO)
         self.motor.set_deceleracion(DECELERACION_REPOSO)

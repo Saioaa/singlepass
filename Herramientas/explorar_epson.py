@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Vuelca la API REST del HMB (SM-200) a un archivo de texto para documentarla.
+"""Vuelca la API REST de Atlas Server (el servicio del PC que gobierna el HMB y
+el SM-200) a un archivo de texto, y descarga su Swagger a un .json aparte.
 
-Uso (desde cualquier carpeta):   py explorar_epson.py [ip]
-Genera epson_api_<fecha>.txt junto al script. Solo hace GET: no cambia nada.
+Uso (desde cualquier carpeta, con Atlas Professional abierto):
+    py explorar_epson.py            (localhost)
+    py explorar_epson.py <host>
+Solo hace GET: no cambia nada.
 """
 
 import json
@@ -12,7 +15,7 @@ import urllib.error
 import urllib.request
 from datetime import datetime
 
-HOST_HMB       = "192.168.79.134"
+HOST_ATLAS     = "localhost"   # Atlas Server corre en el PC, no en la board
 PUERTO_API     = 5000
 TIMEOUT_S      = 10
 MAX_CARACTERES = 200_000   # recorte por respuesta, por si alguna coleccion es enorme
@@ -22,13 +25,10 @@ RUTAS = [
     "/api",
     "/api/jobs", "/api/jobstores", "/api/printqueues", "/api/printqueues/default",
     "/api/printoperations", "/api/bitmaps", "/api/separatedimages",
-    "/api/printheads", "/api/printmodes", "/api/waveforms", "/api/encoders",
-    "/api/status", "/api/system", "/api/version",
+    "/api/HeadManagerBoards", "/api/EventManagerBoards", "/api/flowcontrollers",
+    "/api/licences", "/api/Temperatures/HeadManagerBoards", "/api/version",
 ]
-RUTAS_SWAGGER = [
-    "/swagger/v1/swagger.json", "/swagger/docs/v1", "/api/swagger.json",
-    "/swagger.json", "/api/swagger", "/swagger",
-]
+RUTA_SWAGGER = "/swagger/AtlasServer/swagger.json"
 
 
 def obtener(url):
@@ -51,13 +51,23 @@ def formatear(cuerpo):
 
 
 def main():
-    host = sys.argv[1] if len(sys.argv) > 1 else HOST_HMB
+    host = sys.argv[1] if len(sys.argv) > 1 else HOST_ATLAS
     base = f"http://{host}:{PUERTO_API}"
     salida = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                           f"epson_api_{datetime.now():%y%m%d_%H%M%S}.txt")
+    # Swagger: la definicion completa de la API, a un archivo aparte
+    estado, _tipo, cuerpo = obtener(base + RUTA_SWAGGER)
+    if estado == 200:
+        ruta_json = salida.replace(".txt", "_swagger.json")
+        with open(ruta_json, "w", encoding="utf-8") as f:
+            f.write(formatear(cuerpo))
+        print(f"Swagger guardado en: {ruta_json}")
+    else:
+        print(f"Swagger no disponible ({estado}): {cuerpo[:100]}")
+
     with open(salida, "w", encoding="utf-8") as f:
-        f.write(f"HMB {base}  {datetime.now():%Y-%m-%d %H:%M:%S}\n\n")
-        for ruta in RUTAS_SWAGGER + RUTAS:
+        f.write(f"Atlas Server {base}  {datetime.now():%Y-%m-%d %H:%M:%S}\n\n")
+        for ruta in RUTAS:
             estado, tipo, cuerpo = obtener(base + ruta)
             f.write("=" * 78 + f"\nGET {ruta}  ->  {estado} {tipo}\n" + "=" * 78 + "\n")
             if estado is None:
