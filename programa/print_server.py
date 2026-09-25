@@ -32,7 +32,12 @@ from mesa import MesaImpresion
 
 # ===== WIDGETS =====
 NOMBRES_PAGINA = ("print_server", "PMB8")           # objectName de la pagina, nuevo y antiguo
-COMBOS_MODO = {"PMB": "systemode", "EPSON": "systemode_epson"}   # board.nombre -> combo del .ui
+# combos de modo: board.nombre -> (widget del .ui, texto que muestra mientras no tiene modos)
+COMBOS_MODO = {
+    "PMB":   ("systemode",       "PMB"),
+    "EPSON": ("systemode_epson", "SM-200"),
+    "AEWA":  ("systemode_aewa",  "APMB4"),
+}
 NOMBRES_REGISTRO = ("txtMessage", "txtMessage_2", "txtMessage_3")
 
 # ===== IMAGEN A IMPRIMIR =====
@@ -76,6 +81,7 @@ class PrintServer(QObject):
         self.espejo_x = False
         self.espejo_y = False
         self._ultimo_mensaje = ("", 0.0)
+        self._ultimo_modo = {}   # board.nombre -> ultimo modo elegido en esta sesion
 
         self.pagina = next(getattr(self.ui, n) for n in NOMBRES_PAGINA if hasattr(self.ui, n))
         self._registros = [getattr(self.ui, n) for n in NOMBRES_REGISTRO if hasattr(self.ui, n)]
@@ -104,16 +110,24 @@ class PrintServer(QObject):
         self.ui.pos_x_target.editingFinished.connect(self.ir_a_posicion)
         self.ui.pos_y_target.editingFinished.connect(self.ir_a_posicion)
 
-        # boards: senales y combos de modo
+        # combos de modo: nombre de la board como texto mientras no tengan modos;
+        # deshabilitados hasta que su board este activa en Programa
         self._combos = {}
+        for nombre_board, (nombre_widget, etiqueta) in COMBOS_MODO.items():
+            combo = getattr(self.ui, nombre_widget, None)
+            if combo is not None:
+                combo.setPlaceholderText(etiqueta)
+                combo.setEnabled(False)
+                self._combos[nombre_board] = combo
+
+        # boards: senales y su combo
         for board in self.boards:
             board.mensaje.connect(self.registrar)
             board.estado_cambiado.connect(lambda _e: self._actualizar_estado())
             board.modos_recibidos.connect(lambda modos, b=board: self._cargar_modos(b, modos))
             board.dpi_recibido.connect(lambda dx, dy, b=board: self._guardar_dpi(b, dx, dy))
-            combo = getattr(self.ui, COMBOS_MODO.get(board.nombre, ""), None)
+            combo = self._combos.get(board.nombre)
             if combo is not None:
-                self._combos[board.nombre] = combo
                 combo.currentTextChanged.connect(lambda modo, b=board: self._modo_seleccionado(b, modo))
 
         # botones
@@ -187,14 +201,22 @@ class PrintServer(QObject):
             board.pedir_modos()
 
     def _cargar_modos(self, board, modos):
+        """Rellena el combo; con placeholder Qt no selecciona nada solo, asi que se
+        elige el ultimo modo usado si sigue en la lista, o el primero."""
         combo = self._combos.get(board.nombre)
-        if combo is not None:
-            combo.clear()
-            combo.addItems(modos)
+        if combo is None:
+            return
+        combo.clear()
+        combo.addItems(modos)
+        if not modos:
+            return
+        ultimo = self._ultimo_modo.get(board.nombre)
+        combo.setCurrentIndex(modos.index(ultimo) if ultimo in modos else 0)
 
     def _modo_seleccionado(self, board, modo):
         if not modo:
             return
+        self._ultimo_modo[board.nombre] = modo
         resolucion = re.findall(PATRON_DPI, modo, re.IGNORECASE)
         if len(resolucion) == 2 and self.dpi_actual is None:
             self.dpi_actual = (int(resolucion[0]), int(resolucion[1]))

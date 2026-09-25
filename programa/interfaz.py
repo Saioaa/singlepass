@@ -20,7 +20,7 @@ from PySide6.QtWidgets import QAbstractButton, QMainWindow, QWidget
 import config
 from d1 import MODO_POSICION
 from board_pmb import BoardPMB
-from epson import BoardEpson
+from board_epson import BoardEpson
 from print_server import PrintServer
 from pagina_programa import PaginaPrograma
 from secuencia import SecuenciaImpresion
@@ -128,7 +128,7 @@ class VentanaPrincipal(QMainWindow):
         self.ui.bt_pg_menu.clicked.connect(self.ir_pg_menu)
         self.ui.bt_pg_programa.clicked.connect(self.ir_pg_programa)
         self.ui.bt_pg_programa_2.clicked.connect(self.ir_pg_programa)
-        self.ui.pushButton.clicked.connect(self.print_server.entrar)
+        self.ui.bt_pg_printserver.clicked.connect(self.print_server.entrar)
 
         # ===== pagina movimientos =====
         self.ui.bt_ir_objetivo.clicked.connect(self.ir_objetivo)
