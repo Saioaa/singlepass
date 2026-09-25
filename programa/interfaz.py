@@ -13,9 +13,10 @@ import json
 import os
 import re
 
-from PySide6.QtCore import QLocale, QSize, QTimer
-from PySide6.QtGui import QDoubleValidator, QGuiApplication, QIcon
-from PySide6.QtWidgets import QAbstractButton, QMainWindow, QWidget
+from PySide6.QtCore import QLocale, QSize, Qt, QTimer
+from PySide6.QtGui import QDoubleValidator, QGuiApplication, QIcon, QPixmap
+from PySide6.QtWidgets import (QAbstractButton, QDialog, QLabel, QMainWindow, QVBoxLayout,
+                               QWidget)
 
 import config
 from d1 import MODO_POSICION
@@ -37,6 +38,19 @@ CAMPOS_TEXTO = [
     "pg_prog_vel_curado", "pg_prog_acel_curado", "pg_prog_decel_curado",
     "pg_prog_cant_pasadas_curado", "pg_prog_potencia_NIR", "pg_prog_potencia_secador",
 ]
+
+# ===== VENTANA DE PARADA DE EMERGENCIA =====
+EMERGENCIA_TITULO    = "PARADA DE EMERGENCIA"
+EMERGENCIA_SUBTITULO = "Libera la seta para continuar"
+EMERGENCIA_IMAGEN    = "emergency_2.png"
+EMERGENCIA_LADO_PX   = 260
+EMERGENCIA_MARGEN_PX = 40
+EMERGENCIA_ESPACIADO_PX = 20
+EMERGENCIA_ESTILO = """
+QDialog { background-color: #B71C1C; border: 6px solid #FFD600; border-radius: 16px; }
+QLabel#titulo { color: #FFFFFF; font-size: 34px; font-weight: bold; }
+QLabel#subtitulo { color: #FFF59D; font-size: 18px; }
+"""
 
 # ===== ESCALADO A LA PANTALLA =====
 # El .ui esta disenado con geometrias absolutas para esta resolucion.
@@ -80,6 +94,58 @@ def _leer_float(campo, por_defecto=None):
         return por_defecto
 
 
+class VentanaEmergencia(QDialog):
+    """Bloquea toda la aplicacion mientras la seta esta pulsada. Sin borde, siempre
+    encima, y sin forma de cerrarla desde teclado o raton: solo la cierra ocultar()
+    cuando el M-Duino informa de que la seta se ha liberado."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent, Qt.Dialog | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
+        self.setWindowModality(Qt.ApplicationModal)
+        self.setStyleSheet(EMERGENCIA_ESTILO)
+
+        imagen = QLabel()
+        imagen.setAlignment(Qt.AlignCenter)
+        pixmap = QPixmap(os.path.join(config.CARPETA_IMAGENES, EMERGENCIA_IMAGEN))
+        if not pixmap.isNull():
+            imagen.setPixmap(pixmap.scaled(EMERGENCIA_LADO_PX, EMERGENCIA_LADO_PX,
+                                           Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        titulo = QLabel(EMERGENCIA_TITULO)
+        titulo.setObjectName("titulo")
+        titulo.setAlignment(Qt.AlignCenter)
+        subtitulo = QLabel(EMERGENCIA_SUBTITULO)
+        subtitulo.setObjectName("subtitulo")
+        subtitulo.setAlignment(Qt.AlignCenter)
+
+        disposicion = QVBoxLayout(self)
+        disposicion.setContentsMargins(EMERGENCIA_MARGEN_PX, EMERGENCIA_MARGEN_PX,
+                                       EMERGENCIA_MARGEN_PX, EMERGENCIA_MARGEN_PX)
+        disposicion.setSpacing(EMERGENCIA_ESPACIADO_PX)
+        disposicion.addWidget(imagen)
+        disposicion.addWidget(titulo)
+        disposicion.addWidget(subtitulo)
+
+    def reject(self):
+        pass   # Esc
+
+    def closeEvent(self, evento):
+        evento.ignore()   # Alt+F4 / gestor de ventanas
+
+    def keyPressEvent(self, evento):
+        evento.ignore()
+
+    def mostrar(self):
+        if not self.isVisible():
+            self.show()
+            self.raise_()
+            self.activateWindow()
+        pantalla = self.screen().availableGeometry()
+        self.move(pantalla.center() - self.rect().center())
+
+    def ocultar(self):
+        self.hide()
+
+
 class VentanaPrincipal(QMainWindow):
 
     def __init__(self, motor, mduino, pmb):
@@ -111,6 +177,7 @@ class VentanaPrincipal(QMainWindow):
         self.mduino.seta_cambiada.connect(self.secuencia.set_seta)
         self.mduino.seta_cambiada.connect(self.seta_cambiada)
         self.seta_pulsada = False
+        self.ventana_emergencia = VentanaEmergencia(self)
 
         self.homing_en_curso = False   # impide leer la posicion durante el homing
         self.posicion_mm = None        # ultima posicion leida del D1
@@ -160,6 +227,7 @@ class VentanaPrincipal(QMainWindow):
 
         self.timer_jog = QTimer(self)
         self.timer_jog.setInterval(PERIODO_VIGILANCIA_JOG)
+        self._vigilante_jog = None   # funcion conectada al timeout durante un jog
 
         self.timer_home = QTimer(self)
         self.timer_home.setInterval(PERIODO_SONDEO_HOMING)
@@ -250,7 +318,8 @@ class VentanaPrincipal(QMainWindow):
     # ===== seta de emergencia =====
     def seta_cambiada(self, pulsada):
         """La secuencia se para sola (paro_seta); aqui se paran los movimientos
-        manuales y se bloquean hasta liberar la seta y volver a referenciar."""
+        manuales, se abortan las boards armadas y se bloquea la app hasta
+        liberar la seta y volver a referenciar."""
         if pulsada == self.seta_pulsada:
             return   # el M-Duino repite el estado cada segundo
         self.seta_pulsada = pulsada
@@ -259,7 +328,11 @@ class VentanaPrincipal(QMainWindow):
             self.timer_home.stop()
             self.homing_en_curso = False
             self.print_server.registrar("[SETA] Seta pulsada: movimientos bloqueados")
+            if self.print_server.esta_lista():
+                self.print_server.abortar()   # la impresion no se reanuda: se empieza de nuevo
+            self.ventana_emergencia.mostrar()
         else:
+            self.ventana_emergencia.ocultar()
             self.print_server.registrar("[SETA] Seta liberada: haz Home antes de continuar")
 
     def _movimiento_permitido(self):
@@ -315,10 +388,8 @@ class VentanaPrincipal(QMainWindow):
         self.motor.set_aceleracion(aceleracion)
         self.motor.set_deceleracion(deceleracion)
         self.motor.mover_manual(velocidad, sentido)
-        if sentido == SENTIDO_DERECHA:
-            self.timer_jog.timeout.connect(self.comprobar_derecha)
-        else:
-            self.timer_jog.timeout.connect(self.comprobar_izquierda)
+        self._vigilante_jog = self.comprobar_derecha if sentido == SENTIDO_DERECHA else self.comprobar_izquierda
+        self.timer_jog.timeout.connect(self._vigilante_jog)
         self.timer_jog.start()
 
     def mov_derecha(self):
@@ -348,10 +419,9 @@ class VentanaPrincipal(QMainWindow):
     def stop_motor(self):
         self.motor.parar()
         self.timer_jog.stop()
-        try:
-            self.timer_jog.timeout.disconnect()
-        except (RuntimeError, TypeError):
-            pass
+        if self._vigilante_jog is not None:
+            self.timer_jog.timeout.disconnect(self._vigilante_jog)
+            self._vigilante_jog = None
 
     def mov_reposo(self):
         if not self._movimiento_permitido():

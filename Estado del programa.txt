@@ -1,8 +1,4 @@
-- Seguridades falseadas tanto en el programa de arduino como en el programa de python asta que este conectado tanto la seta de seguridad como los sensores de puerta abierta.
-
 - Longitud de eje X: habra que modificarla cuando se ponga la nueva longitud de la mesa, las distancias de inicio de impresión y de final del carro están de momento con medidas provisionales.
-
-- Faltaría crear la configuración en el Ui y conectar con el arduino para dar la intensidad de la lampara que si no me equivoco esta pensado para que le mande un valor de 0 a 100 al arduino y este hace la conversión de 0 a 255 para sacar un voltage de 0 a 5V que es lo que define la intensidad de la lampara.
 
 - Seguramente haya que cambiar en el programa principal de python los parametros del boton de ir a reposo dado que la aceleración y la deceleracion estan muy bajas, y seguramente la velocidad tambien.
 

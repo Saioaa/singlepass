@@ -1,0 +1,534 @@
+Atlas Server http://localhost:5000  2026-09-25 12:50:52
+
+==============================================================================
+GET /api  ->  200 application/json; charset=utf-8
+==============================================================================
+{
+  "entitySets": [
+    {
+      "url": "PrintQueues",
+      "name": "PrintQueues",
+      "title": "PrintQueues"
+    },
+    {
+      "url": "HeadManagerBoards",
+      "name": "HeadManagerBoards",
+      "title": "HeadManagerBoards"
+    },
+    {
+      "url": "EventManagerBoards",
+      "name": "EventManagerBoards",
+      "title": "EventManagerBoards"
+    }
+  ],
+  "singletons": [],
+  "functionImports": []
+}
+
+==============================================================================
+GET /api/jobs  ->  200 application/json; charset=utf-8
+==============================================================================
+[]
+
+==============================================================================
+GET /api/jobstores  ->  200 application/json; charset=utf-8
+==============================================================================
+[
+  {
+    "id": "Completed",
+    "state": {
+      "name": "Waiting",
+      "isTerminal": false,
+      "isError": false
+    },
+    "uri": "http://localhost:5000/api/jobstores/Completed",
+    "longPollUri": "http://localhost:5000/api/jobstores/Completed?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-1",
+    "name": "Completed",
+    "type": "Static",
+    "jobs": [],
+    "jobModes": [],
+    "mimeTypes": [],
+    "parameters": []
+  },
+  {
+    "id": "Failed",
+    "state": {
+      "name": "Waiting",
+      "isTerminal": false,
+      "isError": false
+    },
+    "uri": "http://localhost:5000/api/jobstores/Failed",
+    "longPollUri": "http://localhost:5000/api/jobstores/Failed?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-1",
+    "name": "Failed",
+    "type": "Static",
+    "jobs": [],
+    "jobModes": [],
+    "mimeTypes": [],
+    "parameters": []
+  },
+  {
+    "id": "Spit1",
+    "state": {
+      "name": "Waiting",
+      "isTerminal": false,
+      "isError": false
+    },
+    "uri": "http://localhost:5000/api/jobstores/Spit1",
+    "longPollUri": "http://localhost:5000/api/jobstores/Spit1?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-1",
+    "name": "Spit 1",
+    "type": "MimeHandling",
+    "jobs": [],
+    "jobModes": [
+      "1200x1200 2BPP",
+      "1200dpi x 1200dpi 1bpp Black GL2",
+      "1200dpi x 1200dpi 1bpp Black KAO GL2",
+      "1200dpi x 800dpi 1bpp Black GL2"
+    ],
+    "mimeTypes": [
+      "application/x.gis.spitparameters+json"
+    ],
+    "flowController": "http://localhost:5000/api/flowcontrollers/4",
+    "parameters": [
+      {
+        "jobStore": "http://localhost:5000/api/jobstores/Spit1",
+        "mimeType": "application/x.gis.spitparameters+json",
+        "jobModeExceptions": {},
+        "expectedCount": 1,
+        "multiplicity": "Exact",
+        "multiplicityBasis": "PerJob"
+      }
+    ]
+  },
+  {
+    "id": "ImagePrint",
+    "state": {
+      "name": "Waiting",
+      "isTerminal": false,
+      "isError": false
+    },
+    "uri": "http://localhost:5000/api/jobstores/ImagePrint",
+    "longPollUri": "http://localhost:5000/api/jobstores/ImagePrint?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-1",
+    "name": "Image Print",
+    "type": "ImageHandling",
+    "jobs": [],
+    "jobModes": [
+      "1200x1200 2BPP",
+      "1200dpi x 1200dpi 1bpp Black GL2",
+      "1200dpi x 1200dpi 1bpp Black KAO GL2",
+      "1200dpi x 800dpi 1bpp Black GL2"
+    ],
+    "mimeTypes": [],
+    "flowController": "http://localhost:5000/api/flowcontrollers/6",
+    "parameters": []
+  },
+  {
+    "id": "Vpi1",
+    "state": {
+      "name": "Waiting",
+      "isTerminal": false,
+      "isError": false
+    },
+    "uri": "http://localhost:5000/api/jobstores/Vpi1",
+    "longPollUri": "http://localhost:5000/api/jobstores/Vpi1?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-1",
+    "name": "Vpi 1",
+    "type": "MimeHandling",
+    "jobs": [],
+    "jobModes": [
+      "1200dpi x 1200dpi 1bpp Black GL2",
+      "1200x1200 2BPP"
+    ],
+    "mimeTypes": [
+      "application/x.gis.vpi"
+    ],
+    "flowController": "http://localhost:5000/api/flowcontrollers/5",
+    "parameters": [
+      {
+        "jobStore": "http://localhost:5000/api/jobstores/Vpi1",
+        "mimeType": "application/x.gis.vpi",
+        "jobModeExceptions": {},
+        "expectedCount": 1,
+        "multiplicity": "Exact",
+        "multiplicityBasis": "PerJob"
+      }
+    ]
+  },
+  {
+    "id": "Tiff",
+    "state": {
+      "name": "Waiting",
+      "isTerminal": false,
+      "isError": false
+    },
+    "uri": "http://localhost:5000/api/jobstores/Tiff",
+    "longPollUri": "http://localhost:5000/api/jobstores/Tiff?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-1",
+    "name": "TIFF",
+    "type": "MimeHandling",
+    "jobs": [],
+    "jobModes": [
+      "1200x1200 2BPP",
+      "1200dpi x 1200dpi 1bpp Black GL2",
+      "1200dpi x 1200dpi 1bpp Black KAO GL2",
+      "1200dpi x 800dpi 1bpp Black GL2"
+    ],
+    "mimeTypes": [
+      "image/tiff"
+    ],
+    "flowController": "http://localhost:5000/api/flowcontrollers/7",
+    "parameters": [
+      {
+        "jobStore": "http://localhost:5000/api/jobstores/Tiff",
+        "mimeType": "image/tiff",
+        "jobModeExceptions": {},
+        "expectedCount": 1,
+        "multiplicity": "Exact",
+        "multiplicityBasis": "PerJob"
+      }
+    ]
+  }
+]
+
+==============================================================================
+GET /api/printqueues  ->  200 application/json; charset=utf-8
+==============================================================================
+[
+  {
+    "id": "1200x1200 2BPP",
+    "state": {
+      "name": "Waiting",
+      "isTerminal": false,
+      "isError": false
+    },
+    "uri": "http://localhost:5000/api/printqueues/1200x1200%202BPP",
+    "longPollUri": "http://localhost:5000/api/printqueues/1200x1200%202BPP?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-1",
+    "isSpitSupported": true,
+    "isInternalEncoderSupported": true,
+    "internalEncoderFrequency": 0,
+    "xPitchInMillimetres": 0.021166666666666667,
+    "yPitchInMillimetres": 0.021166666666666667,
+    "printOperations": [],
+    "spitOperations": [],
+    "flowController": "http://localhost:5000/api/flowcontrollers/3"
+  },
+  {
+    "id": "1200dpi x 1200dpi 1bpp Black GL2",
+    "state": {
+      "name": "Waiting",
+      "isTerminal": false,
+      "isError": false
+    },
+    "uri": "http://localhost:5000/api/printqueues/1200dpi%20x%201200dpi%201bpp%20Black%20GL2",
+    "longPollUri": "http://localhost:5000/api/printqueues/1200dpi%20x%201200dpi%201bpp%20Black%20GL2?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-1",
+    "isSpitSupported": true,
+    "isInternalEncoderSupported": true,
+    "internalEncoderFrequency": 0,
+    "xPitchInMillimetres": 0.021166666666666667,
+    "yPitchInMillimetres": 0.021166666666666667,
+    "printOperations": [],
+    "spitOperations": [],
+    "flowController": "http://localhost:5000/api/flowcontrollers/0"
+  },
+  {
+    "id": "1200dpi x 1200dpi 1bpp Black KAO GL2",
+    "state": {
+      "name": "Waiting",
+      "isTerminal": false,
+      "isError": false
+    },
+    "uri": "http://localhost:5000/api/printqueues/1200dpi%20x%201200dpi%201bpp%20Black%20KAO%20GL2",
+    "longPollUri": "http://localhost:5000/api/printqueues/1200dpi%20x%201200dpi%201bpp%20Black%20KAO%20GL2?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-1",
+    "isSpitSupported": true,
+    "isInternalEncoderSupported": true,
+    "internalEncoderFrequency": 0,
+    "xPitchInMillimetres": 0.021166666666666667,
+    "yPitchInMillimetres": 0.021166666666666667,
+    "printOperations": [],
+    "spitOperations": [],
+    "flowController": "http://localhost:5000/api/flowcontrollers/1"
+  },
+  {
+    "id": "1200dpi x 800dpi 1bpp Black GL2",
+    "state": {
+      "name": "Waiting",
+      "isTerminal": false,
+      "isError": false
+    },
+    "uri": "http://localhost:5000/api/printqueues/1200dpi%20x%20800dpi%201bpp%20Black%20GL2",
+    "longPollUri": "http://localhost:5000/api/printqueues/1200dpi%20x%20800dpi%201bpp%20Black%20GL2?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-1",
+    "isSpitSupported": true,
+    "isInternalEncoderSupported": true,
+    "internalEncoderFrequency": 0,
+    "xPitchInMillimetres": 0.021166666666666667,
+    "yPitchInMillimetres": 0.03175,
+    "printOperations": [],
+    "spitOperations": [],
+    "flowController": "http://localhost:5000/api/flowcontrollers/2"
+  }
+]
+
+==============================================================================
+GET /api/printqueues/default  ->  404 
+==============================================================================
+"Unknown PrintQueue default"
+
+==============================================================================
+GET /api/printoperations  ->  200 application/json; charset=utf-8
+==============================================================================
+[]
+
+==============================================================================
+GET /api/bitmaps  ->  404 
+==============================================================================
+
+
+==============================================================================
+GET /api/separatedimages  ->  404 
+==============================================================================
+
+
+==============================================================================
+GET /api/HeadManagerBoards  ->  200 application/json; charset=utf-8
+==============================================================================
+[
+  {
+    "state": {
+      "name": "Disconnected",
+      "isTerminal": false,
+      "isError": false
+    },
+    "longPollUri": "http://localhost:5000/api/headmanagerboards/0?longpoll=Disconnect0",
+    "id": "0",
+    "uri": "http://localhost:5000/api/headmanagerboards/0"
+  }
+]
+
+==============================================================================
+GET /api/EventManagerBoards  ->  200 application/json; charset=utf-8
+==============================================================================
+[
+  {
+    "alarms": {
+      "cause": [],
+      "currentAlarms": [],
+      "resetAlarms": "http://192.168.79.1:8080/api/systemmanagerboards/0/alarms/resetalarms",
+      "state": {
+        "name": "NoAlarm",
+        "isTerminal": false,
+        "isError": false
+      },
+      "longPollUri": "http://192.168.79.1:8080/api/systemmanagerboards/0/alarms?longpoll=1289509376",
+      "uri": "http://192.168.79.1:8080/api/systemmanagerboards/0/alarms"
+    },
+    "diags": {
+      "emsEncoderOut": 256604,
+      "encoderManagementSystemEncoderOut": 256604,
+      "emsPdOut": 14,
+      "encoderManagementSystemProductDetectOut": 14,
+      "fireRequests0": 14,
+      "inputStates": {},
+      "phase0Counter": 40128,
+      "phase1Counter": 40135,
+      "productDetectFilteredCounter": 14,
+      "zeroPhaseCounter": 40135
+    },
+    "diagnostics": {
+      "emsEncoderOut": 256604,
+      "encoderManagementSystemEncoderOut": 256604,
+      "emsPdOut": 14,
+      "encoderManagementSystemProductDetectOut": 14,
+      "fireRequests0": 14,
+      "inputStates": {},
+      "phase0Counter": 40128,
+      "phase1Counter": 40135,
+      "productDetectFilteredCounter": 14,
+      "zeroPhaseCounter": 40135
+    },
+    "ems": {
+      "absolutePosition": -11752,
+      "encoderEdgeDetection": "Both",
+      "encoderInputEnabled": true,
+      "encoderPhases": "Both",
+      "encoderSource": "RS422",
+      "invertDirection": false,
+      "pdCount": {
+        "hardware": 14,
+        "total": 14
+      },
+      "productDetectCount": {
+        "hardware": 14,
+        "total": 14
+      },
+      "pdEdgeDetection": "Rising",
+      "productDetectEdgeDetection": "Rising",
+      "productDetectInputEnabled": true,
+      "printGoSource": "TTL_PNP",
+      "productDetectSource": "TTL_PNP"
+    },
+    "encoderManagementSystem": {
+      "absolutePosition": -11752,
+      "encoderEdgeDetection": "Both",
+      "encoderInputEnabled": true,
+      "encoderPhases": "Both",
+      "encoderSource": "RS422",
+      "invertDirection": false,
+      "pdCount": {
+        "hardware": 14,
+        "total": 14
+      },
+      "productDetectCount": {
+        "hardware": 14,
+        "total": 14
+      },
+      "pdEdgeDetection": "Rising",
+      "productDetectEdgeDetection": "Rising",
+      "productDetectInputEnabled": true,
+      "printGoSource": "TTL_PNP",
+      "productDetectSource": "TTL_PNP"
+    },
+    "productInfo": {
+      "productName": "SM-200",
+      "softwareVersion": "1.2.0.11203",
+      "logicVersion": "1.2.0.3988",
+      "buildDate": "Jul 10 2023",
+      "buildTime": "02:23:39"
+    },
+    "state": {
+      "name": "Running",
+      "isTerminal": false,
+      "isError": false
+    }
+  }
+]
+
+==============================================================================
+GET /api/flowcontrollers  ->  200 application/json; charset=utf-8
+==============================================================================
+[
+  {
+    "id": "0",
+    "name": "Print queue 1200dpi x 1200dpi 1bpp Black GL2",
+    "constraints": "ImageLimit: 3",
+    "resources": "Images: 0",
+    "state": {
+      "name": "NotFull",
+      "isTerminal": false,
+      "isError": false
+    },
+    "uri": "http://localhost:5000/api/flowcontrollers/0",
+    "longPollUri": "http://localhost:5000/api/flowcontrollers/0?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-0"
+  },
+  {
+    "id": "1",
+    "name": "Print queue 1200dpi x 1200dpi 1bpp Black KAO GL2",
+    "constraints": "ImageLimit: 3",
+    "resources": "Images: 0",
+    "state": {
+      "name": "NotFull",
+      "isTerminal": false,
+      "isError": false
+    },
+    "uri": "http://localhost:5000/api/flowcontrollers/1",
+    "longPollUri": "http://localhost:5000/api/flowcontrollers/1?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-0"
+  },
+  {
+    "id": "2",
+    "name": "Print queue 1200dpi x 800dpi 1bpp Black GL2",
+    "constraints": "ImageLimit: 3",
+    "resources": "Images: 0",
+    "state": {
+      "name": "NotFull",
+      "isTerminal": false,
+      "isError": false
+    },
+    "uri": "http://localhost:5000/api/flowcontrollers/2",
+    "longPollUri": "http://localhost:5000/api/flowcontrollers/2?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-0"
+  },
+  {
+    "id": "3",
+    "name": "Print queue 1200x1200 2BPP",
+    "constraints": "ImageLimit: 3",
+    "resources": "Images: 0",
+    "state": {
+      "name": "NotFull",
+      "isTerminal": false,
+      "isError": false
+    },
+    "uri": "http://localhost:5000/api/flowcontrollers/3",
+    "longPollUri": "http://localhost:5000/api/flowcontrollers/3?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-0"
+  },
+  {
+    "id": "4",
+    "name": "Job store Spit1",
+    "constraints": "ItemLimit: 3",
+    "resources": "Items: 0",
+    "state": {
+      "name": "NotFull",
+      "isTerminal": false,
+      "isError": false
+    },
+    "uri": "http://localhost:5000/api/flowcontrollers/4",
+    "longPollUri": "http://localhost:5000/api/flowcontrollers/4?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-0"
+  },
+  {
+    "id": "5",
+    "name": "Job store Vpi1",
+    "constraints": "ItemLimit: 3",
+    "resources": "Items: 0",
+    "state": {
+      "name": "NotFull",
+      "isTerminal": false,
+      "isError": false
+    },
+    "uri": "http://localhost:5000/api/flowcontrollers/5",
+    "longPollUri": "http://localhost:5000/api/flowcontrollers/5?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-0"
+  },
+  {
+    "id": "6",
+    "name": "Job store ImagePrint",
+    "constraints": "ImageLimit: 3",
+    "resources": "Images: 0",
+    "state": {
+      "name": "NotFull",
+      "isTerminal": false,
+      "isError": false
+    },
+    "uri": "http://localhost:5000/api/flowcontrollers/6",
+    "longPollUri": "http://localhost:5000/api/flowcontrollers/6?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-0"
+  },
+  {
+    "id": "7",
+    "name": "Job store Tiff",
+    "constraints": "ItemLimit: 3",
+    "resources": "Items: 0",
+    "state": {
+      "name": "NotFull",
+      "isTerminal": false,
+      "isError": false
+    },
+    "uri": "http://localhost:5000/api/flowcontrollers/7",
+    "longPollUri": "http://localhost:5000/api/flowcontrollers/7?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-0"
+  }
+]
+
+==============================================================================
+GET /api/licences  ->  200 application/json; charset=utf-8
+==============================================================================
+[
+  {
+    "product": "atlasserver",
+    "expiration": "permanent"
+  }
+]
+
+==============================================================================
+GET /api/Temperatures/HeadManagerBoards  ->  200 application/json; charset=utf-8
+==============================================================================
+{}
+
+==============================================================================
+GET /api/version  ->  200 application/json; charset=utf-8
+==============================================================================
+{
+  "AtlasServices.Api": "1.0.10.26848",
+  "AtlasServices": "1.0.10.26848"
+}
+
