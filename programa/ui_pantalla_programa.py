@@ -397,29 +397,29 @@ class Ui_MainWindow(object):
 "border-radius: 5px;")
         self.txtMessage_2.setReadOnly(True)
         self.stackedWidget.addWidget(self.movimientos)
-        self.PMB8 = QWidget()
-        self.PMB8.setObjectName(u"PMB8")
-        self.label_28 = QLabel(self.PMB8)
+        self.print_server = QWidget()
+        self.print_server.setObjectName(u"print_server")
+        self.label_28 = QLabel(self.print_server)
         self.label_28.setObjectName(u"label_28")
-        self.label_28.setGeometry(QRect(20, 610, 25, 25))
+        self.label_28.setGeometry(QRect(20, 710, 25, 25))
         self.label_28.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.label_29 = QLabel(self.PMB8)
+        self.label_29 = QLabel(self.print_server)
         self.label_29.setObjectName(u"label_29")
-        self.label_29.setGeometry(QRect(20, 560, 25, 25))
+        self.label_29.setGeometry(QRect(20, 660, 25, 25))
         self.label_29.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.lblCoordsText = QLabel(self.PMB8)
+        self.lblCoordsText = QLabel(self.print_server)
         self.lblCoordsText.setObjectName(u"lblCoordsText")
-        self.lblCoordsText.setGeometry(QRect(30, 410, 130, 20))
+        self.lblCoordsText.setGeometry(QRect(30, 510, 130, 20))
         self.lblCoordsText.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.btnMirrorY = QPushButton(self.PMB8)
+        self.btnMirrorY = QPushButton(self.print_server)
         self.btnMirrorY.setObjectName(u"btnMirrorY")
-        self.btnMirrorY.setGeometry(QRect(70, 250, 111, 61))
+        self.btnMirrorY.setGeometry(QRect(70, 270, 111, 61))
         self.btnMirrorY.setStyleSheet(u"QPushButton {\n"
 "    background-color: #62CBC9;\n"
 "    border: 2px solid #333333;\n"
@@ -434,7 +434,7 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
 "}")
-        self.systemode = QComboBox(self.PMB8)
+        self.systemode = QComboBox(self.print_server)
         self.systemode.setObjectName(u"systemode")
         self.systemode.setGeometry(QRect(240, 9, 370, 41))
         self.systemode.setStyleSheet(u" background-color: #62CBC9;\n"
@@ -443,15 +443,15 @@ class Ui_MainWindow(object):
 "    padding: 10px;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.rip2 = QLabel(self.PMB8)
+        self.rip2 = QLabel(self.print_server)
         self.rip2.setObjectName(u"rip2")
         self.rip2.setGeometry(QRect(1510, 290, 300, 210))
         self.rip2.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
 "border: 2px solid #62CBC9;\n"
 "border-radius: 5px;")
-        self.pos_x_target = QLineEdit(self.PMB8)
+        self.pos_x_target = QLineEdit(self.print_server)
         self.pos_x_target.setObjectName(u"pos_x_target")
-        self.pos_x_target.setGeometry(QRect(60, 550, 161, 41))
+        self.pos_x_target.setGeometry(QRect(60, 650, 161, 41))
         self.pos_x_target.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
 "color: rgb(0, 0, 0);\n"
 "border: 2px solid #62CBC9;\n"
@@ -459,7 +459,7 @@ class Ui_MainWindow(object):
 "padding: 10px;\n"
 "font-size: 20px;\n"
 "font-family: nunito;")
-        self.btnPrint = QPushButton(self.PMB8)
+        self.btnPrint = QPushButton(self.print_server)
         self.btnPrint.setObjectName(u"btnPrint")
         self.btnPrint.setGeometry(QRect(1390, 550, 100, 100))
         self.btnPrint.setStyleSheet(u"QPushButton {\n"
@@ -476,13 +476,13 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
 "}")
-        self.label_30 = QLabel(self.PMB8)
+        self.label_30 = QLabel(self.print_server)
         self.label_30.setObjectName(u"label_30")
-        self.label_30.setGeometry(QRect(20, 450, 25, 25))
+        self.label_30.setGeometry(QRect(20, 550, 25, 25))
         self.label_30.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.btnSelect = QPushButton(self.PMB8)
+        self.btnSelect = QPushButton(self.print_server)
         self.btnSelect.setObjectName(u"btnSelect")
         self.btnSelect.setGeometry(QRect(1390, 190, 100, 100))
         font = QFont()
@@ -502,7 +502,7 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
 "}")
-        self.btn_clear = QPushButton(self.PMB8)
+        self.btn_clear = QPushButton(self.print_server)
         self.btn_clear.setObjectName(u"btn_clear")
         self.btn_clear.setGeometry(QRect(1610, 970, 100, 41))
         self.btn_clear.setStyleSheet(u"QPushButton {\n"
@@ -518,7 +518,7 @@ class Ui_MainWindow(object):
 "}\n"
 "QPushButton:pressed {rgb(229, 13, 35)\n"
 "}")
-        self.labelImage = QLabel(self.PMB8)
+        self.labelImage = QLabel(self.print_server)
         self.labelImage.setObjectName(u"labelImage")
         self.labelImage.setGeometry(QRect(240, 60, 1131, 800))
         self.labelImage.setAutoFillBackground(False)
@@ -526,15 +526,15 @@ class Ui_MainWindow(object):
 "border: 2px solid #62CBC9;\n"
 "border-radius: 5px;")
         self.labelImage.setScaledContents(False)
-        self.rip4 = QLabel(self.PMB8)
+        self.rip4 = QLabel(self.print_server)
         self.rip4.setObjectName(u"rip4")
         self.rip4.setGeometry(QRect(1510, 750, 300, 210))
         self.rip4.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
 "border: 2px solid #62CBC9;\n"
 "border-radius: 5px;")
-        self.btnRotate = QPushButton(self.PMB8)
+        self.btnRotate = QPushButton(self.print_server)
         self.btnRotate.setObjectName(u"btnRotate")
-        self.btnRotate.setGeometry(QRect(70, 110, 111, 61))
+        self.btnRotate.setGeometry(QRect(70, 130, 111, 61))
         self.btnRotate.setStyleSheet(u"QPushButton {\n"
 "    background-color: #62CBC9;\n"
 "    border: 2px solid #333333;\n"
@@ -549,9 +549,9 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
 "}")
-        self.pos_y_target = QLineEdit(self.PMB8)
+        self.pos_y_target = QLineEdit(self.print_server)
         self.pos_y_target.setObjectName(u"pos_y_target")
-        self.pos_y_target.setGeometry(QRect(60, 600, 161, 41))
+        self.pos_y_target.setGeometry(QRect(60, 700, 161, 41))
         self.pos_y_target.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
 "color: rgb(0, 0, 0);\n"
 "border: 2px solid #62CBC9;\n"
@@ -559,15 +559,15 @@ class Ui_MainWindow(object):
 "padding: 10px;\n"
 "font-size: 20px;\n"
 "font-family: nunito;")
-        self.rip1 = QLabel(self.PMB8)
+        self.rip1 = QLabel(self.print_server)
         self.rip1.setObjectName(u"rip1")
         self.rip1.setGeometry(QRect(1510, 60, 300, 210))
         self.rip1.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
 "border: 2px solid #62CBC9;\n"
 "border-radius: 5px;")
-        self.lblSizeValue = QLabel(self.PMB8)
+        self.lblSizeValue = QLabel(self.print_server)
         self.lblSizeValue.setObjectName(u"lblSizeValue")
-        self.lblSizeValue.setGeometry(QRect(1210, 10, 160, 40))
+        self.lblSizeValue.setGeometry(QRect(60, 430, 160, 40))
         self.lblSizeValue.setStyleSheet(u"  background-color: #3F4D4C;\n"
 "color: #62CBC9;\n"
 "    border: 2px solid #62CBC9;\n"
@@ -575,15 +575,15 @@ class Ui_MainWindow(object):
 "    padding: 10px;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.rip3 = QLabel(self.PMB8)
+        self.rip3 = QLabel(self.print_server)
         self.rip3.setObjectName(u"rip3")
         self.rip3.setGeometry(QRect(1510, 520, 300, 210))
         self.rip3.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
 "border: 2px solid #62CBC9;\n"
 "border-radius: 5px;")
-        self.pos_x_real = QLabel(self.PMB8)
+        self.pos_x_real = QLabel(self.print_server)
         self.pos_x_real.setObjectName(u"pos_x_real")
-        self.pos_x_real.setGeometry(QRect(60, 444, 161, 41))
+        self.pos_x_real.setGeometry(QRect(60, 544, 161, 41))
         self.pos_x_real.setStyleSheet(u"  background-color: #3F4D4C;\n"
 "color: #62CBC9;\n"
 "    border: 2px solid #62CBC9;\n"
@@ -591,7 +591,7 @@ class Ui_MainWindow(object):
 "    padding: 10px;\n"
 "	font-size: 20px;\n"
 "	font-family: nunito;")
-        self.btnUpdateMode = QPushButton(self.PMB8)
+        self.btnUpdateMode = QPushButton(self.print_server)
         self.btnUpdateMode.setObjectName(u"btnUpdateMode")
         self.btnUpdateMode.setGeometry(QRect(60, 10, 130, 41))
         self.btnUpdateMode.setStyleSheet(u"QPushButton {\n"
@@ -608,7 +608,7 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
 "}")
-        self.btnNewjob = QPushButton(self.PMB8)
+        self.btnNewjob = QPushButton(self.print_server)
         self.btnNewjob.setObjectName(u"btnNewjob")
         self.btnNewjob.setGeometry(QRect(1390, 70, 100, 100))
         self.btnNewjob.setStyleSheet(u"QPushButton {\n"
@@ -625,7 +625,7 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
 "}")
-        self.btnRip = QPushButton(self.PMB8)
+        self.btnRip = QPushButton(self.print_server)
         self.btnRip.setObjectName(u"btnRip")
         self.btnRip.setGeometry(QRect(1390, 410, 100, 100))
         self.btnRip.setStyleSheet(u"QPushButton {\n"
@@ -642,7 +642,7 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
 "}")
-        self.txtMessage = QTextEdit(self.PMB8)
+        self.txtMessage = QTextEdit(self.print_server)
         self.txtMessage.setObjectName(u"txtMessage")
         self.txtMessage.setGeometry(QRect(240, 870, 1131, 151))
         self.txtMessage.setStyleSheet(u"background-color: rgb(174, 199, 232);\n"
@@ -650,9 +650,9 @@ class Ui_MainWindow(object):
 "border: 2px solid #62CBC9;\n"
 "border-radius: 5px;")
         self.txtMessage.setReadOnly(True)
-        self.pos_y_real = QLabel(self.PMB8)
+        self.pos_y_real = QLabel(self.print_server)
         self.pos_y_real.setObjectName(u"pos_y_real")
-        self.pos_y_real.setGeometry(QRect(60, 494, 161, 41))
+        self.pos_y_real.setGeometry(QRect(60, 594, 161, 41))
         self.pos_y_real.setStyleSheet(u"  background-color: #3F4D4C;\n"
 "color: #62CBC9;\n"
 "    border: 2px solid #62CBC9;\n"
@@ -660,9 +660,9 @@ class Ui_MainWindow(object):
 "    padding: 10px;\n"
 "	font-size: 20px;\n"
 "	font-family: nunito;")
-        self.btnMirrorX = QPushButton(self.PMB8)
+        self.btnMirrorX = QPushButton(self.print_server)
         self.btnMirrorX.setObjectName(u"btnMirrorX")
-        self.btnMirrorX.setGeometry(QRect(70, 180, 111, 61))
+        self.btnMirrorX.setGeometry(QRect(70, 200, 111, 61))
         self.btnMirrorX.setStyleSheet(u"QPushButton {\n"
 "    background-color: #62CBC9;\n"
 "    border: 2px solid #333333;\n"
@@ -677,19 +677,19 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
 "}")
-        self.lblSizeText = QLabel(self.PMB8)
+        self.lblSizeText = QLabel(self.print_server)
         self.lblSizeText.setObjectName(u"lblSizeText")
-        self.lblSizeText.setGeometry(QRect(1110, 30, 81, 20))
+        self.lblSizeText.setGeometry(QRect(30, 390, 81, 20))
         self.lblSizeText.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.label_31 = QLabel(self.PMB8)
+        self.label_31 = QLabel(self.print_server)
         self.label_31.setObjectName(u"label_31")
-        self.label_31.setGeometry(QRect(20, 500, 25, 25))
+        self.label_31.setGeometry(QRect(20, 600, 25, 25))
         self.label_31.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.btnAbort = QPushButton(self.PMB8)
+        self.btnAbort = QPushButton(self.print_server)
         self.btnAbort.setObjectName(u"btnAbort")
         self.btnAbort.setGeometry(QRect(1390, 690, 100, 100))
         self.btnAbort.setStyleSheet(u"QPushButton {\n"
@@ -706,7 +706,25 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
 "}")
-        self.stackedWidget.addWidget(self.PMB8)
+        self.systemode_epson = QComboBox(self.print_server)
+        self.systemode_epson.setObjectName(u"systemode_epson")
+        self.systemode_epson.setGeometry(QRect(620, 10, 370, 41))
+        self.systemode_epson.setStyleSheet(u" background-color: #62CBC9;\n"
+"    border: 2px solid #333333;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.systemode_aewa = QComboBox(self.print_server)
+        self.systemode_aewa.setObjectName(u"systemode_aewa")
+        self.systemode_aewa.setGeometry(QRect(1000, 10, 370, 41))
+        self.systemode_aewa.setStyleSheet(u" background-color: #62CBC9;\n"
+"    border: 2px solid #333333;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.stackedWidget.addWidget(self.print_server)
         self.programa = QWidget()
         self.programa.setObjectName(u"programa")
         self.label_10 = QLabel(self.programa)
@@ -1450,9 +1468,9 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addWidget(self.bt_pg_programa)
 
-        self.pushButton = QPushButton(self.verticalLayoutWidget_2)
-        self.pushButton.setObjectName(u"pushButton")
-        self.pushButton.setStyleSheet(u"QPushButton {\n"
+        self.bt_pg_printserver = QPushButton(self.verticalLayoutWidget_2)
+        self.bt_pg_printserver.setObjectName(u"bt_pg_printserver")
+        self.bt_pg_printserver.setStyleSheet(u"QPushButton {\n"
 "    background-color: #3F4D4C;\n"
 "	color: #62CBC9;\n"
 "    border: 2px solid #333333;\n"
@@ -1469,7 +1487,7 @@ class Ui_MainWindow(object):
 "    background-color: rgb(89, 108, 105);\n"
 "}")
 
-        self.verticalLayout_2.addWidget(self.pushButton)
+        self.verticalLayout_2.addWidget(self.bt_pg_printserver)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
@@ -1482,7 +1500,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(3)
+        self.stackedWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -1626,6 +1644,6 @@ class Ui_MainWindow(object):
         self.bt_pg_menu.setText(QCoreApplication.translate("MainWindow", u"Menu", None))
         self.bt_pg_movimientos1.setText(QCoreApplication.translate("MainWindow", u"Movimientos", None))
         self.bt_pg_programa.setText(QCoreApplication.translate("MainWindow", u"Programa", None))
-        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"PMB-8", None))
+        self.bt_pg_printserver.setText(QCoreApplication.translate("MainWindow", u"Print Server", None))
     # retranslateUi
 

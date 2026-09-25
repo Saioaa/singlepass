@@ -2,7 +2,7 @@
 """Ventana principal: navegacion, pagina de movimientos, ajustes y escalado.
 
 Los dispositivos (MotorD1, ClienteMDuino, ClientePMB) los crea main.py y
-llegan por el constructor. La pagina PMB-8 vive en pagina_pmb.py y la pagina
+llegan por el constructor. La pagina Print Server vive en print_server.py y la pagina
 Programa (secuencia, plan y grafico) en pagina_programa.py.
 
 ui_pantalla_programa.py debe generarse con:
@@ -19,7 +19,9 @@ from PySide6.QtWidgets import QAbstractButton, QMainWindow, QWidget
 
 import config
 from d1 import MODO_POSICION
-from pagina_pmb import PaginaPMB
+from board_pmb import BoardPMB
+from epson import BoardEpson
+from print_server import PrintServer
 from pagina_programa import PaginaPrograma
 from secuencia import SecuenciaImpresion
 from ui_pantalla_programa import Ui_MainWindow
@@ -94,11 +96,14 @@ class VentanaPrincipal(QMainWindow):
         self.pmb = pmb
 
         # ===== paginas y secuencias =====
-        self.pagina_pmb = PaginaPMB(self.ui, self.pmb, self.posicion_cabezal,
-                                    posicion_eje=lambda: self.posicion_mm, parent=self)
-        print_go_extra = self.pmb.print_go_software if config.PRINT_GO_TAMBIEN_POR_SOFTWARE else None
+        # boards de impresion: una por familia de cabezal (board.tipos_modulo)
+        self.boards = [BoardPMB(self.pmb, parent=self), BoardEpson(parent=self)]
+        self.print_server = PrintServer(self.ui, self.boards,
+                                        cabezales_activos=lambda: self.pagina_programa.cabezales_activos(),
+                                        posicion_eje=lambda: self.posicion_mm, parent=self)
+        print_go_extra = self.print_server.print_go_software if config.PRINT_GO_TAMBIEN_POR_SOFTWARE else None
         self.secuencia = SecuenciaImpresion(self.motor, self.mduino,
-                                            self.pagina_pmb.esta_lista,
+                                            self.print_server.esta_lista,
                                             config.POSICION_REPOSO_MM,
                                             print_go_extra=print_go_extra, parent=self)
         if config.PRINT_GO_TAMBIEN_POR_SOFTWARE:
@@ -110,11 +115,11 @@ class VentanaPrincipal(QMainWindow):
 
         self.pagina_programa = PaginaPrograma(
             self.ui, self.secuencia, self.mduino,
-            pmb_lista=self.pagina_pmb.esta_lista,
-            abortar_pmb=self.pagina_pmb.abortar,
-            geometria_imagen=self.pagina_pmb.geometria_imagen,
+            boards_listas=self.print_server.esta_lista,
+            abortar_boards=self.print_server.abortar,
+            geometria_imagen=self.print_server.geometria_imagen,
             posicion_real=lambda: self.posicion_mm,
-            registrar=self.pagina_pmb.registrar,
+            registrar=self.print_server.registrar,
             parent=self)
 
         # ===== navegacion =====
@@ -123,7 +128,7 @@ class VentanaPrincipal(QMainWindow):
         self.ui.bt_pg_menu.clicked.connect(self.ir_pg_menu)
         self.ui.bt_pg_programa.clicked.connect(self.ir_pg_programa)
         self.ui.bt_pg_programa_2.clicked.connect(self.ir_pg_programa)
-        self.ui.pushButton.clicked.connect(self.pagina_pmb.entrar)
+        self.ui.pushButton.clicked.connect(self.print_server.entrar)
 
         # ===== pagina movimientos =====
         self.ui.bt_ir_objetivo.clicked.connect(self.ir_objetivo)
@@ -239,10 +244,6 @@ class VentanaPrincipal(QMainWindow):
             self.ui.posicion.setText("---")
             print(f"[POSICION] Lectura fallida: {e}")
             self.timer_posicion.stop()
-
-    def posicion_cabezal(self):
-        """Cabezal PMB activo, para el XOffset de la pagina PMB-8."""
-        return self.pagina_programa.posicion_cabezal_pmb()
 
     # ===== pagina movimientos =====
     def ir_objetivo(self):

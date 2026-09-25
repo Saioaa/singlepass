@@ -18,15 +18,14 @@ from PySide6.QtWidgets import (QFrame, QGraphicsRectItem, QGraphicsScene,
 
 import config
 from mduino import CMD_PULSO
-from pagina_pmb import recorrido_impresion_mm
+from board import recorrido_impresion_mm
 from secuencia import ParametrosPrograma
 
 # ===== MODULOS DE LA BARRA =====
 PRIMER_MODULO = 1
 ULTIMO_MODULO = 8
-TIPOS_CABEZAL_PMB   = ("PMB-C8", "PMB-C2", "APMB4")   # cabezales gobernados por el PMB / Print Server
-TIPOS_CABEZAL_OTROS = ()                                # otros cabezales (p. ej. SM-200): logica pendiente
-TIPOS_CABEZAL = TIPOS_CABEZAL_PMB + TIPOS_CABEZAL_OTROS
+# cabezales de impresion; que board gobierna cada uno lo dice board.tipos_modulo (print_server.py)
+TIPOS_CABEZAL = ("PMB-C8", "PMB-C2", "APMB4", "SM-200")
 MODULO_VACIO  = "-"
 TIPO_NIR      = "NIR"
 TIPO_SECADOR  = "Air dryver"
@@ -85,14 +84,14 @@ def _leer_float(campo, por_defecto=None):
 
 class PaginaPrograma(QObject):
 
-    def __init__(self, ui, secuencia, mduino, pmb_lista, abortar_pmb, geometria_imagen,
+    def __init__(self, ui, secuencia, mduino, boards_listas, abortar_boards, geometria_imagen,
                  posicion_real, registrar, parent=None):
         super().__init__(parent)
         self.ui = ui
         self.secuencia = secuencia
         self.mduino = mduino
-        self._pmb_lista = pmb_lista              # callable -> bool
-        self._abortar_pmb = abortar_pmb          # callable
+        self._boards_listas = boards_listas      # callable -> bool: todas las boards activas armadas
+        self._abortar_boards = abortar_boards    # callable
         self._geometria_imagen = geometria_imagen  # callable -> (x_mm, ancho_mm) | None
         self._posicion_real = posicion_real      # callable -> mm | None
         self.registrar = registrar               # callable(texto)
@@ -176,7 +175,7 @@ class PaginaPrograma(QObject):
         cabezal = self.posicion_cabezal()
         curado = [d for _i, tipo, d in modulos if tipo in TIPOS_CURADO]
         hay_impresion = cabezal is not None
-        usa_pmb = self.tipo_cabezal() in TIPOS_CABEZAL_PMB
+        requiere_armado = hay_impresion   # todo cabezal con board se arma desde Print Server
         hay_curado = bool(curado) and pasadas_curado > 0
         if not hay_impresion and not hay_curado:
             if curado:
@@ -218,7 +217,7 @@ class PaginaPrograma(QObject):
                           f"supera el limite del eje ({maximo} mm): se recorta")
             fin_impresion = min(fin_impresion, maximo)
             fin_curado = min(fin_curado, maximo)
-        return fin_impresion, inicio_curado, fin_curado, hay_curado, hay_impresion, usa_pmb, avisos
+        return fin_impresion, inicio_curado, fin_curado, hay_curado, hay_impresion, requiere_armado, avisos
 
     # ===== parametros =====
     def leer_potencia(self, campo):
@@ -230,7 +229,7 @@ class PaginaPrograma(QObject):
         """ParametrosPrograma listo para la secuencia. Lanza ValueError si falta algo."""
         pasadas = int(_leer_float(self.ui.pg_prog_cant_pasadas_curado, por_defecto=0))
         (fin_impresion, inicio_curado, fin_curado,
-         hay_curado, hay_impresion, usa_pmb, avisos) = self.calcular_plan(pasadas)
+         hay_curado, hay_impresion, requiere_armado, avisos) = self.calcular_plan(pasadas)
         potencia_nir = self.leer_potencia(self.ui.pg_prog_potencia_NIR)
         potencia_secador = self.leer_potencia(self.ui.pg_prog_potencia_secador)
         if hay_curado and potencia_nir == 0:
@@ -250,7 +249,7 @@ class PaginaPrograma(QObject):
             fin_curado=fin_curado,
             hay_curado=hay_curado,
             hay_impresion=hay_impresion,
-            usa_pmb=usa_pmb,
+            requiere_armado=requiere_armado,
             potencia_nir=potencia_nir,
             potencia_secador=potencia_secador,
         )
@@ -278,8 +277,8 @@ class PaginaPrograma(QObject):
         except ValueError:
             self.registrar("[PROGRAMA] Faltan parametros de impresion o curado")
             return
-        if parametros.hay_impresion and parametros.usa_pmb and not self._pmb_lista():
-            self.registrar("[PROGRAMA] El PMB no esta armado: pulsa Print en la pagina PMB-8")
+        if parametros.hay_impresion and parametros.requiere_armado and not self._boards_listas():
+            self.registrar("[PROGRAMA] Las boards no estan armadas: pulsa Print en la pagina Print Server")
             return
         if not self.secuencia.start(parametros):
             self.registrar("[PROGRAMA] No se puede arrancar: seta o referencia pendiente")
@@ -290,8 +289,8 @@ class PaginaPrograma(QObject):
         if self.secuencia.en_marcha():
             self.secuencia.stop()
             self.registrar("[PROGRAMA] Parada")
-            if self._pmb_lista():
-                self._abortar_pmb()   # el PMB no debe quedarse esperando un print go que no llegara
+            if self._boards_listas():
+                self._abortar_boards()   # las boards no deben quedarse esperando un print go que no llegara
 
     def _mensaje_mduino(self, mensaje):
         """Lo que sale hacia el M-Duino: el PULSE se resalta en el grafico."""
@@ -328,10 +327,9 @@ class PaginaPrograma(QObject):
         cabezal = self._cabezal_activo()
         return cabezal[0] if cabezal else None
 
-    def posicion_cabezal_pmb(self):
-        """Posicion del cabezal PMB activo, para el XOffset de la pagina PMB-8; None si no lo hay."""
-        cabezal = self._cabezal_activo(TIPOS_CABEZAL_PMB)
-        return cabezal[1] if cabezal else None
+    def cabezales_activos(self):
+        """[(tipo, posicion_mm), ...] de todos los cabezales activos, para Print Server."""
+        return [(tipo, d) for _i, tipo, d in self.leer_modulos() if tipo in TIPOS_CABEZAL]
 
     # ===== grafico estatico =====
     def _dibujar_perfil(self, v, a, dec, inicio_mm, fin_mm, escala, y_base, altura, color):
@@ -415,7 +413,7 @@ class PaginaPrograma(QObject):
         pasadas = int(_leer_float(self.ui.pg_prog_cant_pasadas_curado, por_defecto=0))
         try:
             (fin_impresion, inicio_curado, fin_curado,
-             hay_curado, hay_impresion, _usa_pmb, _avisos) = self.calcular_plan(pasadas)
+             hay_curado, hay_impresion, _requiere_armado, _avisos) = self.calcular_plan(pasadas)
         except PlanInvalido:
             hay_curado = hay_impresion = False
         v_ref = v_impr if hay_impresion and v_impr > 0 else v_cur   # la altura maxima es la mayor velocidad

@@ -6,7 +6,7 @@ interfaz: los calcula la pagina Programa a partir de los modulos montados y
 llegan en ParametrosPrograma. La secuencia solo sabe de posiciones.
 
 Uso:
-    self.secuencia = SecuenciaImpresion(motor, mduino, self.pagina_pmb.esta_lista)
+    self.secuencia = SecuenciaImpresion(motor, mduino, self.print_server.esta_lista, reposo)
     self.secuencia.start(ParametrosPrograma(...))
 """
 
@@ -52,7 +52,7 @@ class ParametrosPrograma:
     fin_curado: float              # mm: mesa entera despues del ultimo modulo de curado
     hay_curado: bool = False       # hay modulo NIR/secador y pasadas > 0
     hay_impresion: bool = True     # hay cabezal activo: la secuencia envia PULSE e imprime
-    usa_pmb: bool = True           # el cabezal activo es de la familia PMB: exige el PMB armado
+    requiere_armado: bool = True   # hay cabezal con board: exige todas las boards armadas
     potencia_nir: int = 0          # % de las lamparas NIR durante el curado (LAMP:<n> al M-Duino)
     potencia_secador: int = 0      # % del secador; sin salida en el M-Duino todavia, solo se guarda
 
@@ -61,13 +61,13 @@ class SecuenciaImpresion(QObject):
 
     terminada = Signal()    # la secuencia ha vuelto a ESPERA
 
-    def __init__(self, motor, mduino, pmb_listo, posicion_reposo, print_go_extra=None,
+    def __init__(self, motor, mduino, boards_listas, posicion_reposo, print_go_extra=None,
                  parent=None):
         super().__init__(parent)
         self.motor = motor
         self.mduino = mduino
         self._print_go_extra = print_go_extra   # callable opcional que se lanza junto al PULSE
-        self._pmb_listo = pmb_listo   # callable -> bool: el PMB esta armado (se arma en la pagina PMB)
+        self._boards_listas = boards_listas   # callable -> bool: todas las boards activas armadas
         self.posicion_reposo = posicion_reposo
 
         self.timer = QTimer(self)
@@ -112,7 +112,7 @@ class SecuenciaImpresion(QObject):
     def start(self, parametros):
         if self.referencia_pendiente or self.seta:
             return False
-        if parametros.hay_impresion and parametros.usa_pmb and not self._pmb_listo():
+        if parametros.hay_impresion and parametros.requiere_armado and not self._boards_listas():
             return False
         self.parametros = parametros
         self.contpas = parametros.pasadas_curado
