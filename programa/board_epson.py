@@ -67,8 +67,8 @@ ESTADOS_IMPRESO      = ("Completed", "Printed", "Finished")               # term
 ESTADOS_ERROR        = ("FinishedWithError",)   # terminal con isError; visto sin HMB: "1 of 1 print operations failed"
 NOMBRE_TRABAJO       = "singlepass"
 NOMBRE_VPI_EPSON     = "epson.vpi"
-NOMBRE_PREVIEW       = "preview_epson.png"   # recorte de Preview.tif con solo la imagen
-TOLERANCIA_ASPECTO   = 0.05   # para reconocer si Preview.tif es la pagina entera o solo la imagen
+NOMBRE_PREVIEW_ATLAS = "preview_atlas.tif"   # Preview.tif tal cual lo devuelve Atlas (miniatura cuadrada)
+NOMBRE_PREVIEW       = "preview_epson.png"   # tramo de la pagina con la imagen, mismo formato que un plano del PMB
 CLAVE_DATOS_EPSON    = "epson"          # bloque propio dentro del json del trabajo
 
 
@@ -220,6 +220,7 @@ class BoardEpson(Board):
         self.id_trabajo = None
         self.sondeo = None
         self._conectada = False
+        self._estado_hmb = {}   # id -> ultimo estado avisado, para no repetir el aviso
         self._estado_trabajo_atlas = None   # ultimo state.name recibido del trabajo
 
     # ===== conexion y modos =====
@@ -236,8 +237,13 @@ class BoardEpson(Board):
         if codigo == 200 and isinstance(hmbs, list):
             for hmb in hmbs:
                 estado = hmb.get("state", {}).get("name")
+                if estado == self._estado_hmb.get(hmb.get("id")):
+                    continue   # se avisa solo cuando cambia
+                self._estado_hmb[hmb.get("id")] = estado
                 if estado != ESTADO_HMB_OK:
                     self.registrar(f"HMB {hmb.get('id')}: {estado} (no se podra imprimir hasta que este {ESTADO_HMB_OK})")
+                else:
+                    self.registrar(f"HMB {hmb.get('id')}: {estado}")
         return True
 
     def esta_conectada(self):
@@ -407,9 +413,9 @@ class BoardEpson(Board):
         return True
 
     def planos_render(self):
-        """Descarga Preview.tif del trabajo (un unico plano) y guarda en la carpeta la
-        parte que corresponde a la imagen, para componerla en la mesa como los planos del PMB.
-        La pagina Epson empieza en el print go, asi que la imagen es el tramo final."""
+        """Descarga Preview.tif del trabajo (un unico plano) y guarda en la carpeta el tramo
+        de pagina que ocupa la imagen, con el mismo formato que un plano del PMB (ancho de la
+        imagen x alto del cabezal), para que Print Server lo componga sobre la mesa."""
         if self.id_trabajo is None or self.carpeta_trabajo is None:
             return []
         codigo, datos = self.cliente.peticion("GET", f"/api/Jobs/{self.id_trabajo}/Preview.tif")
@@ -420,25 +426,30 @@ class BoardEpson(Board):
         if imagen.isNull():
             self.registrar("Preview.tif no se ha podido decodificar")
             return []
-        recorte = self._recortar_imagen(imagen)
+        with open(os.path.join(self.carpeta_trabajo, NOMBRE_PREVIEW_ATLAS), "wb") as f:
+            f.write(datos)
+        recorte = self._recortar_pagina(imagen)
         ruta = os.path.join(self.carpeta_trabajo, NOMBRE_PREVIEW)
         if not recorte.save(ruta):
             return []
         return [ruta]
 
-    def _recortar_imagen(self, imagen):
-        """Si la previsualizacion tiene la proporcion de la pagina entera, se queda con el
-        tramo final (donde esta la imagen); si ya tiene la de la imagen, se devuelve tal cual."""
-        if self.dimensiones_pagina is None or self.geometria is None or not self.alto_imagen_mm:
+    def _recortar_pagina(self, imagen):
+        """Preview.tif es una miniatura cuadrada (256 x 256) con la pagina entera encajada
+        conservando la proporcion y centrada (bandas blancas arriba y abajo). Se recorta el
+        tramo final de la pagina (donde esta la imagen: la pagina empieza en el print go)
+        a toda la altura del cabezal, como un plano del PMB."""
+        if self.dimensiones_pagina is None or self.geometria is None:
             return imagen
         ancho_pagina, alto_pagina = self.dimensiones_pagina
         ancho_imagen = self.geometria[1]
-        aspecto = imagen.width() / imagen.height()
-        if abs(aspecto - ancho_pagina / alto_pagina) > TOLERANCIA_ASPECTO * aspecto:
-            return imagen
-        ancho_px = round(imagen.width() * ancho_imagen / ancho_pagina)
-        alto_px = round(imagen.height() * self.alto_imagen_mm / alto_pagina)
-        return imagen.copy(imagen.width() - ancho_px, 0, ancho_px, alto_px)
+        escala = min(imagen.width() / ancho_pagina, imagen.height() / alto_pagina)   # px por mm
+        ancho_pagina_px = ancho_pagina * escala
+        alto_pagina_px = alto_pagina * escala
+        x0 = (imagen.width() - ancho_pagina_px) / 2
+        y0 = (imagen.height() - alto_pagina_px) / 2
+        ancho_px = round(ancho_imagen * escala)
+        return imagen.copy(round(x0 + ancho_pagina_px) - ancho_px, round(y0), ancho_px, round(alto_pagina_px))
 
     def geometria_trabajo(self):
         return self.geometria
