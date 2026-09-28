@@ -67,7 +67,6 @@ ESTADOS_IMPRESO      = ("Completed", "Printed", "Finished")               # term
 ESTADOS_ERROR        = ("FinishedWithError",)   # terminal con isError; visto sin HMB: "1 of 1 print operations failed"
 NOMBRE_TRABAJO       = "singlepass"
 NOMBRE_VPI_EPSON     = "epson.vpi"
-NOMBRE_PREVIEW_ATLAS = "preview_atlas.tif"   # Preview.tif tal cual lo devuelve Atlas (miniatura cuadrada)
 NOMBRE_PREVIEW       = "preview_epson.png"   # tramo de la pagina con la imagen, mismo formato que un plano del PMB
 CLAVE_DATOS_EPSON    = "epson"          # bloque propio dentro del json del trabajo
 
@@ -426,8 +425,6 @@ class BoardEpson(Board):
         if imagen.isNull():
             self.registrar("Preview.tif no se ha podido decodificar")
             return []
-        with open(os.path.join(self.carpeta_trabajo, NOMBRE_PREVIEW_ATLAS), "wb") as f:
-            f.write(datos)
         recorte = self._recortar_pagina(imagen)
         ruta = os.path.join(self.carpeta_trabajo, NOMBRE_PREVIEW)
         if not recorte.save(ruta):
