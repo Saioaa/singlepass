@@ -9,7 +9,6 @@ Rutas y parametros tomados del Swagger de Atlas Server (AtlasServices 1.0.10).
 """
 
 import json
-import os
 import sys
 import time
 import urllib.error
@@ -24,8 +23,7 @@ NOMBRE_TRABAJO = "prueba singlepass"
 MIME_VPI     = "application/x.gis.vpi"
 MIME_JSON    = "application/json"
 CAMPO_PROPIEDADES = "jobProperties"   # JSON con las propiedades del trabajo (el servidor lo exige)
-CAMPO_DATOS  = "jobData"              # el archivo (VPI)
-FRONTERA     = "----singlepass-boundary"
+FRONTERA     = "------singlepass------trabajo"
 SEGUNDOS_OBSERVACION = 20
 PERIODO_S    = 0.5
 TIMEOUT_S    = 10
@@ -38,6 +36,8 @@ def peticion(metodo, ruta, cuerpo=None, tipo=None):
     cabeceras = {"Accept": "application/json"}
     if tipo:
         cabeceras["Content-Type"] = tipo
+    if tipo and tipo.startswith("multipart/"):
+        cabeceras["Accept"] = "multipart/form-data"   # como Atlas Professional
     req = urllib.request.Request(url, data=cuerpo, method=metodo, headers=cabeceras)
     try:
         with urllib.request.urlopen(req, timeout=TIMEOUT_S) as r:
@@ -52,40 +52,23 @@ def peticion(metodo, ruta, cuerpo=None, tipo=None):
         return r.status, texto
 
 
-def _parte_texto(nombre, valor, tipo=None):
-    cabecera = f"--{FRONTERA}\r\nContent-Disposition: form-data; name=\"{nombre}\"\r\n"
-    if tipo:
-        cabecera += f"Content-Type: {tipo}\r\n"
-    return (cabecera + "\r\n").encode() + str(valor).encode() + b"\r\n"
-
-
-def _parte_archivo(ruta):
-    with open(ruta, "rb") as f:
+def multipart_trabajo(ruta_archivo, mime, job_store, propiedades):
+    """Cuerpo multipart tal como lo envia Atlas Professional (capturado con espia_atlas.py):
+    primero los datos, en una parte llamada como el job store y con filename = nombre del
+    trabajo; despues jobProperties (JSON) con filename=- . Sin filename Atlas ignora la parte."""
+    with open(ruta_archivo, "rb") as f:
         datos = f.read()
-    return ((f"--{FRONTERA}\r\nContent-Disposition: form-data; name=\"{CAMPO_DATOS}\"; "
-             f"filename=\"{os.path.basename(ruta)}\"\r\nContent-Type: {MIME_VPI}\r\n\r\n").encode()
-            + datos + b"\r\n")
-
-
-def multipart_vpi(ruta_vpi, propiedades, variante):
-    """Cuerpo multipart/form-data con el VPI y las propiedades codificadas segun la variante.
-    El servidor (ASP.NET) rechaza con 'jobProperties cannot be null' las formas que no entiende."""
-    partes = b""
-    if variante == "campos sueltos":                 # Name=..., JobStoreId=... (enlace [FromForm] habitual)
-        for k, v in propiedades.items():
-            partes += _parte_texto(k, v)
-    elif variante == "campos con prefijo":           # jobProperties.Name=...
-        for k, v in propiedades.items():
-            partes += _parte_texto(f"{CAMPO_PROPIEDADES}.{k}", v)
-    elif variante == "json en jobProperties":        # jobProperties = {...}
-        partes += _parte_texto(CAMPO_PROPIEDADES, json.dumps(propiedades), MIME_JSON)
-    elif variante == "json sin content-type":
-        partes += _parte_texto(CAMPO_PROPIEDADES, json.dumps(propiedades))
-    cuerpo = partes + _parte_archivo(ruta_vpi) + f"--{FRONTERA}--\r\n".encode()
-    return cuerpo, f"multipart/form-data; boundary={FRONTERA}"
-
-
-VARIANTES = ("campos sueltos", "campos con prefijo", "json en jobProperties", "json sin content-type")
+    nombre = propiedades["Name"]
+    parte_datos = ((f"--{FRONTERA}\r\n"
+                    f"Content-Type: {mime}\r\n"
+                    f'Content-Disposition: form-data; name={job_store}; filename="{nombre}"\r\n\r\n').encode()
+                   + datos + b"\r\n")
+    parte_props = ((f"--{FRONTERA}\r\n"
+                    f"Content-Type: {MIME_JSON}; charset=utf-8\r\n"
+                    f"Content-Disposition: form-data; name={CAMPO_PROPIEDADES}; filename=-\r\n\r\n").encode()
+                   + json.dumps(propiedades).encode("utf-8") + b"\r\n")
+    cuerpo = parte_datos + parte_props + f"--{FRONTERA}--\r\n".encode()
+    return cuerpo, f'multipart/form-data; boundary="{FRONTERA}"'
 
 
 def estado(objeto):
@@ -114,23 +97,14 @@ def main():
     codigo, _ = peticion("POST", f"/api/PrintQueues/{cola}/stop")
     print(f"cola '{modo}' parada -> {codigo}")
 
-    propiedades = {"Name": NOMBRE_TRABAJO, "JobStoreId": JOB_STORE, "JobMode": modo,
-                   "FrameStart": 0, "FrameCount": 1}
-    consulta = urllib.parse.urlencode(propiedades)
-    codigo, trabajo = None, None
-    for variante in VARIANTES:
-        for ruta in ("/api/Jobs", f"/api/Jobs?{consulta}"):
-            cuerpo, tipo = multipart_vpi(ruta_vpi, propiedades, variante)
-            codigo, trabajo = peticion("POST", ruta, cuerpo, tipo)
-            print(f"POST {ruta[:9]:9}{' (+query)' if '?' in ruta else '         '}  {variante:24} -> {codigo}  "
-                  f"{'' if codigo in CODIGOS_OK else str(trabajo)[:120]}")
-            if codigo in CODIGOS_OK:
-                break
-        if codigo in CODIGOS_OK:
-            print(f"==> variante aceptada: '{variante}'{' con query' if '?' in ruta else ''}")
-            break
+    propiedades = {"Name": NOMBRE_TRABAJO, "JobStoreId": JOB_STORE, "FrameStart": 0, "FrameCount": 1,
+                   "JobMode": modo, "RecognitionId": None, "WidthInMillimetres": 0.0,
+                   "HeightInMillimetres": 0.0, "Arguments": None}
+    cuerpo, tipo = multipart_trabajo(ruta_vpi, MIME_VPI, JOB_STORE, propiedades)
+    codigo, trabajo = peticion("POST", "/api/Jobs", cuerpo, tipo)
+    print(f"POST /api/Jobs -> {codigo}")
     if codigo not in CODIGOS_OK:
-        print("Ninguna variante aceptada; enviame esta salida completa.")
+        print(trabajo)
         peticion("POST", f"/api/PrintQueues/{cola}/start")
         return
     id_trabajo = trabajo["id"]

@@ -1,0 +1,128 @@
+==============================================================================
+12:15:49.519 GET /api/service
+(sin cuerpo)
+  -> 200
+{
+  "state": {
+    "name": "Running",
+    "isTerminal": false,
+    "isError": false
+  },
+  "uri": "http://localhost:5000/api/service",
+  "longPollUri": "http://localhost:5000/api/service?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-2",
+  "started": "2026-09-23T10:57:36.3950358Z"
+}
+==============================================================================
+12:15:49.557 GET /api/service
+(sin cuerpo)
+  -> 200
+{
+  "state": {
+    "name": "Running",
+    "isTerminal": false,
+    "isError": false
+  },
+  "uri": "http://localhost:5000/api/service",
+  "longPollUri": "http://localhost:5000/api/service?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-2",
+  "started": "2026-09-23T10:57:36.3950358Z"
+}
+==============================================================================
+12:15:49.580 GET /api/configurations/vpirender.xml
+==============================================================================
+12:15:49.581 GET /api/licences
+(sin cuerpo)
+(sin cuerpo)
+  -> 200
+[
+  {
+    "product": "atlasserver",
+    "expiration": "permanent"
+  }
+]
+==============================================================================
+12:15:49.586 GET /api/Jobs/LongPollUriAndValues
+(sin cuerpo)
+  -> 200
+<?xml version="1.0" encoding="utf-8"?>
+<GISConfigurationFile>
+    <RenderManager Name="Render Manager" VersionNumber="" ActiveRenderMode="0" CurrentRenderMode="0" NumberOfRIPs="1" OutputFileFormat="0" RenderDirection="0" PagesInX="1" PagesInY="1" InvertXRenderDirection="False" InvertYRenderDirection="False" UseLargeImageRIP="False" RenderIntoColumns="False" DocumentColumnWidth="0.000000000000000000" ReverseColumnOrder="False" SaveRenderPreview="False" AllowRenderWithoutPrinting="True" DefaultPrintRotation="0" EPStoPDFDirectory="" EnableVPITransformation="False" VPIRenderAngle="0.000000000000000000" VPIRotationMode="0" VPIRenderOffsetX="0.000000000000000000" VPIRenderOffsetY="0.000000000000000000" NozzleOutCorrectionMode="0" NozzleOutCorrectionFilename="" NozzleOutInvertY="False" NozzleOutMaxGreyLevel="3" NozzleOutScaleFactor="1.000000000000000000" EnableFeedbackInListener="False" LogExecution="False" LogOnError="True" LogOnIssue="1" NumberOfLinesToLogAfterError="100" NumberOfLinesToLogBeforeError="100" LogPerformance="False" DaysToKeepLogsFor="0" MaximumLogSize="10485760" LogRenderedImages="False" LogRenderImageFileNameOffset="0" EnableDiagnosticInfo="False" RMTSetUpCode="FD" RMTInkSet="0" RMTManufacturerName="1" RMTPrintheadMake="18" RMTProcessResolution="0" RMTxPitch="0.141111110000000012" RMTCrossProcessResolution="0" RMTyPitch="0.070555560000000003" RMTDropsPerDot="3" UIMaximumCachedImageDimension="1024">
+        <DATA_UNIQUE_ID PRESET_DEF_ATTR_NAME="AllowRenderWithoutPrinting" PRESET_VAL_ATTR="AllowRenderWithoutPrinting"/>
+        <ImageLoader Name="Image Loader" LoadSection="False" InvertXAxis="False" InvertYAxis="False" SectionX="0" SectionY="0" SectionWidth="1000" SectionHeight="1000" MinimiseSectionLoadSize="False" LoadSectionInColumns="False" SectionColumnWidth="0" SectionBorderMode="0" LogImagesLoaded="False" LogImageFileNameOffset="0" AllowLoadWhenNotPrinting="False"/>
+        <RenderMode Name="1200dpi 1bpp CMYK" RequestedRIPVersion="0" FastImageRenderingEnabled="False">
+            <ColourSeparationManager Name="Colour Separation Manager" DefaultProcessColourSeparation="0" DefaultSpotColourSeparation="0" DefaultGraphicsColourSeparation="0">
+                <ColourSeparationGIS Name="Colour Separation GIS" SeparationMode="1" CyanInBlack="0.500000000000000000" MagentaInBlack="0.349999999999999978" YellowInBlack="0.149999999999999994">
+                    <ColourSeparationManager Name="Auto Mask Generation" IsEnabled="False" CalculationMethod="0" Threshold="1" ResizeAmount="0" Feather="0" OutputDensity="100.000000000000000000">
+                        <ColourSeparatedPlaneStoreSource Name="Source">
+                            <ColourSeparatedPlane Name="Cyan" Lightness="0.000000000000000000" A="0.000000000000000000" B="0.000000000000000000"/>
+                            <ColourSeparatedPlane Name="Magenta" Lightness="0.000000000000000000" A="0.000000000000000000" B="0.000000000000000000"/>
+                            <ColourSeparatedPlane Name="Yellow" Lightness="0.000000000000000000" A="0.000000000000000000" B="0.000000000000000000"/>
+                            <ColourSeparatedPlane Name="Black" Lightness="0.000000000000000000" A="0.000000000000000000" B="0.000000000000000000"/>
+                        </ColourSeparatedPlaneStoreSource>
+                        <ColourSeparatedPlaneStoreDestination Name="Destination">
+                            <ColourSeparatedPlane Name="Cyan" Lightness="0.000000000000000000" A="0.000000000000000000" B="0.000000000000000000"/>
+                            <ColourSeparatedPlane Name="Magenta" Lightness="0.000000000000000000" A="0.000000000000000000" B="0.000000000000000000"/>
+                            <ColourSeparatedPlane Name="Yellow" Lightness="0.000000000000000000" A="0.000000000000000000" B="0.000000000000000000"/>
+                            <ColourSeparatedPlane Name="Black" Lightness="0.000000000000000000" A="0.000000000000000000" B="0.000000000000000000
+  -> 200
+{
+  "uri": "http://localhost:5000/api/jobs/longpollUriAndValues",
+  "longPollUri": "http://localhost:5000/api/jobs/longpollUriAndValues?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-0",
+  "values": []
+}
+==============================================================================
+12:16:39.638 POST /api/Jobs
+  Accept: multipart/form-data
+  Content-Type: multipart/form-data; boundary="------GIS------f79de4f3-bd07-4393-93a5-d1267e9a09da"
+  Expect: 100-continue
+multipart, frontera=------GIS------f79de4f3-bd07-4393-93a5-d1267e9a09da, 751 bytes
+  --- parte ---
+  Content-Type: application/x.gis.spitparameters+json
+Content-Disposition: form-data; name=Spit1; filename="Spit operation"; filename*=utf-8''Spit%20operation
+  {"FrequencyInHz":10.0,"DurationInSeconds":1.0,"GreyLevel":1,"Channels":null}
+  --- parte ---
+  Content-Type: application/json; charset=utf-8
+Content-Disposition: form-data; name=jobProperties; filename=-; filename*=utf-8''-
+  {"Name":"Spit operation","JobStoreId":"Spit1","FrameStart":0,"FrameCount":1,"JobMode":"1200dpi x 1200dpi 1bpp Black GL2","RecognitionId":null,"WidthInMillimetres":0.0,"HeightInMillimetres":0.0,"Arguments":null}
+  -> 200
+{
+  "id": "0",
+  "state": {
+    "name": "Processing",
+    "isTerminal": false,
+    "isError": false
+  },
+  "uri": "http://localhost:5000/api/jobs/0",
+  "longPollUri": "http://localhost:5000/api/jobs/0?longpoll=f58b1454-7db3-4ec2-8bc7-7efb5d725c9a-5",
+  "jobStoreUri": "http://localhost:5000/api/jobstores/Spit1",
+  "creationTime": "2026-09-28T10:16:39.6707804Z",
+  "progress": [
+    {
+      "jobStoreUri": "http://localhost:5000/api/jobstores/Spit1",
+      "jobStoreId": "Spit1",
+      "timeEnteredJobStore": "2026-09-28T10:16:39.7874748Z",
+      "timeLastChanged": "2026-09-28T10:16:39.826723Z",
+      "current": 0,
+      "total": 1
+    }
+  ],
+  "entryJobStoreUri": "http://localhost:5000/api/jobstores/Spit1",
+  "jobStoreId": "Spit1",
+  "jobContent": [
+    {
+      "mimeType": "application/x.gis.spitparameters+json",
+      "dataUri": "http://localhost:5000/api/jobs/0/data/0"
+    }
+  ],
+  "relatedJobs": [],
+  "printOperations": [],
+  "spitOperations": [],
+  "name": "Spit operation",
+  "frameStart": 0,
+  "frameCount": 0,
+  "completedFrameCount": 0,
+  "jobMode": "1200dpi x 1200dpi 1bpp Black GL2",
+  "widthInMillimetres": 0.0,
+  "heightInMillimetres": 0.0,
+  "widthInPixels": 0.0,
+  "heightInPixels": 0.0
+}
