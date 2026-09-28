@@ -52,19 +52,40 @@ def peticion(metodo, ruta, cuerpo=None, tipo=None):
         return r.status, texto
 
 
-def multipart_vpi(ruta_vpi, propiedades):
-    """Cuerpo multipart/form-data: jobProperties (JSON) + jobData (el VPI)."""
-    nombre = os.path.basename(ruta_vpi)
-    with open(ruta_vpi, "rb") as f:
+def _parte_texto(nombre, valor, tipo=None):
+    cabecera = f"--{FRONTERA}\r\nContent-Disposition: form-data; name=\"{nombre}\"\r\n"
+    if tipo:
+        cabecera += f"Content-Type: {tipo}\r\n"
+    return (cabecera + "\r\n").encode() + str(valor).encode() + b"\r\n"
+
+
+def _parte_archivo(ruta):
+    with open(ruta, "rb") as f:
         datos = f.read()
-    parte_props = (f"--{FRONTERA}\r\n"
-                   f'Content-Disposition: form-data; name="{CAMPO_PROPIEDADES}"\r\n'
-                   f"Content-Type: {MIME_JSON}\r\n\r\n").encode() + json.dumps(propiedades).encode() + b"\r\n"
-    parte_datos = (f"--{FRONTERA}\r\n"
-                   f'Content-Disposition: form-data; name="{CAMPO_DATOS}"; filename="{nombre}"\r\n'
-                   f"Content-Type: {MIME_VPI}\r\n\r\n").encode() + datos + b"\r\n"
-    cierre = f"--{FRONTERA}--\r\n".encode()
-    return parte_props + parte_datos + cierre, f"multipart/form-data; boundary={FRONTERA}"
+    return ((f"--{FRONTERA}\r\nContent-Disposition: form-data; name=\"{CAMPO_DATOS}\"; "
+             f"filename=\"{os.path.basename(ruta)}\"\r\nContent-Type: {MIME_VPI}\r\n\r\n").encode()
+            + datos + b"\r\n")
+
+
+def multipart_vpi(ruta_vpi, propiedades, variante):
+    """Cuerpo multipart/form-data con el VPI y las propiedades codificadas segun la variante.
+    El servidor (ASP.NET) rechaza con 'jobProperties cannot be null' las formas que no entiende."""
+    partes = b""
+    if variante == "campos sueltos":                 # Name=..., JobStoreId=... (enlace [FromForm] habitual)
+        for k, v in propiedades.items():
+            partes += _parte_texto(k, v)
+    elif variante == "campos con prefijo":           # jobProperties.Name=...
+        for k, v in propiedades.items():
+            partes += _parte_texto(f"{CAMPO_PROPIEDADES}.{k}", v)
+    elif variante == "json en jobProperties":        # jobProperties = {...}
+        partes += _parte_texto(CAMPO_PROPIEDADES, json.dumps(propiedades), MIME_JSON)
+    elif variante == "json sin content-type":
+        partes += _parte_texto(CAMPO_PROPIEDADES, json.dumps(propiedades))
+    cuerpo = partes + _parte_archivo(ruta_vpi) + f"--{FRONTERA}--\r\n".encode()
+    return cuerpo, f"multipart/form-data; boundary={FRONTERA}"
+
+
+VARIANTES = ("campos sueltos", "campos con prefijo", "json en jobProperties", "json sin content-type")
 
 
 def estado(objeto):
@@ -95,11 +116,21 @@ def main():
 
     propiedades = {"Name": NOMBRE_TRABAJO, "JobStoreId": JOB_STORE, "JobMode": modo,
                    "FrameStart": 0, "FrameCount": 1}
-    cuerpo, tipo = multipart_vpi(ruta_vpi, propiedades)
-    codigo, trabajo = peticion("POST", "/api/Jobs", cuerpo, tipo)
-    print(f"POST /api/Jobs -> {codigo}")
+    consulta = urllib.parse.urlencode(propiedades)
+    codigo, trabajo = None, None
+    for variante in VARIANTES:
+        for ruta in ("/api/Jobs", f"/api/Jobs?{consulta}"):
+            cuerpo, tipo = multipart_vpi(ruta_vpi, propiedades, variante)
+            codigo, trabajo = peticion("POST", ruta, cuerpo, tipo)
+            print(f"POST {ruta[:9]:9}{' (+query)' if '?' in ruta else '         '}  {variante:24} -> {codigo}  "
+                  f"{'' if codigo in CODIGOS_OK else str(trabajo)[:120]}")
+            if codigo in CODIGOS_OK:
+                break
+        if codigo in CODIGOS_OK:
+            print(f"==> variante aceptada: '{variante}'{' con query' if '?' in ruta else ''}")
+            break
     if codigo not in CODIGOS_OK:
-        print(trabajo)
+        print("Ninguna variante aceptada; enviame esta salida completa.")
         peticion("POST", f"/api/PrintQueues/{cola}/start")
         return
     id_trabajo = trabajo["id"]
