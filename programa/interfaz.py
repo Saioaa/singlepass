@@ -41,16 +41,19 @@ CAMPOS_TEXTO = [
 
 # ===== VENTANA DE PARADA DE EMERGENCIA =====
 EMERGENCIA_TITULO    = "PARADA DE EMERGENCIA"
-EMERGENCIA_SUBTITULO = "Libera la seta para continuar"
+EMERGENCIA_SUBTITULO = "Rearme para continuar"
 EMERGENCIA_IMAGEN    = "emergency_2.png"
 EMERGENCIA_LADO_PX   = 260
 EMERGENCIA_MARGEN_PX = 40
 EMERGENCIA_ESPACIADO_PX = 20
 EMERGENCIA_ESTILO = """
 QDialog { background-color: #B71C1C; border: 6px solid #FFD600; border-radius: 16px; }
+QDialog QLabel { background-color: transparent; border: none; }
 QLabel#titulo { color: #FFFFFF; font-size: 34px; font-weight: bold; }
 QLabel#subtitulo { color: #FFF59D; font-size: 18px; }
 """
+# la ventana hereda la hoja de estilo de la principal (fondos azules de los QLabel):
+# la regla "QDialog QLabel" los anula dentro del dialogo
 
 # ===== ESCALADO A LA PANTALLA =====
 # El .ui esta disenado con geometrias absolutas para esta resolucion.
@@ -327,17 +330,17 @@ class VentanaPrincipal(QMainWindow):
             self.stop_motor()
             self.timer_home.stop()
             self.homing_en_curso = False
-            self.print_server.registrar("[SETA] Seta pulsada: movimientos bloqueados")
+            self.print_server.registrar("[SEGURIDAD] Parada de emergencia: movimientos bloqueados")
             if self.print_server.esta_lista():
                 self.print_server.abortar()   # la impresion no se reanuda: se empieza de nuevo
             self.ventana_emergencia.mostrar()
         else:
             self.ventana_emergencia.ocultar()
-            self.print_server.registrar("[SETA] Seta liberada: haz Home antes de continuar")
+            self.print_server.registrar("[SEGURIDAD] Home para continuar")
 
     def _movimiento_permitido(self):
         if self.seta_pulsada:
-            self.print_server.registrar("[SETA] Movimiento ignorado: seta pulsada")
+            self.print_server.registrar("[SEGURIDAD] Movimiento ignorado: parada de emergencia activa")
             return False
         return True
 
