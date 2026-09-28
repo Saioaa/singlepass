@@ -27,7 +27,7 @@ def crear_dispositivos():
                     config.LIMITE_MIN_MM, config.LIMITE_MAX_MM, config.FACTOR_SI)
     mduino = ClienteMDuino(config.IP_MDUINO, config.PUERTO_MDUINO)
     mduino.iniciar()
-    pmb = ClientePMB()   # se conecta al entrar en su pagina
+    pmb = ClientePMB(config.IP_PMB, config.PUERTO_PMB)   # se conecta al entrar en su pagina
     return motor, mduino, pmb
 
 

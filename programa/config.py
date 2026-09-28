@@ -31,12 +31,22 @@ MODULO_MM          = 125    # ancho de cada modulo a lo largo de la barra
 # un modulo montado a distancia d ocupa [d, d + MODULO_MM]. Los recorridos de la
 # secuencia se calculan con esto a partir de los modulos de la pagina Programa.
 
-# ===== PRINT GO =====
-# PROVISIONAL: el pulso del rele R1_4 del M-Duino no llega a la entrada TTL del PMB.
-# Mientras se arregla el cableado, la secuencia envia el PULSE al M-Duino y ADEMAS
-# el print go por software al Print Controller (P,SPG). Requiere PrintGoSource =
-# Software en el nodo PMB de GIS. Con el cable arreglado: False y PrintGoSource = TTL.
+# ===== GIS PRINT SERVER (PMB-C8 / PMB-C2) =====
+IP_PMB     = "localhost"   # Print Server de GIS, corre en este mismo PC
+PUERTO_PMB = 2000
+# PROVISIONAL: el pulso del rele R1_4 del M-Duino no llega a la entrada TTL del PMB
+# (en la SM-200 si se ve en el Encoder Monitor de Atlas). Mientras se arregla, la
+# secuencia envia el PULSE al M-Duino y ADEMAS el print go por software al Print
+# Controller (P,SPG). Requiere PrintGoSource = Software en el nodo PMB de GIS.
+# Con el cable arreglado: False y PrintGoSource = TTL.
 PRINT_GO_TAMBIEN_POR_SOFTWARE = True
+
+# ===== ATLAS (SM-200 / Epson) =====
+IP_ATLAS      = "localhost"        # Atlas Server (API REST), corre en este mismo PC
+PUERTO_ATLAS  = 5000
+IP_HMB        = "192.168.79.134"   # Head Manager Board (aun sin montar): sin API, la gestiona el Atlas Server
+IP_SM200      = "192.168.79.1"     # tarjeta encoder / print go: solo habla con el Atlas Server
+PUERTO_SM200  = 8080
 
 # ===== MESA DE IMPRESION (A4 apaisado: X = direccion del movimiento) =====
 MESA_ANCHO_MM = 297
