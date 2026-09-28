@@ -22,7 +22,9 @@ JOB_STORE    = "Vpi1"
 MODO_DEFECTO = "1200dpi x 1200dpi 1bpp Black GL2"
 NOMBRE_TRABAJO = "prueba singlepass"
 MIME_VPI     = "application/x.gis.vpi"
-CAMPO_DATOS  = "jobData"          # unico campo del multipart segun el Swagger
+MIME_JSON    = "application/json"
+CAMPO_PROPIEDADES = "jobProperties"   # JSON con las propiedades del trabajo (el servidor lo exige)
+CAMPO_DATOS  = "jobData"              # el archivo (VPI)
 FRONTERA     = "----singlepass-boundary"
 SEGUNDOS_OBSERVACION = 20
 PERIODO_S    = 0.5
@@ -50,16 +52,19 @@ def peticion(metodo, ruta, cuerpo=None, tipo=None):
         return r.status, texto
 
 
-def multipart_vpi(ruta_vpi):
-    """Cuerpo multipart/form-data con el VPI en el campo jobData."""
+def multipart_vpi(ruta_vpi, propiedades):
+    """Cuerpo multipart/form-data: jobProperties (JSON) + jobData (el VPI)."""
     nombre = os.path.basename(ruta_vpi)
     with open(ruta_vpi, "rb") as f:
         datos = f.read()
-    cabecera = (f"--{FRONTERA}\r\n"
-                f'Content-Disposition: form-data; name="{CAMPO_DATOS}"; filename="{nombre}"\r\n'
-                f"Content-Type: {MIME_VPI}\r\n\r\n").encode()
-    cierre = f"\r\n--{FRONTERA}--\r\n".encode()
-    return cabecera + datos + cierre, f"multipart/form-data; boundary={FRONTERA}"
+    parte_props = (f"--{FRONTERA}\r\n"
+                   f'Content-Disposition: form-data; name="{CAMPO_PROPIEDADES}"\r\n'
+                   f"Content-Type: {MIME_JSON}\r\n\r\n").encode() + json.dumps(propiedades).encode() + b"\r\n"
+    parte_datos = (f"--{FRONTERA}\r\n"
+                   f'Content-Disposition: form-data; name="{CAMPO_DATOS}"; filename="{nombre}"\r\n'
+                   f"Content-Type: {MIME_VPI}\r\n\r\n").encode() + datos + b"\r\n"
+    cierre = f"--{FRONTERA}--\r\n".encode()
+    return parte_props + parte_datos + cierre, f"multipart/form-data; boundary={FRONTERA}"
 
 
 def estado(objeto):
@@ -88,9 +93,10 @@ def main():
     codigo, _ = peticion("POST", f"/api/PrintQueues/{cola}/stop")
     print(f"cola '{modo}' parada -> {codigo}")
 
-    parametros = urllib.parse.urlencode({"JobStoreId": JOB_STORE, "JobMode": modo, "Name": NOMBRE_TRABAJO})
-    cuerpo, tipo = multipart_vpi(ruta_vpi)
-    codigo, trabajo = peticion("POST", f"/api/Jobs?{parametros}", cuerpo, tipo)
+    propiedades = {"Name": NOMBRE_TRABAJO, "JobStoreId": JOB_STORE, "JobMode": modo,
+                   "FrameStart": 0, "FrameCount": 1}
+    cuerpo, tipo = multipart_vpi(ruta_vpi, propiedades)
+    codigo, trabajo = peticion("POST", "/api/Jobs", cuerpo, tipo)
     print(f"POST /api/Jobs -> {codigo}")
     if codigo not in CODIGOS_OK:
         print(trabajo)
