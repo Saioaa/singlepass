@@ -231,6 +231,7 @@ class BoardEpson(Board):
             return False
         if not self._conectada:
             self.registrar(f"Atlas Server {version.get('AtlasServices', '?') if isinstance(version, dict) else version}")
+            self._limpiar_trabajos_antiguos()
         self._conectada = True
         codigo, hmbs = self.cliente.peticion("GET", "/api/HeadManagerBoards")
         if codigo == 200 and isinstance(hmbs, list):
@@ -247,6 +248,24 @@ class BoardEpson(Board):
 
     def esta_conectada(self):
         return self._conectada
+
+    def _limpiar_trabajos_antiguos(self):
+        """Cancela y borra los trabajos nuestros que quedaron en Atlas de sesiones anteriores:
+        las colas procesan en serie y uno atascado bloquea a los nuevos."""
+        codigo, trabajos = self.cliente.peticion("GET", "/api/Jobs")
+        if codigo != 200 or not isinstance(trabajos, list):
+            return
+        antiguos = [t.get("id") for t in trabajos if isinstance(t, dict)
+                    and (t.get("name") or t.get("Name")) == NOMBRE_TRABAJO and t.get("id") != self.id_trabajo]
+        for id_trabajo in antiguos:
+            self._retirar_trabajo(id_trabajo)
+        if antiguos:
+            self.registrar(f"Retirados de Atlas {len(antiguos)} trabajos de sesiones anteriores")
+
+    def _retirar_trabajo(self, id_trabajo):
+        """Cancela (si sigue vivo) y borra un trabajo del servidor."""
+        self.cliente.peticion("POST", f"/api/Jobs/{id_trabajo}/Cancel")
+        self.cliente.peticion("DELETE", f"/api/Jobs/{id_trabajo}")
 
     def pedir_modos(self):
         if not self.conectar():
@@ -329,14 +348,12 @@ class BoardEpson(Board):
         self._estado_trabajo_atlas = nombre
         self.registrar(f"Trabajo {trabajo.get('id')}: {nombre}"
                        + (f" ERROR {estado.get('error')}" if estado.get("isError") else ""))
-        if estado.get("isError"):
-            self._poner_estado(ESTADO_RENDER_LISTO if self.ruta_vpi else ESTADO_SIN_TRABAJO)
-            self.id_trabajo = None
-        elif estado.get("isTerminal"):
+        if estado.get("isError") or estado.get("isTerminal"):
             if nombre in ESTADOS_IMPRESO:
                 self.registrar("Impresion completada")
+            self._retirar_trabajo(self.id_trabajo)    # terminado: se borra del servidor
             self.id_trabajo = None
-            self._poner_estado(ESTADO_RENDER_LISTO)   # el VPI sigue: armar() lo reenvia
+            self._poner_estado(ESTADO_RENDER_LISTO if self.ruta_vpi else ESTADO_SIN_TRABAJO)   # armar() lo reenvia
         elif nombre in ESTADOS_ARMADA:
             if self.estado == ESTADO_ARMANDO:
                 self._armada()
@@ -354,10 +371,13 @@ class BoardEpson(Board):
         self._poner_estado(ESTADO_RENDER_LISTO if self.ruta_vpi else ESTADO_SIN_TRABAJO)
 
     def _olvidar_trabajo(self):
+        """Deja de seguir el trabajo actual y lo retira del servidor para que no se acumule."""
         if self.sondeo is not None:
             self.sondeo.detener()
             self.sondeo.wait()
             self.sondeo = None
+        if self.id_trabajo is not None:
+            self._retirar_trabajo(self.id_trabajo)
         self.id_trabajo = None
 
     # ===== armado =====
@@ -382,8 +402,7 @@ class BoardEpson(Board):
 
     def abortar(self):
         if self.id_trabajo is not None:
-            codigo, _ = self.cliente.peticion("POST", f"/api/Jobs/{self.id_trabajo}/Cancel")
-            self.registrar(f"Trabajo {self.id_trabajo} cancelado ({codigo})")
+            self.registrar(f"Trabajo {self.id_trabajo} cancelado")
         if self.modo is not None:
             self.cliente.peticion("POST", f"/api/PrintQueues/{self._cola()}/stop")
         self._olvidar_trabajo()
