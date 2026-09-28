@@ -18,11 +18,10 @@ Widgets del .ui:
 """
 
 import os
-import re
 import time
 
 from PySide6.QtCore import QLocale, QObject, Qt, QTimer
-from PySide6.QtGui import QColor, QDoubleValidator, QPainter, QPixmap, QTransform
+from PySide6.QtGui import QColor, QDoubleValidator, QImageReader, QPainter, QPixmap, QTransform
 from PySide6.QtWidgets import QFileDialog
 
 import config
@@ -41,11 +40,15 @@ COMBOS_MODO = {
 NOMBRES_REGISTRO = ("txtMessage", "txtMessage_2", "txtMessage_3")
 
 # ===== IMAGEN A IMPRIMIR =====
+# El tamano fisico sale de la resolucion grabada en el archivo (Photoshop, GIMP...),
+# no del modo de impresion: la misma imagen mide lo mismo a 600 y a 1200 dpi.
 FILTRO_IMAGENES = "Imagenes (*.tif *.tiff *.bmp *.jpg *.jpeg *.png)"
 MM_POR_PULGADA  = 25.4
+MM_POR_METRO    = 1000
 GRADOS_POR_GIRO = 90
 GRADOS_VUELTA   = 360
-PATRON_DPI      = r"(\d+)\s*dpi"
+GIRO_PERPENDICULAR = 90
+DPI_GENERICOS   = (72, 96)   # lo que graban los programas cuando la imagen no tiene resolucion real
 POSICION_INICIAL_X_MM = 0.0   # donde aparece una imagen recien cargada
 POSICION_INICIAL_Y_MM = 0.0
 DECIMALES_POSICION = 2
@@ -73,7 +76,7 @@ class PrintServer(QObject):
         self._posicion_eje = posicion_eje               # callable -> mm | None
         self._board_por_tipo = {tipo: b for b in self.boards for tipo in b.tipos_modulo}
 
-        self.dpi_actual = None
+        self.dpi_imagen = None       # (dpi_x, dpi_y) del archivo cargado
         self.ruta_imagen = None
         self.ancho_imagen_mm = None
         self.alto_imagen_mm = None
@@ -82,6 +85,7 @@ class PrintServer(QObject):
         self.espejo_y = False
         self._ultimo_mensaje = ("", 0.0)
         self._ultimo_modo = {}   # board.nombre -> ultimo modo elegido en esta sesion
+        self._previews_cargadas = False   # ya hay planos del trabajo actual en los recuadros
 
         self.pagina = next(getattr(self.ui, n) for n in NOMBRES_PAGINA if hasattr(self.ui, n))
         self._registros = [getattr(self.ui, n) for n in NOMBRES_REGISTRO if hasattr(self.ui, n)]
@@ -123,7 +127,7 @@ class PrintServer(QObject):
         # boards: senales y su combo
         for board in self.boards:
             board.mensaje.connect(self.registrar)
-            board.estado_cambiado.connect(lambda _e: self._actualizar_estado())
+            board.estado_cambiado.connect(lambda estado, b=board: self._estado_board_cambiado(b, estado))
             board.modos_recibidos.connect(lambda modos, b=board: self._cargar_modos(b, modos))
             board.dpi_recibido.connect(lambda dx, dy, b=board: self._guardar_dpi(b, dx, dy))
             combo = self._combos.get(board.nombre)
@@ -217,18 +221,10 @@ class PrintServer(QObject):
         if not modo:
             return
         self._ultimo_modo[board.nombre] = modo
-        resolucion = re.findall(PATRON_DPI, modo, re.IGNORECASE)
-        if len(resolucion) == 2 and self.dpi_actual is None:
-            self.dpi_actual = (int(resolucion[0]), int(resolucion[1]))
         board.seleccionar_modo(modo)
 
     def _guardar_dpi(self, board, dpi_x, dpi_y):
-        """La resolucion fija el tamano fisico de la imagen; si dos boards difieren, manda la primera."""
-        if self.dpi_actual is not None and self.dpi_actual != (dpi_x, dpi_y):
-            self.registrar(f"[{board.nombre}] Modo a {dpi_x} x {dpi_y} dpi; el tamano de la imagen "
-                           f"se calcula con {self.dpi_actual[0]} x {self.dpi_actual[1]} dpi")
-            return
-        self.dpi_actual = (dpi_x, dpi_y)
+        """Resolucion de rasterizado del modo; solo informativa, no cambia el tamano de la imagen."""
         self.registrar(f"[{board.nombre}] Modo activo: {dpi_x} x {dpi_y} dpi")
 
     # ===== posicion en la mesa =====
@@ -258,17 +254,28 @@ class PrintServer(QObject):
         return posicion[0], self.ancho_imagen_mm
 
     # ===== imagen =====
+    @staticmethod
+    def _leer_dpi(ruta):
+        """(dpi_x, dpi_y) grabados en el archivo, o None si no lleva resolucion real."""
+        imagen = QImageReader(ruta).read()
+        if imagen.isNull():
+            return None
+        dpi_x = round(imagen.dotsPerMeterX() * MM_POR_PULGADA / MM_POR_METRO)
+        dpi_y = round(imagen.dotsPerMeterY() * MM_POR_PULGADA / MM_POR_METRO)
+        if dpi_x <= 0 or dpi_y <= 0 or dpi_x in DPI_GENERICOS or dpi_y in DPI_GENERICOS:
+            return None
+        return dpi_x, dpi_y
+
     def _mostrar_pixmap(self, pixmap, x_mm=None, y_mm=None):
-        dpi_x, dpi_y = self.dpi_actual
+        dpi_x, dpi_y = self.dpi_imagen
+        if self.rotacion_imagen % (GRADOS_VUELTA // 2) == GIRO_PERPENDICULAR:
+            dpi_x, dpi_y = dpi_y, dpi_x   # el pixmap girado tiene los ejes intercambiados
         self.ancho_imagen_mm = pixmap.width() * MM_POR_PULGADA / dpi_x
         self.alto_imagen_mm = pixmap.height() * MM_POR_PULGADA / dpi_y
         self.mesa.mostrar_imagen(pixmap, self.ancho_imagen_mm, self.alto_imagen_mm, x_mm, y_mm)
         self.ui.lblSizeValue.setText(f"{self.ancho_imagen_mm:.1f} x {self.alto_imagen_mm:.1f} mm")
 
     def cargar_imagen(self):
-        if self.dpi_actual is None:
-            self.registrar("[PRINT SERVER] Selecciona antes un modo de impresion")
-            return
         ruta, _ = QFileDialog.getOpenFileName(self.mesa.window(), "Seleccionar imagen", "", FILTRO_IMAGENES)
         if not ruta:
             return
@@ -276,12 +283,18 @@ class PrintServer(QObject):
         if pixmap.isNull():
             self.registrar(f"[PRINT SERVER] No se ha podido abrir: {ruta}")
             return
+        self.dpi_imagen = self._leer_dpi(ruta)
+        if self.dpi_imagen is None:
+            self.dpi_imagen = (config.DPI_IMAGEN_POR_DEFECTO, config.DPI_IMAGEN_POR_DEFECTO)
+            self.registrar(f"[PRINT SERVER] La imagen no lleva resolucion grabada: "
+                           f"se asumen {config.DPI_IMAGEN_POR_DEFECTO} dpi")
         self.ruta_imagen = os.path.normpath(ruta)
         self.rotacion_imagen = 0
         self.espejo_x = False
         self.espejo_y = False
         self._mostrar_pixmap(pixmap, POSICION_INICIAL_X_MM, POSICION_INICIAL_Y_MM)
-        self.registrar(f"[PRINT SERVER] Imagen: {pixmap.width()} x {pixmap.height()} px "
+        self.registrar(f"[PRINT SERVER] Imagen: {pixmap.width()} x {pixmap.height()} px a "
+                       f"{self.dpi_imagen[0]} x {self.dpi_imagen[1]} dpi "
                        f"({self.ancho_imagen_mm:.2f} x {self.alto_imagen_mm:.2f} mm)")
 
     def _refrescar_vista(self):
@@ -306,6 +319,7 @@ class PrintServer(QObject):
 
     def limpiar_imagen(self):
         self.ruta_imagen = None
+        self.dpi_imagen = None
         self.ancho_imagen_mm = None
         self.alto_imagen_mm = None
         self.rotacion_imagen = 0
@@ -338,6 +352,7 @@ class PrintServer(QObject):
             return
         trabajo = self._trabajo()
         self.limpiar_previews()
+        self._previews_cargadas = False
         for board, x_cabezal in activas:
             board.preparar(trabajo, x_cabezal)
 
@@ -368,6 +383,13 @@ class PrintServer(QObject):
             board.abortar()
 
     # ===== estado conjunto y boton Print =====
+    def _estado_board_cambiado(self, board, estado):
+        """Cada board avisa cuando tiene el raster (render_listo) o queda armada;
+        la primera que lo tenga pone las previews del trabajo actual."""
+        if not self._previews_cargadas and estado in (ESTADO_RENDER_LISTO, ESTADO_LISTO):
+            self._previews_cargadas = self.cargar_previews()
+        self._actualizar_estado()
+
     def _actualizar_estado(self):
         activas = [b for b, _ in self.boards_activas()]
         if not activas:
@@ -375,11 +397,8 @@ class PrintServer(QObject):
         else:
             estado = min((b.estado for b in activas), key=ORDEN_ESTADOS.index)
         if estado != self.estado:
-            anterior = self.estado
             self.estado = estado
             self._pintar_estado()
-            if estado == ESTADO_RENDER_LISTO and ORDEN_ESTADOS.index(anterior) < ORDEN_ESTADOS.index(estado):
-                self.cargar_previews()   # todas han terminado de ripear
 
     def _pintar_print(self, color=None, texto=TEXTO_PRINT):
         hoja = self._estilo_print_base
@@ -406,7 +425,8 @@ class PrintServer(QObject):
     # ===== previews =====
     def cargar_previews(self):
         """Planos de la primera board activa que los tenga, a escala de la mesa y con
-        el desplazamiento X del trabajo. El alto del render ya es el de la mesa."""
+        el desplazamiento X del trabajo. El alto del render ya es el de la mesa.
+        Devuelve True si se ha cargado alguno."""
         self.limpiar_previews()
         for board, _x in self.boards_activas():
             planos = board.planos_render()
@@ -422,8 +442,9 @@ class PrintServer(QObject):
                 recuadro.setPixmap(self._componer_preview(recuadro.size(), plano, x_mm, ancho_mm, color))
                 cargados += 1
             if cargados:
-                return
+                return True
         self.registrar("[PRINT SERVER] No se han encontrado planos rasterizados para las previews")
+        return False
 
     @staticmethod
     def _tenir_plano(plano, color):

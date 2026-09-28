@@ -35,6 +35,7 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 
 from PySide6.QtCore import QThread, Signal
+from PySide6.QtGui import QImage
 
 import config
 import vpi
@@ -61,11 +62,13 @@ DECIMALES_MM = 2
 # Ciclo visto: WaitingForProcessing -> Processing (Vpi1) -> Processing (ImagePrint) -> QueuedForPrint
 ESTADO_HMB_OK        = "Running"
 ESTADOS_PROCESANDO   = ("WaitingForProcessing", "Processing")             # render en curso
-ESTADOS_ARMADA       = ("QueuedForPrint", "ReadyToPrint", "Printing")     # en cola esperando print go
+ESTADOS_ARMADA       = ("QueuedForPrint", "ReadyToPrint", "Printing")     # raster hecho, en cola esperando print go
 ESTADOS_IMPRESO      = ("Completed", "Printed", "Finished")               # terminado (a confirmar con HMB)
+ESTADOS_ERROR        = ("FinishedWithError",)   # terminal con isError; visto sin HMB: "1 of 1 print operations failed"
 NOMBRE_TRABAJO       = "singlepass"
 NOMBRE_VPI_EPSON     = "epson.vpi"
-NOMBRE_PREVIEW       = "preview_epson.tif"
+NOMBRE_PREVIEW       = "preview_epson.png"   # recorte de Preview.tif con solo la imagen
+TOLERANCIA_ASPECTO   = 0.05   # para reconocer si Preview.tif es la pagina entera o solo la imagen
 CLAVE_DATOS_EPSON    = "epson"          # bloque propio dentro del json del trabajo
 
 
@@ -213,6 +216,7 @@ class BoardEpson(Board):
         self.ruta_vpi = None
         self.dimensiones_pagina = None  # (ancho, alto) mm del VPI enviado
         self.geometria = None           # (x_imagen, ancho_imagen) mm para las previews
+        self.alto_imagen_mm = None
         self.id_trabajo = None
         self.sondeo = None
         self._conectada = False
@@ -280,7 +284,8 @@ class BoardEpson(Board):
                 trabajo.rotacion, trabajo.espejo_x, trabajo.espejo_y, carpeta)
             with open(os.path.join(carpeta, vpi.NOMBRE_POSICION), "w", encoding="utf-8") as f:
                 json.dump({CLAVE_DATOS_EPSON: {"offset_x_mm": offset_x_mm, "x_imagen_mm": trabajo.x_mm,
-                                               "ancho_imagen_mm": trabajo.ancho_mm, "x_cabezal_mm": x_cabezal_mm,
+                                               "ancho_imagen_mm": trabajo.ancho_mm, "alto_imagen_mm": trabajo.alto_mm,
+                                               "x_cabezal_mm": x_cabezal_mm,
                                                "modo": self.modo, "ancho_pagina_mm": ancho_pagina}}, f, indent=2)
         except (OSError, ValueError) as e:
             self.registrar(f"No se ha podido generar el VPI: {e}")
@@ -290,6 +295,7 @@ class BoardEpson(Board):
         self.ruta_vpi = ruta_vpi
         self.dimensiones_pagina = (ancho_pagina, alto_pagina)
         self.geometria = (trabajo.x_mm, trabajo.ancho_mm)
+        self.alto_imagen_mm = trabajo.alto_mm
         self.registrar(f"Trabajo generado: {ruta_vpi}")
         return self._enviar_trabajo()
 
@@ -305,8 +311,7 @@ class BoardEpson(Board):
             return False
         self.id_trabajo = trabajo["id"]
         self._estado_trabajo_atlas = trabajo.get("state", {}).get("name")
-        self.registrar(f"Trabajo {self.id_trabajo} creado en Atlas ({self._estado_trabajo_atlas})")
-        self._poner_estado(ESTADO_RENDER_LISTO)
+        self.registrar(f"Trabajo {self.id_trabajo} creado en Atlas ({self._estado_trabajo_atlas}): ripeando...")
         self.sondeo = SondeoTrabajo(self.cliente, self.id_trabajo)
         self.sondeo.estado.connect(self._estado_trabajo)
         self.sondeo.perdido.connect(self._trabajo_perdido)
@@ -327,8 +332,12 @@ class BoardEpson(Board):
                 self.registrar("Impresion completada")
             self.id_trabajo = None
             self._poner_estado(ESTADO_RENDER_LISTO)   # el VPI sigue: armar() lo reenvia
-        elif self.estado == ESTADO_ARMANDO and nombre in ESTADOS_ARMADA:
-            self._armada()
+        elif nombre in ESTADOS_ARMADA:
+            if self.estado == ESTADO_ARMANDO:
+                self._armada()
+            elif self.estado != ESTADO_LISTO:
+                self.registrar("Raster terminado")
+                self._poner_estado(ESTADO_RENDER_LISTO)   # dispara las previews en Print Server
 
     def _armada(self):
         self.registrar("Cabezal armado, esperando print go")
@@ -393,20 +402,43 @@ class BoardEpson(Board):
         self.modo = datos.get("modo", self.modo)
         self.dimensiones_pagina = (datos["ancho_pagina_mm"], vpi.ANCHO_CABEZAL_MM)
         self.geometria = (datos["x_imagen_mm"], datos["ancho_imagen_mm"])
+        self.alto_imagen_mm = datos.get("alto_imagen_mm")
         self._poner_estado(ESTADO_RENDER_LISTO)
         return True
 
     def planos_render(self):
-        """Descarga la previsualizacion del trabajo (un unico plano) a la carpeta."""
+        """Descarga Preview.tif del trabajo (un unico plano) y guarda en la carpeta la
+        parte que corresponde a la imagen, para componerla en la mesa como los planos del PMB.
+        La pagina Epson empieza en el print go, asi que la imagen es el tramo final."""
         if self.id_trabajo is None or self.carpeta_trabajo is None:
             return []
         codigo, datos = self.cliente.peticion("GET", f"/api/Jobs/{self.id_trabajo}/Preview.tif")
         if codigo != 200 or not isinstance(datos, bytes):
+            self.registrar(f"Sin previsualizacion del trabajo {self.id_trabajo} ({codigo})")
             return []
+        imagen = QImage.fromData(datos)
+        if imagen.isNull():
+            self.registrar("Preview.tif no se ha podido decodificar")
+            return []
+        recorte = self._recortar_imagen(imagen)
         ruta = os.path.join(self.carpeta_trabajo, NOMBRE_PREVIEW)
-        with open(ruta, "wb") as f:
-            f.write(datos)
+        if not recorte.save(ruta):
+            return []
         return [ruta]
+
+    def _recortar_imagen(self, imagen):
+        """Si la previsualizacion tiene la proporcion de la pagina entera, se queda con el
+        tramo final (donde esta la imagen); si ya tiene la de la imagen, se devuelve tal cual."""
+        if self.dimensiones_pagina is None or self.geometria is None or not self.alto_imagen_mm:
+            return imagen
+        ancho_pagina, alto_pagina = self.dimensiones_pagina
+        ancho_imagen = self.geometria[1]
+        aspecto = imagen.width() / imagen.height()
+        if abs(aspecto - ancho_pagina / alto_pagina) > TOLERANCIA_ASPECTO * aspecto:
+            return imagen
+        ancho_px = round(imagen.width() * ancho_imagen / ancho_pagina)
+        alto_px = round(imagen.height() * self.alto_imagen_mm / alto_pagina)
+        return imagen.copy(imagen.width() - ancho_px, 0, ancho_px, alto_px)
 
     def geometria_trabajo(self):
         return self.geometria

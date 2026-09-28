@@ -51,6 +51,9 @@ PUERTO_SM200  = 8080
 # ===== MESA DE IMPRESION (A4 apaisado: X = direccion del movimiento) =====
 MESA_ANCHO_MM = 297
 MESA_ALTO_MM  = 210
+# Resolucion que se asume para una imagen que no lleva dpi grabados en el archivo.
+# El tamano fisico de la imagen sale de su resolucion, no del modo de impresion.
+DPI_IMAGEN_POR_DEFECTO = 600
 
 # ===== OFFSET X DE IMPRESION (Print Controller) =====
 # XOffset = DISTANCIA_CABEZAL (pagina Programa) - X_IMAGEN (mesa) - POSICION_PULSE_MM
