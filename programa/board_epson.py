@@ -28,6 +28,7 @@ ajustan con lo que devuelva la primera prueba (todo cambio se registra).
 import json
 import os
 import shutil
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -62,7 +63,12 @@ DECIMALES_MM = 2
 # Ciclo visto: WaitingForProcessing -> Processing (Vpi1) -> Processing (ImagePrint) -> QueuedForPrint
 ESTADOS_HMB_OK       = ("Ready", "Running")   # visto "Ready" con HMB y cabezal conectados; "Disconnected" sin HMB
 ESTADO_CABEZAL_APAGADO = "PoweredDown"        # el SE-D3000 hay que encenderlo (POST .../powerup) antes de imprimir
+ESTADO_CABEZAL_ENCENDIDO = "PoweredUp"        # nombre real observado tras el powerup
 ESTADOS_CABEZAL_TRANSITORIOS = ("PoweredDown", "PoweringUp")   # aun no se puede imprimir
+# La etapa de potencia del HMB (host board) tiene que estar encendida antes que los cabezales;
+# tras un reinicio del HMB arranca apagada ("HostBoardMustBePowered").
+RUTA_HOST_BOARD        = "hostBoard"
+RUTA_ENCENDER_HOST     = "hostBoard/boardPower/powerUp"
 TIMEOUT_ENCENDIDO_S    = 30                   # espera maxima a que un cabezal deje de estar PoweredDown
 ESTADOS_PROCESANDO   = ("WaitingForProcessing", "Processing")             # render en curso
 ESTADOS_ARMADA       = ("QueuedForPrint", "ReadyToPrint", "Printing")     # raster hecho, en cola esperando print go
@@ -161,7 +167,7 @@ class SondeoTrabajo(QThread):
 class EncendidoCabezales(QThread):
     """Sondea los cabezales indicados hasta que ninguno este PoweredDown (o venza el timeout)."""
 
-    terminado = Signal(list, bool)   # [(hmb, indice, estado final), ...], True si todos encendidos
+    terminado = Signal(list, bool)   # [(hmb, indice, estado final), ...], True si alguno ha quedado encendido
 
     def __init__(self, cliente, cabezales):
         super().__init__()
@@ -184,9 +190,8 @@ class EncendidoCabezales(QThread):
                 break
             self.msleep(int(PERIODO_SONDEO_S * 1000))
         lista = [(hmb_id, indice, nombre) for (hmb_id, indice), nombre in estados.items()]
-        encendidos = all(nombre.split(" - ")[0] not in ESTADOS_CABEZAL_TRANSITORIOS + ("sin respuesta",)
-                         for _, _, nombre in lista)
-        self.terminado.emit(lista, encendidos)
+        alguno = any(nombre == ESTADO_CABEZAL_ENCENDIDO for _, _, nombre in lista)
+        self.terminado.emit(lista, alguno)
 
 
 class VigilantePendientes(QThread):
@@ -466,24 +471,56 @@ class BoardEpson(Board):
                     apagados.append((hmb.get("id"), indice))
         return apagados
 
+    def _encender_host_board(self, hmb_id):
+        """Enciende la etapa de potencia del HMB si esta apagada. Devuelve True si queda encendida."""
+        codigo, host = self.cliente.peticion("GET", f"/api/HeadManagerBoards/{hmb_id}/{RUTA_HOST_BOARD}")
+        if codigo != 200 or not isinstance(host, dict):
+            return True   # sin informacion no se bloquea
+        estado = host.get("boardPower", {}).get("state", {}).get("name")
+        if estado not in ESTADOS_CABEZAL_TRANSITORIOS:
+            return True
+        codigo, respuesta = self.cliente.peticion("POST", f"/api/HeadManagerBoards/{hmb_id}/{RUTA_ENCENDER_HOST}")
+        self.registrar(f"HMB {hmb_id} host board: encendiendo ({codigo})")
+        if codigo not in CODIGOS_OK:
+            print(f"[EPSON] host board powerUp -> {codigo}: {respuesta}")
+            return False
+        intentos = int(TIMEOUT_ENCENDIDO_S / PERIODO_SONDEO_S)
+        for _ in range(intentos):
+            time.sleep(PERIODO_SONDEO_S)
+            codigo, host = self.cliente.peticion("GET", f"/api/HeadManagerBoards/{hmb_id}/{RUTA_HOST_BOARD}")
+            estado = host.get("boardPower", {}).get("state", {}).get("name") if codigo == 200 and isinstance(host, dict) else None
+            if estado is not None and estado not in ESTADOS_CABEZAL_TRANSITORIOS:
+                self.registrar(f"HMB {hmb_id} host board: {estado}")
+                return True
+        self.registrar(f"HMB {hmb_id} host board sigue {estado} tras {TIMEOUT_ENCENDIDO_S} s")
+        return False
+
     def _encender_cabezales(self, apagados):
-        """POST powerup a cada cabezal apagado y espera en un hilo a que dejen de estar
-        PoweredDown; al terminar sigue el armado (_arrancar_cola)."""
+        """Enciende la host board de cada HMB y despues POST powerup a cada cabezal apagado;
+        un hilo espera a que salgan de PoweredDown/PoweringUp y sigue el armado (_arrancar_cola)."""
+        for hmb_id in sorted({hmb_id for hmb_id, _ in apagados}):
+            if not self._encender_host_board(hmb_id):
+                self._poner_estado(ESTADO_RENDER_LISTO)
+                return
         for hmb_id, indice in apagados:
             codigo, respuesta = self.cliente.peticion("POST", f"/api/HeadManagerBoards/{hmb_id}/printheads/{indice}/powerup")
             self.registrar(f"HMB {hmb_id} cabezal {indice}: encendiendo ({codigo})"
                            + ("" if codigo in CODIGOS_OK else f" {str(respuesta)[:120]}"))
+            if codigo not in CODIGOS_OK:
+                print(f"[EPSON] powerup HMB {hmb_id} cabezal {indice} -> {codigo}: {respuesta}")
         self._encendido = EncendidoCabezales(self.cliente, apagados)
         self._encendido.terminado.connect(self._cabezales_encendidos)
         self._encendido.start()
 
-    def _cabezales_encendidos(self, estados, todos):
+    def _cabezales_encendidos(self, estados, alguno):
+        """Basta con un cabezal encendido: los que acaben en error (p. ej. un conector vacio,
+        "Check printhead connection") se registran y se ignoran."""
         for hmb_id, indice, nombre in estados:
             self.registrar(f"HMB {hmb_id} cabezal {indice}: {nombre}")
         if self.estado != ESTADO_ARMANDO:
             return   # se aborto mientras se encendian
-        if not todos:
-            self.registrar(f"Los cabezales no se han encendido en {TIMEOUT_ENCENDIDO_S} s: revisa el HMB Monitor")
+        if not alguno:
+            self.registrar("Ningun cabezal ha quedado encendido: revisa el HMB Monitor")
             self._poner_estado(ESTADO_RENDER_LISTO)
             return
         self._arrancar_cola()
