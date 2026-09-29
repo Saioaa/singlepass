@@ -65,6 +65,7 @@ ESTADOS_PROCESANDO   = ("WaitingForProcessing", "Processing")             # rend
 ESTADOS_ARMADA       = ("QueuedForPrint", "ReadyToPrint", "Printing")     # raster hecho, en cola esperando print go
 ESTADOS_IMPRESO      = ("Completed", "Printed", "Finished")               # terminado (a confirmar con HMB)
 ESTADOS_ERROR        = ("FinishedWithError",)   # terminal con isError; visto sin HMB: "1 of 1 print operations failed"
+ESTADO_CANCELANDO    = "Cancelling"   # un Cancel durante Processing se queda aqui para siempre y bloquea la cola
 NOMBRE_TRABAJO       = "singlepass"
 NOMBRE_VPI_EPSON     = "epson.vpi"
 NOMBRE_PREVIEW       = "preview_epson.png"   # tramo de la pagina con la imagen, mismo formato que un plano del PMB
@@ -154,6 +155,29 @@ class SondeoTrabajo(QThread):
         self.activo = False
 
 
+class VigilantePendientes(QThread):
+    """Espera a que los trabajos apuntados dejen de ripear y avisa para retirarlos."""
+
+    terminado = Signal()
+
+    def __init__(self, cliente, ids):
+        super().__init__()
+        self.cliente = cliente
+        self.ids = set(ids)
+
+    def run(self):
+        while self.ids:
+            for id_trabajo in list(self.ids):
+                codigo, trabajo = self.cliente.peticion("GET", f"/api/Jobs/{id_trabajo}")
+                if codigo is None:
+                    return
+                nombre = trabajo.get("state", {}).get("name") if isinstance(trabajo, dict) else None
+                if codigo == 404 or nombre not in ESTADOS_PROCESANDO:
+                    self.ids.discard(id_trabajo)
+            self.msleep(int(PERIODO_SONDEO_S * 1000))
+        self.terminado.emit()
+
+
 def generar_vpi_pagina(ruta_imagen, ancho_mm, alto_mm, x_pagina_mm, y_mm, rotacion, espejo_x, espejo_y,
                        carpeta_trabajo, ancho_cabezal_mm=vpi.ANCHO_CABEZAL_MM):
     """VPI cuya pagina cubre desde el print go hasta el final de la imagen:
@@ -220,6 +244,8 @@ class BoardEpson(Board):
         self.sondeo = None
         self._conectada = False
         self._estado_hmb = {}   # id -> ultimo estado avisado, para no repetir el aviso
+        self._por_retirar = set()   # ids que aun ripean: se borran cuando terminen de procesar
+        self._vigilante = None
         self._estado_trabajo_atlas = None   # ultimo state.name recibido del trabajo
 
     # ===== conexion y modos =====
@@ -255,17 +281,41 @@ class BoardEpson(Board):
         codigo, trabajos = self.cliente.peticion("GET", "/api/Jobs")
         if codigo != 200 or not isinstance(trabajos, list):
             return
-        antiguos = [t.get("id") for t in trabajos if isinstance(t, dict)
+        antiguos = [t for t in trabajos if isinstance(t, dict)
                     and (t.get("name") or t.get("Name")) == NOMBRE_TRABAJO and t.get("id") != self.id_trabajo]
-        for id_trabajo in antiguos:
-            self._retirar_trabajo(id_trabajo)
-        if antiguos:
-            self.registrar(f"Retirados de Atlas {len(antiguos)} trabajos de sesiones anteriores")
+        retirados = sum(self._retirar_trabajo(t.get("id"), t) for t in antiguos)
+        if retirados:
+            self.registrar(f"Retirados de Atlas {retirados} trabajos de sesiones anteriores")
+        if self._por_retirar:
+            self.registrar(f"{len(self._por_retirar)} trabajos antiguos siguen ripeando: se retiraran al terminar")
 
-    def _retirar_trabajo(self, id_trabajo):
-        """Cancela (si sigue vivo) y borra un trabajo del servidor."""
-        self.cliente.peticion("POST", f"/api/Jobs/{id_trabajo}/Cancel")
-        self.cliente.peticion("DELETE", f"/api/Jobs/{id_trabajo}")
+    def _retirar_trabajo(self, id_trabajo, trabajo=None):
+        """Borra un trabajo del servidor segun su estado. Devuelve True si se ha retirado.
+        - ripeando: NO se cancela (Atlas se queda en Cancelling y bloquea la cola); se apunta
+          y se retira cuando llegue a la cola o termine
+        - en cola: Cancel + DELETE;  terminal: DELETE;  Cancelling: no hay nada que hacer"""
+        if trabajo is None:
+            codigo, trabajo = self.cliente.peticion("GET", f"/api/Jobs/{id_trabajo}")
+            if codigo == 404:
+                return True
+            if codigo != 200 or not isinstance(trabajo, dict):
+                return False
+        estado = trabajo.get("state", {})
+        nombre = estado.get("name")
+        if nombre in ESTADOS_PROCESANDO:
+            self._por_retirar.add(id_trabajo)
+            return False
+        if nombre == ESTADO_CANCELANDO:
+            return False
+        if not estado.get("isTerminal"):
+            self.cliente.peticion("POST", f"/api/Jobs/{id_trabajo}/Cancel")
+        codigo, _ = self.cliente.peticion("DELETE", f"/api/Jobs/{id_trabajo}")
+        self._por_retirar.discard(id_trabajo)
+        return codigo in CODIGOS_OK
+
+    def _retirar_pendientes(self):
+        for id_trabajo in list(self._por_retirar):
+            self._retirar_trabajo(id_trabajo)
 
     def pedir_modos(self):
         if not self.conectar():
@@ -346,6 +396,7 @@ class BoardEpson(Board):
         estado = trabajo.get("state", {})
         nombre = estado.get("name")
         self._estado_trabajo_atlas = nombre
+        self._retirar_pendientes()
         self.registrar(f"Trabajo {trabajo.get('id')}: {nombre}"
                        + (f" ERROR {estado.get('error')}" if estado.get("isError") else ""))
         if estado.get("isError") or estado.get("isTerminal"):
@@ -376,9 +427,18 @@ class BoardEpson(Board):
             self.sondeo.detener()
             self.sondeo.wait()
             self.sondeo = None
-        if self.id_trabajo is not None:
-            self._retirar_trabajo(self.id_trabajo)
+        if self.id_trabajo is not None and not self._retirar_trabajo(self.id_trabajo):
+            self._vigilar_pendientes()
         self.id_trabajo = None
+
+    def _vigilar_pendientes(self):
+        """Sin trabajo propio que sondear, un hilo aparte espera a que los pendientes
+        terminen de ripear para borrarlos."""
+        if self._vigilante is not None and self._vigilante.isRunning():
+            return
+        self._vigilante = VigilantePendientes(self.cliente, self._por_retirar)
+        self._vigilante.terminado.connect(self._retirar_pendientes)
+        self._vigilante.start()
 
     # ===== armado =====
     def armar(self, posicion_eje_mm):
