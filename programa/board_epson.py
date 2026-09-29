@@ -62,6 +62,7 @@ DECIMALES_MM = 2
 # Ciclo visto: WaitingForProcessing -> Processing (Vpi1) -> Processing (ImagePrint) -> QueuedForPrint
 ESTADOS_HMB_OK       = ("Ready", "Running")   # visto "Ready" con HMB y cabezal conectados; "Disconnected" sin HMB
 ESTADO_CABEZAL_APAGADO = "PoweredDown"        # el SE-D3000 hay que encenderlo (POST .../powerup) antes de imprimir
+ESTADOS_CABEZAL_TRANSITORIOS = ("PoweredDown", "PoweringUp")   # aun no se puede imprimir
 TIMEOUT_ENCENDIDO_S    = 30                   # espera maxima a que un cabezal deje de estar PoweredDown
 ESTADOS_PROCESANDO   = ("WaitingForProcessing", "Processing")             # render en curso
 ESTADOS_ARMADA       = ("QueuedForPrint", "ReadyToPrint", "Printing")     # raster hecho, en cola esperando print go
@@ -160,7 +161,7 @@ class SondeoTrabajo(QThread):
 class EncendidoCabezales(QThread):
     """Sondea los cabezales indicados hasta que ninguno este PoweredDown (o venza el timeout)."""
 
-    terminado = Signal(dict, bool)   # {(hmb, indice): estado final}, True si todos encendidos
+    terminado = Signal(list, bool)   # [(hmb, indice, estado final), ...], True si todos encendidos
 
     def __init__(self, cliente, cabezales):
         super().__init__()
@@ -174,15 +175,18 @@ class EncendidoCabezales(QThread):
             pendientes = False
             for hmb_id, indice in self.cabezales:
                 codigo, cabezal = self.cliente.peticion("GET", f"/api/HeadManagerBoards/{hmb_id}/printheads/{indice}")
-                nombre = cabezal.get("state", {}).get("name") if codigo == 200 and isinstance(cabezal, dict) else None
-                estados[(hmb_id, indice)] = nombre
-                if nombre == ESTADO_CABEZAL_APAGADO or nombre is None:
+                estado = cabezal.get("state", {}) if codigo == 200 and isinstance(cabezal, dict) else {}
+                nombre = estado.get("name")
+                estados[(hmb_id, indice)] = (nombre or "sin respuesta") + (f" - {estado.get('error')}" if estado.get("isError") else "")
+                if nombre is None or (nombre in ESTADOS_CABEZAL_TRANSITORIOS and not estado.get("isError")):
                     pendientes = True
             if not pendientes:
-                self.terminado.emit(estados, True)
-                return
+                break
             self.msleep(int(PERIODO_SONDEO_S * 1000))
-        self.terminado.emit(estados, False)
+        lista = [(hmb_id, indice, nombre) for (hmb_id, indice), nombre in estados.items()]
+        encendidos = all(nombre.split(" - ")[0] not in ESTADOS_CABEZAL_TRANSITORIOS + ("sin respuesta",)
+                         for _, _, nombre in lista)
+        self.terminado.emit(lista, encendidos)
 
 
 class VigilantePendientes(QThread):
@@ -474,7 +478,7 @@ class BoardEpson(Board):
         self._encendido.start()
 
     def _cabezales_encendidos(self, estados, todos):
-        for (hmb_id, indice), nombre in estados.items():
+        for hmb_id, indice, nombre in estados:
             self.registrar(f"HMB {hmb_id} cabezal {indice}: {nombre}")
         if self.estado != ESTADO_ARMANDO:
             return   # se aborto mientras se encendian
