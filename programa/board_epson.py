@@ -365,6 +365,7 @@ class BoardEpson(Board):
             self.registrar(f"No se ha podido generar el VPI: {e}")
             return False
         self._olvidar_trabajo()
+        self._poner_estado(ESTADO_SIN_TRABAJO)   # hasta que Atlas termine el RIP
         self.carpeta_trabajo = carpeta
         self.ruta_vpi = ruta_vpi
         self.dimensiones_pagina = (ancho_pagina, alto_pagina)
@@ -404,12 +405,12 @@ class BoardEpson(Board):
                 self.registrar("Impresion completada")
             self._retirar_trabajo(self.id_trabajo)    # terminado: se borra del servidor
             self.id_trabajo = None
-            self._poner_estado(ESTADO_RENDER_LISTO if self.ruta_vpi else ESTADO_SIN_TRABAJO)   # armar() lo reenvia
+            self._descartar_vpi()                     # Atlas no repite trabajos: Rip de nuevo
         elif nombre in ESTADOS_ARMADA:
             if self.estado == ESTADO_ARMANDO:
                 self._armada()
             elif self.estado != ESTADO_LISTO:
-                self.registrar("Raster terminado")
+                self.registrar("RIP terminado")
                 self._poner_estado(ESTADO_RENDER_LISTO)   # dispara las previews en Print Server
 
     def _armada(self):
@@ -419,7 +420,17 @@ class BoardEpson(Board):
     def _trabajo_perdido(self, motivo):
         self.registrar(f"Se ha perdido el trabajo en Atlas: {motivo}")
         self.id_trabajo = None
-        self._poner_estado(ESTADO_RENDER_LISTO if self.ruta_vpi else ESTADO_SIN_TRABAJO)
+        self._descartar_vpi()
+
+    def _descartar_vpi(self):
+        """En Atlas un trabajo solo se imprime una vez: impreso, cancelado o en error,
+        desaparece de la cola y hay que volver a ripear. Se olvida el VPI y la board
+        vuelve a sin_trabajo (Print Server retira las previews)."""
+        self.ruta_vpi = None
+        self.geometria = None
+        self.alto_imagen_mm = None
+        self.dimensiones_pagina = None
+        self._poner_estado(ESTADO_SIN_TRABAJO)
 
     def _olvidar_trabajo(self):
         """Deja de seguir el trabajo actual y lo retira del servidor para que no se acumule."""
@@ -442,12 +453,13 @@ class BoardEpson(Board):
 
     # ===== armado =====
     def armar(self, posicion_eje_mm):
-        if self.ruta_vpi is None:
-            self.registrar("No hay ningun trabajo generado")
-            return False
         if self.estado == ESTADO_LISTO:
             return True
-        if self.id_trabajo is None and not self._enviar_trabajo():
+        if self.id_trabajo is None:
+            self.registrar("No hay ningun trabajo en la cola de Atlas: pulsa Rip")
+            return False
+        if self.estado != ESTADO_RENDER_LISTO:
+            self.registrar("El RIP todavia no ha terminado")
             return False
         self._poner_estado(ESTADO_ARMANDO)
         codigo, _ = self.cliente.peticion("POST", f"/api/PrintQueues/{self._cola()}/start")
@@ -456,22 +468,19 @@ class BoardEpson(Board):
             self._poner_estado(ESTADO_RENDER_LISTO)
             return False
         self.registrar(f"Cola {self.modo} en marcha: el trabajo esperara el print go")
-        if self._estado_trabajo_atlas in ESTADOS_ARMADA:
-            self._armada()   # el trabajo ya estaba ripeado y listo cuando se arranco la cola
+        self._armada()
         return True
 
     def abortar(self):
         if self.id_trabajo is not None:
-            self.registrar(f"Trabajo {self.id_trabajo} cancelado")
+            self.registrar(f"Trabajo {self.id_trabajo} cancelado: para imprimirlo, Rip de nuevo")
         if self.modo is not None:
             self.cliente.peticion("POST", f"/api/PrintQueues/{self._cola()}/stop")
         self._olvidar_trabajo()
-        self._poner_estado(ESTADO_RENDER_LISTO if self.ruta_vpi else ESTADO_SIN_TRABAJO)
+        self._descartar_vpi()
 
     def descartar(self):
         self.abortar()
-        self.ruta_vpi = None
-        self.geometria = None
         super().descartar()
 
     # ===== previews =====
@@ -487,8 +496,8 @@ class BoardEpson(Board):
         self.dimensiones_pagina = (datos["ancho_pagina_mm"], vpi.ANCHO_CABEZAL_MM)
         self.geometria = (datos["x_imagen_mm"], datos["ancho_imagen_mm"])
         self.alto_imagen_mm = datos.get("alto_imagen_mm")
-        self._poner_estado(ESTADO_RENDER_LISTO)
-        return True
+        self._poner_estado(ESTADO_SIN_TRABAJO)
+        return self._enviar_trabajo()   # en Atlas no queda nada: se ripea de nuevo
 
     def planos_render(self):
         """Descarga Preview.tif del trabajo (un unico plano) y guarda en la carpeta el tramo

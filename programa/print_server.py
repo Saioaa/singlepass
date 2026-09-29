@@ -384,9 +384,12 @@ class PrintServer(QObject):
 
     # ===== estado conjunto y boton Print =====
     def _estado_board_cambiado(self, board, estado):
-        """Cada board avisa cuando tiene el raster (render_listo) o queda armada;
-        la primera que lo tenga pone las previews del trabajo actual."""
-        if not self._previews_cargadas and estado in (ESTADO_RENDER_LISTO, ESTADO_LISTO):
+        """Cada board avisa cuando tiene el RIP (render_listo) o queda armada; la primera
+        que lo tenga pone las previews. Si una board pierde su trabajo (impreso, cancelado,
+        error), las previews se rehacen con las que aun lo tengan, o se vacian."""
+        if estado == ESTADO_SIN_TRABAJO:
+            self._previews_cargadas = self.cargar_previews(avisar=False)
+        elif not self._previews_cargadas and estado in (ESTADO_RENDER_LISTO, ESTADO_LISTO):
             self._previews_cargadas = self.cargar_previews()
         self._actualizar_estado()
 
@@ -423,7 +426,7 @@ class PrintServer(QObject):
             self._pintar_print()
 
     # ===== previews =====
-    def cargar_previews(self):
+    def cargar_previews(self, avisar=True):
         """Planos de la primera board activa que los tenga, a escala de la mesa y con
         el desplazamiento X del trabajo. El alto del render ya es el de la mesa.
         Devuelve True si se ha cargado alguno."""
@@ -443,7 +446,8 @@ class PrintServer(QObject):
                 cargados += 1
             if cargados:
                 return True
-        self.registrar("[PRINT SERVER] No se han encontrado planos rasterizados para las previews")
+        if avisar:
+            self.registrar("[PRINT SERVER] No se han encontrado planos rasterizados para las previews")
         return False
 
     @staticmethod
