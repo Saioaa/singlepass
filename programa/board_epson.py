@@ -60,7 +60,7 @@ DECIMALES_MM = 2
 
 # ===== ESTADOS (nombres observados en el Atlas Server real con probar_epson.py) =====
 # Ciclo visto: WaitingForProcessing -> Processing (Vpi1) -> Processing (ImagePrint) -> QueuedForPrint
-ESTADO_HMB_OK        = "Running"
+ESTADOS_HMB_OK       = ("Ready", "Running")   # visto "Ready" con HMB y cabezal conectados; "Disconnected" sin HMB
 ESTADOS_PROCESANDO   = ("WaitingForProcessing", "Processing")             # render en curso
 ESTADOS_ARMADA       = ("QueuedForPrint", "ReadyToPrint", "Printing")     # raster hecho, en cola esperando print go
 ESTADOS_IMPRESO      = ("Completed", "Printed", "Finished")               # terminado (a confirmar con HMB)
@@ -266,8 +266,8 @@ class BoardEpson(Board):
                 if estado == self._estado_hmb.get(hmb.get("id")):
                     continue   # se avisa solo cuando cambia
                 self._estado_hmb[hmb.get("id")] = estado
-                if estado != ESTADO_HMB_OK:
-                    self.registrar(f"HMB {hmb.get('id')}: {estado} (no se podra imprimir hasta que este {ESTADO_HMB_OK})")
+                if estado not in ESTADOS_HMB_OK:
+                    self.registrar(f"HMB {hmb.get('id')}: {estado} (no se podra imprimir hasta que este Ready)")
                 else:
                     self.registrar(f"HMB {hmb.get('id')}: {estado}")
         return True
@@ -400,6 +400,8 @@ class BoardEpson(Board):
         self._retirar_pendientes()
         self.registrar(f"Trabajo {trabajo.get('id')}: {nombre}"
                        + (f" ERROR {estado.get('error')}" if estado.get("isError") else ""))
+        if estado.get("isError"):
+            self._registrar_operaciones(trabajo)
         if estado.get("isError") or estado.get("isTerminal"):
             if nombre in ESTADOS_IMPRESO:
                 self.registrar("Impresion completada")
@@ -412,6 +414,22 @@ class BoardEpson(Board):
             elif self.estado != ESTADO_LISTO:
                 self.registrar("RIP terminado")
                 self._poner_estado(ESTADO_RENDER_LISTO)   # dispara las previews en Print Server
+
+    def _registrar_operaciones(self, trabajo):
+        """Detalle de cada operacion de impresion del trabajo: es donde Atlas deja el motivo
+        real de un fallo ("1 of 1 print operations failed" solo es el resumen)."""
+        for operacion in trabajo.get("printOperations", []):
+            if not isinstance(operacion, dict):
+                continue
+            estado = operacion.get("state", {})
+            self.registrar(f"  Operacion {operacion.get('id')}: {estado.get('name')}"
+                           + (f" - {estado.get('error')}" if estado.get("error") else ""))
+            codigo, detalle = self.cliente.peticion("GET", f"/api/PrintOperations/{operacion.get('id')}")
+            if codigo == 200 and isinstance(detalle, dict):
+                print(f"[EPSON] Operacion {operacion.get('id')}: {json.dumps(detalle, indent=1)[:2000]}")
+        codigo, hmbs = self.cliente.peticion("GET", "/api/HeadManagerBoards")
+        if codigo == 200:
+            print(f"[EPSON] HMB: {json.dumps(hmbs, indent=1)[:3000]}")
 
     def _armada(self):
         self.registrar("Cabezal armado, esperando print go")
