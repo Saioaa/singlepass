@@ -72,7 +72,8 @@ RUTA_HOST_POWER        = "/api/headManagerBoards/{hmb}/hostBoard/boardPower"
 RUTA_CABEZAL_POWER     = "/api/HeadManagerBoards/{hmb}/printheads/{cabezal}"   # via Atlas Server
 TIMEOUT_ENCENDIDO_S    = 60                   # espera maxima a que host board y cabezales enciendan
 ESTADOS_PROCESANDO   = ("WaitingForProcessing", "Processing")             # render en curso
-ESTADOS_ARMADA       = ("QueuedForPrint", "ReadyToPrint", "Printing")     # raster hecho, en cola esperando print go
+ESTADO_EN_COLA       = "QueuedForPrint"                    # RIP hecho, en cola (la cola puede estar parada)
+ESTADOS_ARMADA       = ("ReadyToPrint", "Printing")        # Atlas ha preparado la operacion: espera el print go
 ESTADOS_IMPRESO      = ("Completed", "Printed", "Finished")               # terminado (a confirmar con HMB)
 ESTADOS_ERROR        = ("FinishedWithError",)   # terminal con isError; visto sin HMB: "1 of 1 print operations failed"
 ESTADO_CANCELANDO    = "Cancelling"   # un Cancel durante Processing se queda aqui para siempre y bloquea la cola
@@ -548,12 +549,11 @@ class BoardEpson(Board):
             self._retirar_trabajo(self.id_trabajo)    # terminado: se borra del servidor
             self.id_trabajo = None
             self._descartar_vpi()                     # Atlas no repite trabajos: Rip de nuevo
-        elif nombre in ESTADOS_ARMADA:
-            if self.estado == ESTADO_ARMANDO:
-                self._armada()
-            elif self.estado != ESTADO_LISTO:
-                self.registrar("RIP terminado")
-                self._poner_estado(ESTADO_RENDER_LISTO)   # dispara las previews en Print Server
+        elif nombre == ESTADO_EN_COLA and self.estado == ESTADO_SIN_TRABAJO:
+            self.registrar("RIP terminado")
+            self._poner_estado(ESTADO_RENDER_LISTO)   # dispara las previews en Print Server
+        elif nombre in ESTADOS_ARMADA and self.estado == ESTADO_ARMANDO:
+            self._armada()
 
     def _registrar_operaciones(self, trabajo):
         """Detalle de cada operacion de impresion del trabajo: es donde Atlas deja el motivo
@@ -657,16 +657,16 @@ class BoardEpson(Board):
             self.registrar(f"No se ha podido arrancar la cola {self.modo} ({codigo})")
             self._poner_estado(ESTADO_RENDER_LISTO)
             return False
-        self.registrar(f"Cola {self.modo} en marcha: el trabajo esperara el print go")
-        self._armada()
-        return True
+        self.registrar(f"Cola {self.modo} en marcha: esperando a que Atlas prepare la operacion")
+        return True   # armada cuando el sondeo vea ReadyToPrint (_estado_trabajo)
 
     def abortar(self):
         self._armar_al_encender = False
         if self.id_trabajo is not None:
             self.registrar(f"Trabajo {self.id_trabajo} cancelado: para imprimirlo, Rip de nuevo")
         if self.modo is not None:
-            self.cliente.peticion("POST", f"/api/PrintQueues/{self._cola()}/stop")
+            # cancel: aborta la operacion en curso (si la hay) y para la cola; stop solo la para
+            self.cliente.peticion("POST", f"/api/PrintQueues/{self._cola()}/cancel")
         self._olvidar_trabajo()
         self._descartar_vpi()
 
