@@ -44,7 +44,8 @@ PRINT_GO_TAMBIEN_POR_SOFTWARE = True
 # ===== ATLAS (SM-200 / Epson) =====
 IP_ATLAS      = "localhost"        # Atlas Server (API REST), corre en este mismo PC
 PUERTO_ATLAS  = 5000
-IP_HMB        = "192.168.79.134"   # Head Manager Board (aun sin montar): sin API, la gestiona el Atlas Server
+IP_HMB        = "192.168.79.134"   # Head Manager Board: API propia en el 8080 (host board, cabezales)
+PUERTO_HMB    = 8080
 IP_SM200      = "192.168.79.1"     # tarjeta encoder / print go: solo habla con el Atlas Server
 PUERTO_SM200  = 8080
 

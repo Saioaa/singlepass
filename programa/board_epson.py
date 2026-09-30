@@ -28,7 +28,6 @@ ajustan con lo que devuelva la primera prueba (todo cambio se registra).
 import json
 import os
 import shutil
-import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -66,10 +65,12 @@ ESTADO_CABEZAL_APAGADO = "PoweredDown"        # el SE-D3000 hay que encenderlo (
 ESTADO_CABEZAL_ENCENDIDO = "PoweredUp"        # nombre real observado tras el powerup
 ESTADOS_CABEZAL_TRANSITORIOS = ("PoweredDown", "PoweringUp")   # aun no se puede imprimir
 # La etapa de potencia del HMB (host board) tiene que estar encendida antes que los cabezales;
-# tras un reinicio del HMB arranca apagada ("HostBoardMustBePowered").
-RUTA_HOST_BOARD        = "hostBoard"
-RUTA_ENCENDER_HOST     = "hostBoard/boardPower/powerUp"
-TIMEOUT_ENCENDIDO_S    = 30                   # espera maxima a que un cabezal deje de estar PoweredDown
+# tras un reinicio del HMB arranca apagada ("HostBoardMustBePowered"). Se maneja hablando
+# directamente con el HMB (config.IP_HMB:PUERTO_HMB), que es donde esta comprobado.
+RUTA_HOST_BOARD        = "/api/headManagerBoards/{hmb}/hostBoard"
+RUTA_HOST_POWER        = "/api/headManagerBoards/{hmb}/hostBoard/boardPower"
+RUTA_CABEZAL_POWER     = "/api/HeadManagerBoards/{hmb}/printheads/{cabezal}"   # via Atlas Server
+TIMEOUT_ENCENDIDO_S    = 60                   # espera maxima a que host board y cabezales enciendan
 ESTADOS_PROCESANDO   = ("WaitingForProcessing", "Processing")             # render en curso
 ESTADOS_ARMADA       = ("QueuedForPrint", "ReadyToPrint", "Printing")     # raster hecho, en cola esperando print go
 ESTADOS_IMPRESO      = ("Completed", "Printed", "Finished")               # terminado (a confirmar con HMB)
@@ -164,34 +165,91 @@ class SondeoTrabajo(QThread):
         self.activo = False
 
 
-class EncendidoCabezales(QThread):
-    """Sondea los cabezales indicados hasta que ninguno este PoweredDown (o venza el timeout)."""
+class EncendidoHMB(QThread):
+    """Enciende la etapa de potencia (host board) de cada HMB y despues los cabezales
+    apagados sin error, esperando a que salgan de PoweredDown/PoweringUp. Avisa por
+    'mensaje' de cada paso y al final 'terminado(True)' si algun cabezal esta PoweredUp.
+    Se lanza al entrar en Print Server para que el cabezal llegue a temperatura antes
+    de imprimir; armar() solo espera a que termine si todavia esta en marcha."""
 
-    terminado = Signal(list, bool)   # [(hmb, indice, estado final), ...], True si alguno ha quedado encendido
+    mensaje = Signal(str)
+    terminado = Signal(bool)
 
-    def __init__(self, cliente, cabezales):
+    def __init__(self, atlas, hmb):
         super().__init__()
-        self.cliente = cliente
-        self.cabezales = list(cabezales)
+        self.atlas = atlas   # Atlas Server (localhost:5000): lista de HMB y cabezales
+        self.hmb = hmb       # HMB directo (192.168.79.134:8080): host board
+
+    def _esperar(self, leer_estado, transitorios):
+        """Sondea hasta que el estado salga de 'transitorios' o venza el timeout. Devuelve el estado."""
+        estado = None
+        for _ in range(int(TIMEOUT_ENCENDIDO_S / PERIODO_SONDEO_S)):
+            estado = leer_estado()
+            if estado is not None and estado not in transitorios:
+                return estado
+            self.msleep(int(PERIODO_SONDEO_S * 1000))
+        return estado
+
+    def _estado_host(self, hmb_id):
+        codigo, host = self.hmb.peticion("GET", RUTA_HOST_BOARD.format(hmb=hmb_id))
+        if codigo != 200 or not isinstance(host, dict):
+            return None
+        return host.get("boardPower", {}).get("state", {}).get("name")
+
+    def _estado_cabezal(self, hmb_id, indice):
+        codigo, cabezal = self.atlas.peticion("GET", RUTA_CABEZAL_POWER.format(hmb=hmb_id, cabezal=indice))
+        if codigo != 200 or not isinstance(cabezal, dict):
+            return None, None
+        estado = cabezal.get("state", {})
+        return estado.get("name"), (estado.get("error") if estado.get("isError") else None)
 
     def run(self):
-        estados = {}
-        intentos = int(TIMEOUT_ENCENDIDO_S / PERIODO_SONDEO_S)
-        for _ in range(intentos):
-            pendientes = False
-            for hmb_id, indice in self.cabezales:
-                codigo, cabezal = self.cliente.peticion("GET", f"/api/HeadManagerBoards/{hmb_id}/printheads/{indice}")
-                estado = cabezal.get("state", {}) if codigo == 200 and isinstance(cabezal, dict) else {}
-                nombre = estado.get("name")
-                estados[(hmb_id, indice)] = (nombre or "sin respuesta") + (f" - {estado.get('error')}" if estado.get("isError") else "")
-                if nombre is None or (nombre in ESTADOS_CABEZAL_TRANSITORIOS and not estado.get("isError")):
-                    pendientes = True
-            if not pendientes:
-                break
-            self.msleep(int(PERIODO_SONDEO_S * 1000))
-        lista = [(hmb_id, indice, nombre) for (hmb_id, indice), nombre in estados.items()]
-        alguno = any(nombre == ESTADO_CABEZAL_ENCENDIDO for _, _, nombre in lista)
-        self.terminado.emit(lista, alguno)
+        codigo, hmbs = self.atlas.peticion("GET", "/api/HeadManagerBoards")
+        if codigo != 200 or not isinstance(hmbs, list):
+            self.mensaje.emit("No se ha podido leer la lista de HMB")
+            self.terminado.emit(False)
+            return
+        alguno = False
+        for hmb in hmbs:
+            hmb_id = hmb.get("id")
+            # --- host board ---
+            estado = self._estado_host(hmb_id)
+            if estado is None:
+                self.mensaje.emit(f"HMB {hmb_id}: sin respuesta de la host board en {self.hmb.base}")
+                continue
+            if estado in ESTADOS_CABEZAL_TRANSITORIOS:
+                codigo, respuesta = self.hmb.peticion("POST", RUTA_HOST_POWER.format(hmb=hmb_id) + "/powerUp")
+                self.mensaje.emit(f"HMB {hmb_id} host board: encendiendo ({codigo})")
+                if codigo not in CODIGOS_OK:
+                    print(f"[EPSON] host board powerUp -> {codigo}: {respuesta}")
+                    continue
+                estado = self._esperar(lambda: self._estado_host(hmb_id), ESTADOS_CABEZAL_TRANSITORIOS)
+                self.mensaje.emit(f"HMB {hmb_id} host board: {estado}")
+                if estado in ESTADOS_CABEZAL_TRANSITORIOS:
+                    continue
+            # --- cabezales ---
+            pendientes = []
+            for indice, cabezal in enumerate(hmb.get("printHeads", [])):
+                nombre, error = self._estado_cabezal(hmb_id, indice)
+                if error:
+                    self.mensaje.emit(f"HMB {hmb_id} cabezal {indice}: {nombre} - {error} (se ignora)")
+                elif nombre == ESTADO_CABEZAL_ENCENDIDO:
+                    alguno = True
+                elif nombre == ESTADO_CABEZAL_APAGADO:
+                    codigo, respuesta = self.atlas.peticion("POST", RUTA_CABEZAL_POWER.format(hmb=hmb_id, cabezal=indice) + "/powerup")
+                    self.mensaje.emit(f"HMB {hmb_id} cabezal {indice}: encendiendo ({codigo})")
+                    if codigo in CODIGOS_OK:
+                        pendientes.append(indice)
+                    else:
+                        print(f"[EPSON] powerup HMB {hmb_id} cabezal {indice} -> {codigo}: {respuesta}")
+            for indice in pendientes:
+                def leer(i=indice):
+                    nombre, error = self._estado_cabezal(hmb_id, i)
+                    return f"{nombre} - {error}" if error else nombre
+                estado = self._esperar(leer, ESTADOS_CABEZAL_TRANSITORIOS)
+                self.mensaje.emit(f"HMB {hmb_id} cabezal {indice}: {estado}")
+                alguno = alguno or estado == ESTADO_CABEZAL_ENCENDIDO
+        self.terminado.emit(alguno)
 
 
 class VigilantePendientes(QThread):
@@ -273,6 +331,7 @@ class BoardEpson(Board):
     def __init__(self, host=HOST_ATLAS, puerto=PUERTO_API, parent=None):
         super().__init__(parent)
         self.cliente = ClienteAtlas(host, puerto)
+        self.cliente_hmb = ClienteAtlas(config.IP_HMB, config.PUERTO_HMB)   # host board, en directo
         self.modo = None
         self.pasos_por_modo = {}       # modo -> (xPitch, yPitch) en mm
         self.ruta_vpi = None
@@ -285,7 +344,8 @@ class BoardEpson(Board):
         self._estado_hmb = {}   # id -> ultimo estado avisado, para no repetir el aviso
         self._por_retirar = set()   # ids que aun ripean: se borran cuando terminen de procesar
         self._vigilante = None
-        self._encendido = None      # hilo que espera a que los cabezales se enciendan
+        self._encendido = None      # hilo EncendidoHMB (host board + cabezales)
+        self._armar_al_encender = False   # Print pulsado mientras se encendia
         self._estado_trabajo_atlas = None   # ultimo state.name recibido del trabajo
 
     # ===== conexion y modos =====
@@ -366,6 +426,45 @@ class BoardEpson(Board):
             return
         self.pasos_por_modo = {c["id"]: (c.get("xPitchInMillimetres"), c.get("yPitchInMillimetres")) for c in colas}
         self.modos_recibidos.emit(list(self.pasos_por_modo))
+        self.encender()   # que el cabezal vaya cogiendo temperatura mientras se prepara el trabajo
+
+    # ===== potencia del HMB =====
+    def encender(self):
+        """Enciende host board y cabezales en segundo plano (si no esta ya en marcha)."""
+        if self._encendido is not None and self._encendido.isRunning():
+            return
+        self._encendido = EncendidoHMB(self.cliente, self.cliente_hmb)
+        self._encendido.mensaje.connect(self.registrar)
+        self._encendido.terminado.connect(self._tras_encender)
+        self._encendido.start()
+
+    def _tras_encender(self, alguno):
+        if not alguno:
+            self.registrar("Ningun cabezal ha quedado encendido: revisa el HMB Monitor")
+        if not self._armar_al_encender:
+            return
+        self._armar_al_encender = False
+        if self.estado != ESTADO_ARMANDO:
+            return   # se aborto mientras se encendia
+        if alguno:
+            self._arrancar_cola()
+        else:
+            self._poner_estado(ESTADO_RENDER_LISTO)
+
+    def cerrar(self):
+        """Al salir de la app: apaga los cabezales y la etapa de potencia del HMB."""
+        if self._encendido is not None and self._encendido.isRunning():
+            self._encendido.wait()
+        codigo, hmbs = self.cliente.peticion("GET", "/api/HeadManagerBoards", timeout=2)
+        if codigo != 200 or not isinstance(hmbs, list):
+            return
+        for hmb in hmbs:
+            hmb_id = hmb.get("id")
+            for indice, cabezal in enumerate(hmb.get("printHeads", [])):
+                if cabezal.get("state", {}).get("name") == ESTADO_CABEZAL_ENCENDIDO:
+                    self.cliente.peticion("POST", RUTA_CABEZAL_POWER.format(hmb=hmb_id, cabezal=indice) + "/powerdown", timeout=2)
+            self.cliente_hmb.peticion("POST", RUTA_HOST_POWER.format(hmb=hmb_id) + "/powerDown", timeout=2)
+        print("[EPSON] Cabezales y host board apagados")
 
     def seleccionar_modo(self, modo):
         self.modo = modo
@@ -455,76 +554,6 @@ class BoardEpson(Board):
                 self.registrar("RIP terminado")
                 self._poner_estado(ESTADO_RENDER_LISTO)   # dispara las previews en Print Server
 
-    def _cabezales_apagados(self):
-        """[(hmb_id, indice_cabezal), ...] de los cabezales sin error que estan PoweredDown.
-        Los que estan en error se avisan y se dejan (p. ej. "Check printhead connection")."""
-        codigo, hmbs = self.cliente.peticion("GET", "/api/HeadManagerBoards")
-        if codigo != 200 or not isinstance(hmbs, list):
-            return []   # sin informacion no se bloquea; el error lo dira el trabajo
-        apagados = []
-        for hmb in hmbs:
-            for indice, cabezal in enumerate(hmb.get("printHeads", [])):
-                estado = cabezal.get("state", {})
-                if estado.get("isError"):
-                    self.registrar(f"HMB {hmb.get('id')} cabezal {indice}: {estado.get('name')} - {estado.get('error')}")
-                elif estado.get("name") == ESTADO_CABEZAL_APAGADO:
-                    apagados.append((hmb.get("id"), indice))
-        return apagados
-
-    def _encender_host_board(self, hmb_id):
-        """Enciende la etapa de potencia del HMB si esta apagada. Devuelve True si queda encendida."""
-        codigo, host = self.cliente.peticion("GET", f"/api/HeadManagerBoards/{hmb_id}/{RUTA_HOST_BOARD}")
-        if codigo != 200 or not isinstance(host, dict):
-            return True   # sin informacion no se bloquea
-        estado = host.get("boardPower", {}).get("state", {}).get("name")
-        if estado not in ESTADOS_CABEZAL_TRANSITORIOS:
-            return True
-        codigo, respuesta = self.cliente.peticion("POST", f"/api/HeadManagerBoards/{hmb_id}/{RUTA_ENCENDER_HOST}")
-        self.registrar(f"HMB {hmb_id} host board: encendiendo ({codigo})")
-        if codigo not in CODIGOS_OK:
-            print(f"[EPSON] host board powerUp -> {codigo}: {respuesta}")
-            return False
-        intentos = int(TIMEOUT_ENCENDIDO_S / PERIODO_SONDEO_S)
-        for _ in range(intentos):
-            time.sleep(PERIODO_SONDEO_S)
-            codigo, host = self.cliente.peticion("GET", f"/api/HeadManagerBoards/{hmb_id}/{RUTA_HOST_BOARD}")
-            estado = host.get("boardPower", {}).get("state", {}).get("name") if codigo == 200 and isinstance(host, dict) else None
-            if estado is not None and estado not in ESTADOS_CABEZAL_TRANSITORIOS:
-                self.registrar(f"HMB {hmb_id} host board: {estado}")
-                return True
-        self.registrar(f"HMB {hmb_id} host board sigue {estado} tras {TIMEOUT_ENCENDIDO_S} s")
-        return False
-
-    def _encender_cabezales(self, apagados):
-        """Enciende la host board de cada HMB y despues POST powerup a cada cabezal apagado;
-        un hilo espera a que salgan de PoweredDown/PoweringUp y sigue el armado (_arrancar_cola)."""
-        for hmb_id in sorted({hmb_id for hmb_id, _ in apagados}):
-            if not self._encender_host_board(hmb_id):
-                self._poner_estado(ESTADO_RENDER_LISTO)
-                return
-        for hmb_id, indice in apagados:
-            codigo, respuesta = self.cliente.peticion("POST", f"/api/HeadManagerBoards/{hmb_id}/printheads/{indice}/powerup")
-            self.registrar(f"HMB {hmb_id} cabezal {indice}: encendiendo ({codigo})"
-                           + ("" if codigo in CODIGOS_OK else f" {str(respuesta)[:120]}"))
-            if codigo not in CODIGOS_OK:
-                print(f"[EPSON] powerup HMB {hmb_id} cabezal {indice} -> {codigo}: {respuesta}")
-        self._encendido = EncendidoCabezales(self.cliente, apagados)
-        self._encendido.terminado.connect(self._cabezales_encendidos)
-        self._encendido.start()
-
-    def _cabezales_encendidos(self, estados, alguno):
-        """Basta con un cabezal encendido: los que acaben en error (p. ej. un conector vacio,
-        "Check printhead connection") se registran y se ignoran."""
-        for hmb_id, indice, nombre in estados:
-            self.registrar(f"HMB {hmb_id} cabezal {indice}: {nombre}")
-        if self.estado != ESTADO_ARMANDO:
-            return   # se aborto mientras se encendian
-        if not alguno:
-            self.registrar("Ningun cabezal ha quedado encendido: revisa el HMB Monitor")
-            self._poner_estado(ESTADO_RENDER_LISTO)
-            return
-        self._arrancar_cola()
-
     def _registrar_operaciones(self, trabajo):
         """Detalle de cada operacion de impresion del trabajo: es donde Atlas deja el motivo
         real de un fallo ("1 of 1 print operations failed" solo es el resumen)."""
@@ -590,11 +619,20 @@ class BoardEpson(Board):
             self.registrar("El RIP todavia no ha terminado")
             return False
         self._poner_estado(ESTADO_ARMANDO)
-        apagados = self._cabezales_apagados()
-        if apagados:
-            self._encender_cabezales(apagados)   # sigue en _cabezales_encendidos -> _arrancar_cola
-            return True
-        return self._arrancar_cola()
+        if self._encendido is None or not self._encendido.isRunning():
+            if self._algun_cabezal_encendido():
+                return self._arrancar_cola()
+            self.encender()   # se apago entre medias (o no se llego a encender): otra vez
+        self.registrar("Esperando a que el HMB termine de encender")
+        self._armar_al_encender = True   # sigue en _tras_encender -> _arrancar_cola
+        return True
+
+    def _algun_cabezal_encendido(self):
+        codigo, hmbs = self.cliente.peticion("GET", "/api/HeadManagerBoards")
+        if codigo != 200 or not isinstance(hmbs, list):
+            return True   # sin informacion no se bloquea; el error lo dira el trabajo
+        return any(cabezal.get("state", {}).get("name") == ESTADO_CABEZAL_ENCENDIDO
+                   for hmb in hmbs for cabezal in hmb.get("printHeads", []))
 
     def _arrancar_cola(self):
         codigo, _ = self.cliente.peticion("POST", f"/api/PrintQueues/{self._cola()}/start")
@@ -607,6 +645,7 @@ class BoardEpson(Board):
         return True
 
     def abortar(self):
+        self._armar_al_encender = False
         if self.id_trabajo is not None:
             self.registrar(f"Trabajo {self.id_trabajo} cancelado: para imprimirlo, Rip de nuevo")
         if self.modo is not None:

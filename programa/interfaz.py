@@ -280,6 +280,9 @@ class VentanaPrincipal(QMainWindow):
     # ===== cierre =====
     def closeEvent(self, evento):
         self.guardar_ajustes()
+        for board in self.boards:
+            if hasattr(board, "cerrar"):
+                board.cerrar()   # Epson: apaga cabezales y host board del HMB
         super().closeEvent(evento)
 
     # ===== accesos a widgets repetidos =====
