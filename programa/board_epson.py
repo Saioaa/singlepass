@@ -76,6 +76,7 @@ ESTADOS_ARMADA       = ("QueuedForPrint", "ReadyToPrint", "Printing")     # rast
 ESTADOS_IMPRESO      = ("Completed", "Printed", "Finished")               # terminado (a confirmar con HMB)
 ESTADOS_ERROR        = ("FinishedWithError",)   # terminal con isError; visto sin HMB: "1 of 1 print operations failed"
 ESTADO_CANCELANDO    = "Cancelling"   # un Cancel durante Processing se queda aqui para siempre y bloquea la cola
+DIAGNOSTICOS_MOSTRADOS = 15   # mensajes de /api/Diagnostics (los mas recientes) que se vuelcan tras un fallo
 NOMBRE_TRABAJO       = "singlepass"
 NOMBRE_VPI_EPSON     = "epson.vpi"
 NOMBRE_PREVIEW       = "preview_epson.png"   # tramo de la pagina con la imagen, mismo formato que un plano del PMB
@@ -576,8 +577,11 @@ class BoardEpson(Board):
                     self.registrar(f"  Operacion {operacion.get('id')}: {estado.get('name')} - {estado.get('error')}")
             print(f"[EPSON] PrintOperations: {json.dumps(operaciones, indent=1)[:4000]}")
         codigo, diagnosticos = self.cliente.peticion("GET", "/api/Diagnostics")
-        if codigo == 200:
-            print(f"[EPSON] Diagnostics: {json.dumps(diagnosticos, indent=1)[-4000:]}")
+        if codigo == 200 and isinstance(diagnosticos, dict):
+            # la lista viene de mas reciente a mas antiguo: los primeros son los del fallo
+            for informe in diagnosticos.get("diagnosticReports", [])[:DIAGNOSTICOS_MOSTRADOS]:
+                print(f"[EPSON] {informe.get('level')}: {informe.get('diagnosticMessage')}"
+                      + (f" | {informe.get('additionalMessage')}" if informe.get("additionalMessage") else ""))
         codigo, hmbs = self.cliente.peticion("GET", "/api/HeadManagerBoards")
         if codigo == 200 and isinstance(hmbs, list):
             resumen = [{"id": h.get("id"), "state": h.get("state"), "printHeads": h.get("printHeads")} for h in hmbs]
