@@ -566,9 +566,22 @@ class BoardEpson(Board):
             codigo, detalle = self.cliente.peticion("GET", f"/api/PrintOperations/{operacion.get('id')}")
             if codigo == 200 and isinstance(detalle, dict):
                 print(f"[EPSON] Operacion {operacion.get('id')}: {json.dumps(detalle, indent=1)[:2000]}")
-        codigo, hmbs = self.cliente.peticion("GET", "/api/HeadManagerBoards")
+        # el sondeo del trabajo no siempre trae printOperations: se piden todas y se
+        # muestran las que estan en error (el texto de error es el motivo real del fallo)
+        codigo, operaciones = self.cliente.peticion("GET", "/api/PrintOperations")
+        if codigo == 200 and isinstance(operaciones, list):
+            for operacion in operaciones:
+                estado = operacion.get("state", {}) if isinstance(operacion, dict) else {}
+                if estado.get("isError") or estado.get("error"):
+                    self.registrar(f"  Operacion {operacion.get('id')}: {estado.get('name')} - {estado.get('error')}")
+            print(f"[EPSON] PrintOperations: {json.dumps(operaciones, indent=1)[:4000]}")
+        codigo, diagnosticos = self.cliente.peticion("GET", "/api/Diagnostics")
         if codigo == 200:
-            print(f"[EPSON] HMB: {json.dumps(hmbs, indent=1)[:3000]}")
+            print(f"[EPSON] Diagnostics: {json.dumps(diagnosticos, indent=1)[-4000:]}")
+        codigo, hmbs = self.cliente.peticion("GET", "/api/HeadManagerBoards")
+        if codigo == 200 and isinstance(hmbs, list):
+            resumen = [{"id": h.get("id"), "state": h.get("state"), "printHeads": h.get("printHeads")} for h in hmbs]
+            print(f"[EPSON] HMB: {json.dumps(resumen, indent=1)}")
 
     def _armada(self):
         self.registrar("Cabezal armado, esperando print go")
