@@ -20,6 +20,11 @@ PERIODO_SECUENCIA_MS = 50     # ms - intervalo del QTimer despachador
 RETARDO_ARRANQUE_MOV = 0.15   # s - ventana ciega tras lanzar un movimiento
 T_LAMPARAS_ON        = 4.0    # s que tardan en encender
 T_LAMPARAS_OFF       = 2.0    # s que tardan en apagar
+# El print go se envia con la mesa PARADA en reposo y el movimiento arranca despues:
+# si salieran a la vez, el pulso (TCP -> M-Duino -> rele) llegaria con la mesa ya en
+# marcha y la imagen se desplazaria segun la velocidad. El rele dura 0,3 s y el
+# flanco de subida se captura al cerrar, asi que con esto sobra.
+T_PRINT_GO_S         = 0.3    # s entre el PULSE y el arranque de la pasada de impresion
 
 # ===== LAMPARAS =====
 PWM_APAGADAS = 0    # la potencia de curado llega en ParametrosPrograma.potencia_nir (%)
@@ -207,16 +212,21 @@ class SecuenciaImpresion(QObject):
             self.subpaso = 0
 
     def etapa_sin_curado(self):
-        """sin curado -> ida y vuelta a velocidad de impresion."""
+        """sin curado -> print go con la mesa parada, ida y vuelta a velocidad de impresion."""
         if self.subpaso == 0:
             self.params_impresion()
             self.print_go()
-            self.mover_secuencia(self.parametros.fin_impresion)
+            self.t_espera = time.time() + T_PRINT_GO_S
             self.subpaso = 1
         elif self.subpaso == 1:
-            self.mover_secuencia(self.posicion_reposo)
+            if time.time() < self.t_espera:   # el pulso llega con la mesa quieta
+                return
+            self.mover_secuencia(self.parametros.fin_impresion)
             self.subpaso = 2
         elif self.subpaso == 2:
+            self.mover_secuencia(self.posicion_reposo)
+            self.subpaso = 3
+        elif self.subpaso == 3:
             self._terminar()
 
     def etapa_ida_impresion(self):
@@ -231,9 +241,14 @@ class SecuenciaImpresion(QObject):
                 return
             self.params_impresion()
             self.print_go()
-            self.mover_secuencia(self.parametros.fin_impresion)
+            self.t_espera = time.time() + T_PRINT_GO_S
             self.subpaso = 2
         elif self.subpaso == 2:
+            if time.time() < self.t_espera:   # el pulso llega con la mesa quieta
+                return
+            self.mover_secuencia(self.parametros.fin_impresion)
+            self.subpaso = 3
+        elif self.subpaso == 3:
             self.destino_curado = self.parametros.fin_curado   # la ida ha acabado en el extremo lejano
             self.contpas -= 1   # la ida ya fue la pasada 1
             if self.contpas > 0:
