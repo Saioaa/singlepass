@@ -31,7 +31,7 @@ from board import (ESTADO_ARMANDO, ESTADO_LISTO, ESTADO_RENDER_LISTO, ESTADO_SIN
 from mesa import MesaImpresion
 
 # ===== WIDGETS =====
-NOMBRES_PAGINA = ("print_server")           # objectName de la pagina
+NOMBRES_PAGINA = ("print_server",)          # objectName de la pagina (tupla: la coma importa)
 # combos de modo: board.nombre -> (widget del .ui, texto que muestra mientras no tiene modos)
 COMBOS_MODO = {
     "PMB":   ("systemode",       "PMB"),
