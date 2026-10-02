@@ -9,9 +9,11 @@ ui_pantalla_programa.py debe generarse con:
     pyside6-uic pantalla_programa.ui -o ui_pantalla_programa.py
 """
 
+import ctypes
 import json
 import os
 import re
+import sys
 
 from PySide6.QtCore import QLocale, QSize, Qt, QTimer
 from PySide6.QtGui import QDoubleValidator, QGuiApplication, QIcon, QPixmap
@@ -26,6 +28,13 @@ from print_server import PrintServer
 from pagina_programa import PaginaPrograma
 from secuencia import SecuenciaImpresion
 from ui_pantalla_programa import Ui_MainWindow
+
+# ===== IDENTIDAD DE LA APLICACION =====
+TITULO_VENTANA = "MATERIALIGHT"
+ICONO_APP      = "M_02.ico"           # en config.CARPETA_IMAGENES: barra de titulo y barra de tareas
+# Windows agrupa las ventanas en la barra de tareas por este identificador; sin el,
+# una app lanzada con python.exe hereda el icono de Python en lugar del suyo.
+ID_APP_WINDOWS = "Materialight.Singlepass"
 
 # ===== MODULOS DE LA BARRA (para la persistencia de ajustes) =====
 PRIMER_MODULO = 1
@@ -155,6 +164,7 @@ class VentanaPrincipal(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self._poner_identidad()
 
         validador = QDoubleValidator()
         validador.setLocale(QLocale(QLocale.English))
@@ -247,6 +257,20 @@ class VentanaPrincipal(QMainWindow):
         self.timer_latido.start()
 
         self.cargar_ajustes()
+
+    # ===== identidad =====
+    def _poner_identidad(self):
+        """Titulo e icono de la ventana (barra de titulo y barra de tareas)."""
+        self.setWindowTitle(TITULO_VENTANA)
+        ruta = os.path.join(config.CARPETA_IMAGENES, ICONO_APP)
+        if not os.path.exists(ruta):
+            print(f"[UI] Falta el icono {ruta}")
+            return
+        if sys.platform == "win32":
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(ID_APP_WINDOWS)
+        icono = QIcon(ruta)
+        self.setWindowIcon(icono)
+        QGuiApplication.setWindowIcon(icono)   # tambien dialogos y ventanas secundarias
 
     # ===== escalado =====
     def ajustar_a_pantalla(self):

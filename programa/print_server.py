@@ -54,6 +54,9 @@ GRADOS_POR_GIRO = 90
 GRADOS_VUELTA   = 360
 GIRO_PERPENDICULAR = 90
 DPI_GENERICOS   = (72, 96)   # lo que graban los programas cuando la imagen no tiene resolucion real
+# Qt rechaza por defecto imagenes que descomprimidas superan 256 MB (una A4 a 1200 dpi en
+# color ya pasa de 500 MB). Es un limite del lector de imagenes, no de la memoria del PC.
+LIMITE_MEMORIA_IMAGEN_MB = 0   # 0 = sin limite
 POSICION_INICIAL_X_MM = 0.0   # donde aparece una imagen recien cargada
 POSICION_INICIAL_Y_MM = 0.0
 DECIMALES_POSICION = 2
@@ -75,6 +78,7 @@ class PrintServer(QObject):
 
     def __init__(self, ui, boards, cabezales_activos, posicion_eje, parent=None):
         super().__init__(parent)
+        QImageReader.setAllocationLimit(LIMITE_MEMORIA_IMAGEN_MB)   # global para QPixmap/QImage
         self.ui = ui
         self.boards = list(boards)                      # todas las boards conocidas
         self._cabezales_activos = cabezales_activos     # callable -> [(tipo_modulo, x_mm), ...]
