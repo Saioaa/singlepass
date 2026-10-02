@@ -5,12 +5,25 @@ Unico sitio donde se tocan IPs, limites de carrera y geometria de la barra.
 """
 
 import os
+import sys
 
-# ===== RUTAS =====
-CARPETA_PROGRAMA = os.path.dirname(os.path.realpath(__file__))
-CARPETA_IMAGENES = os.path.normpath(os.path.join(CARPETA_PROGRAMA, "..", "imagenes"))
-RUTA_AJUSTES     = os.path.join(CARPETA_PROGRAMA, "ajustes.json")
+# ===== RUTAS DEL PROGRAMA =====
+# Ejecutando desde el codigo: singlepass/programa/*.py y singlepass/imagenes/.
+# Empaquetado con PyInstaller (sys.frozen): todo cuelga de sys._MEIPASS, con las
+# imagenes anadidas con --add-data "imagenes;imagenes".
+if getattr(sys, "frozen", False):
+    CARPETA_RAIZ     = sys._MEIPASS
+    CARPETA_PROGRAMA = CARPETA_RAIZ
+else:
+    CARPETA_PROGRAMA = os.path.dirname(os.path.realpath(__file__))
+    CARPETA_RAIZ     = os.path.normpath(os.path.join(CARPETA_PROGRAMA, ".."))
+CARPETA_IMAGENES = os.path.join(CARPETA_RAIZ, "imagenes")
 RUTA_GUIA_EJE    = os.path.join(CARPETA_IMAGENES, "guia_eje_x_blanca.png")
+
+# ===== RUTAS DE DATOS DEL USUARIO (fuera del programa: sobreviven a reinstalar) =====
+CARPETA_DATOS = os.path.join(os.path.expanduser("~"), "MATERIALIGHT")   # tambien RIPOutput (vpi.py)
+CARPETA_LOGS  = os.path.join(CARPETA_DATOS, "Logging")                  # un .log por dia
+RUTA_AJUSTES  = os.path.join(CARPETA_DATOS, "ajustes.json")             # campos de la interfaz
 
 # ===== VARIADOR D1 (eje X) =====
 IP_MOTOR      = "192.168.79.73"

@@ -14,6 +14,7 @@ sys.path.insert(0, CARPETA_PROGRAMA)   # para importar los modulos de programa/
 from PySide6.QtWidgets import QApplication, QMessageBox   # noqa: E402
 
 import config                                   # noqa: E402
+import registro                                 # noqa: E402
 from d1 import MotorD1                          # noqa: E402
 from interfaz import VentanaPrincipal           # noqa: E402
 from mduino import ClienteMDuino                # noqa: E402
@@ -32,6 +33,8 @@ def crear_dispositivos():
 
 
 def main():
+    # lo primero: a partir de aqui todo print y traceback va tambien al .log del dia
+    registro.iniciar(config.CARPETA_LOGS)
     # los iconos del .ui usan rutas relativas (../imagenes/...): fijar el
     # directorio de trabajo para que se resuelvan igual desde cualquier sitio
     os.chdir(config.CARPETA_PROGRAMA)
@@ -49,6 +52,7 @@ def main():
     app.aboutToQuit.connect(pmb.cerrar)
     app.aboutToQuit.connect(motor.close)
     app.aboutToQuit.connect(mduino.cerrar)
+    app.aboutToQuit.connect(registro.cerrar)   # el ultimo: los cierres anteriores aun se registran
     ventana.ajustar_a_pantalla()
     ventana.showMaximized()
     sys.exit(app.exec())
