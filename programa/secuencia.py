@@ -24,7 +24,7 @@ T_LAMPARAS_OFF       = 2.0    # s que tardan en apagar
 # si salieran a la vez, el pulso (TCP -> M-Duino -> rele) llegaria con la mesa ya en
 # marcha y la imagen se desplazaria segun la velocidad. El rele dura 0,3 s y el
 # flanco de subida se captura al cerrar, asi que con esto sobra.
-T_PRINT_GO_S         = 1.0    # s entre el PULSE y el arranque de la pasada de impresion
+T_PRINT_GO_S         = 0.3    # s entre el PULSE y el arranque de la pasada de impresion
 
 # ===== LAMPARAS =====
 PWM_APAGADAS = 0    # la potencia de curado llega en ParametrosPrograma.potencia_nir (%)
