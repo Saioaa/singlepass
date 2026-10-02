@@ -20,17 +20,18 @@ Widgets del .ui:
 import os
 import time
 
-from PySide6.QtCore import QLocale, QObject, Qt, QTimer
+from PySide6.QtCore import QLocale, QObject, QStandardPaths, Qt, QTimer
 from PySide6.QtGui import QColor, QDoubleValidator, QImageReader, QPainter, QPixmap, QTransform
 from PySide6.QtWidgets import QFileDialog
 
 import config
+import vpi
 from board import (ESTADO_ARMANDO, ESTADO_LISTO, ESTADO_RENDER_LISTO, ESTADO_SIN_TRABAJO,
                    ORDEN_ESTADOS, Trabajo)
 from mesa import MesaImpresion
 
 # ===== WIDGETS =====
-NOMBRES_PAGINA = ("print_server", "PMB8")           # objectName de la pagina, nuevo y antiguo
+NOMBRES_PAGINA = ("print_server")           # objectName de la pagina
 # combos de modo: board.nombre -> (widget del .ui, texto que muestra mientras no tiene modos)
 COMBOS_MODO = {
     "PMB":   ("systemode",       "PMB"),
@@ -43,6 +44,10 @@ NOMBRES_REGISTRO = ("txtMessage", "txtMessage_2", "txtMessage_3")
 # El tamano fisico sale de la resolucion grabada en el archivo (Photoshop, GIMP...),
 # no del modo de impresion: la misma imagen mide lo mismo a 600 y a 1200 dpi.
 FILTRO_IMAGENES = "Imagenes (*.tif *.tiff *.bmp *.jpg *.jpeg *.png)"
+# carpetas iniciales de los dialogos: New Image abre la carpeta Imagenes del usuario y
+# Select job la de salida del RIP (vpi.CARPETA_SALIDA). Si no existen, Qt abre la ultima usada.
+CARPETA_INICIAL_IMAGENES = QStandardPaths.writableLocation(QStandardPaths.PicturesLocation)
+CARPETA_INICIAL_TRABAJOS = vpi.CARPETA_SALIDA
 MM_POR_PULGADA  = 25.4
 MM_POR_METRO    = 1000
 GRADOS_POR_GIRO = 90
@@ -276,7 +281,8 @@ class PrintServer(QObject):
         self.ui.lblSizeValue.setText(f"{self.ancho_imagen_mm:.1f} x {self.alto_imagen_mm:.1f} mm")
 
     def cargar_imagen(self):
-        ruta, _ = QFileDialog.getOpenFileName(self.mesa.window(), "Seleccionar imagen", "", FILTRO_IMAGENES)
+        ruta, _ = QFileDialog.getOpenFileName(self.mesa.window(), "Seleccionar imagen",
+                                              CARPETA_INICIAL_IMAGENES, FILTRO_IMAGENES)
         if not ruta:
             return
         pixmap = QPixmap(ruta)
@@ -358,7 +364,8 @@ class PrintServer(QObject):
 
     def seleccionar_trabajo(self):
         """Adopta una carpeta de trabajo ya ripeada en las boards que la reconozcan."""
-        carpeta = QFileDialog.getExistingDirectory(self.mesa.window(), "Seleccionar carpeta de trabajo")
+        carpeta = QFileDialog.getExistingDirectory(self.mesa.window(), "Seleccionar carpeta de trabajo",
+                                                   CARPETA_INICIAL_TRABAJOS)
         if not carpeta:
             return
         carpeta = os.path.normpath(carpeta)
