@@ -10,3 +10,4 @@ PySide6_Essentials==6.11.1
 pywin32-ctypes==0.2.3
 setuptools==84.0.0
 shiboken6==6.11.1
+coapthon3==1.0.2

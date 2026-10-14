@@ -1,28 +1,27 @@
 # -*- coding: utf-8 -*-
 """Temperatura del cabezal a traves del Print Server (PMB).
 
-Equivalente a aprint_cabezal.py de MBD-F-500, pero preguntando al PMB. Cada
-PERIODO_LECTURA_MS pide al Print Controller el parametro de temperatura real
-(config.PARAMETRO_TEMPERATURA_CABEZAL) y, menos a menudo, la consigna
-(config.PARAMETRO_CONSIGNA_CABEZAL); las respuestas llegan por
-ClientePMB.parametro_recibido y de ahi sale la senal lectura(real, consigna).
+Equivalente a aprint_cabezal.py de MBD-F-500, pero con el PMB:
 
-Solo pregunta mientras el PMB esta conectado (se conecta al entrar en la pagina
-Print Server). Si no hay respuesta, la interfaz sigue mostrando "--".
+  - Lectura: el Print Controller envia a sus listeners el estado de cabezales
+    (I,<id>,H,<xml>, manual GIS 6.7). pmb.py lo parsea y lo emite por
+    estado_cabezales como [{"nombre", "temperatura", "objetivo", "activo"}, ...];
+    aqui se toma el primer cabezal activo (o el primero si ninguno lo esta).
+  - Consigna: se escribe el parametro TargetControllerTemp del Print Controller
+    (config.PARAMETRO_CONSIGNA_CABEZAL) con ClientePMB.cambiar_parametro_pc.
 
-PROVISIONAL: los nombres de los parametros y el formato del comando de lectura
-estan en config.py y pmb.py y hay que confirmarlos con el manual del Print Server.
+Si el PMB no esta conectado o deja de enviar estados, la interfaz muestra "--".
 """
-
-import re
 
 from PySide6.QtCore import QObject, QTimer, Signal
 
 import config
 
-PERIODO_LECTURA_MS = 2000       # temperatura real
-LECTURAS_POR_CONSIGNA = 5       # la consigna se pide una de cada N lecturas
-PATRON_NUMERO = re.compile(r"-?\d+(?:[.,]\d+)?")
+CLAVE_TEMPERATURA = "temperatura"
+CLAVE_OBJETIVO = "objetivo"
+CLAVE_ACTIVO = "activo"
+SIN_ESTADO_S = 10.0            # sin estado de cabezales durante este tiempo -> "--"
+PERIODO_VIGILANCIA_MS = 2000
 
 
 class TemperaturaCabezal(QObject):
@@ -35,14 +34,13 @@ class TemperaturaCabezal(QObject):
         self.pmb = pmb
         self._real = None
         self._consigna = None
-        self._contador = 0
-        self._avisado_sin_conexion = False
-        pmb.parametro_recibido.connect(self._parametro_recibido)
+        self._sin_estado_s = 0.0
+        pmb.estado_cabezales.connect(self._estado_cabezales)
         pmb.conexion_perdida.connect(lambda _motivo: self._sin_dato())
 
         self._timer = QTimer(self)
-        self._timer.setInterval(PERIODO_LECTURA_MS)
-        self._timer.timeout.connect(self._pedir)
+        self._timer.setInterval(PERIODO_VIGILANCIA_MS)
+        self._timer.timeout.connect(self._vigilar)
         self._timer.start()
 
     def cerrar(self):
@@ -53,43 +51,26 @@ class TemperaturaCabezal(QObject):
         if not self.pmb.conectado():
             self.mensaje.emit("[CABEZAL] PMB no conectado: consigna de temperatura no enviada")
             return
-        self.pmb.escribir_parametro(config.PARAMETRO_CONSIGNA_CABEZAL, f"{grados:g}")
+        self.pmb.cambiar_parametro_pc(config.PARAMETRO_CONSIGNA_CABEZAL, f"{grados:g}")
         self.mensaje.emit(f"[CABEZAL] Consigna de temperatura enviada: {grados:g} ºC")
-        self._consigna = grados
+
+    # ===== estado de cabezales =====
+    def _estado_cabezales(self, cabezales):
+        if not cabezales:
+            return
+        cabezal = next((c for c in cabezales if c.get(CLAVE_ACTIVO)), cabezales[0])
+        self._sin_estado_s = 0.0
+        self._real = cabezal.get(CLAVE_TEMPERATURA)
+        self._consigna = cabezal.get(CLAVE_OBJETIVO)
         self.lectura.emit(self._real, self._consigna)
 
-    # ===== lectura periodica =====
-    def _pedir(self):
-        if not self.pmb.conectado():
+    def _vigilar(self):
+        self._sin_estado_s += PERIODO_VIGILANCIA_MS / 1000
+        if self._sin_estado_s >= SIN_ESTADO_S or not self.pmb.conectado():
             self._sin_dato()
-            return
-        self._contador = (self._contador + 1) % LECTURAS_POR_CONSIGNA
-        parametro = (config.PARAMETRO_CONSIGNA_CABEZAL if self._contador == 0
-                     else config.PARAMETRO_TEMPERATURA_CABEZAL)
-        self.pmb.leer_parametro(parametro)
-
-    def _parametro_recibido(self, parametro, texto):
-        valor = self._extraer_numero(texto)
-        if valor is None:
-            self.mensaje.emit(f"[CABEZAL] Respuesta no numerica a {parametro}: {texto}")
-            return
-        if parametro == config.PARAMETRO_TEMPERATURA_CABEZAL:
-            self._real = valor
-        elif parametro == config.PARAMETRO_CONSIGNA_CABEZAL:
-            self._consigna = valor
-        else:
-            return   # otro parametro leido por otro modulo
-        self.lectura.emit(self._real, self._consigna)
 
     def _sin_dato(self):
         if self._real is not None or self._consigna is not None:
             self._real = None
             self._consigna = None
             self.lectura.emit(None, None)
-
-    @staticmethod
-    def _extraer_numero(texto):
-        encontrado = PATRON_NUMERO.search(texto or "")
-        if encontrado is None:
-            return None
-        return float(encontrado.group(0).replace(",", "."))

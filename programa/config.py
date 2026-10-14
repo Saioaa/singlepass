@@ -70,8 +70,7 @@ MESA_ALTO_MM  = 210
 DPI_IMAGEN_POR_DEFECTO = 600
 
 # ===== SISTEMA DE TINTA (IMB, CoAP puerto 5683): tinta.py =====
-# PROVISIONAL: IP de la app de 4 canales (IDS); cambiarla aqui si es otra.
-IP_TINTA    = "192.168.79.74"
+IP_TINTA    = "192.168.79.75"
 CANAL_TINTA = 1
 # Tiempo maximo para que el IMB confirme un cambio de estado (pasar a Dormant
 # puede tardar bastante)
@@ -86,11 +85,10 @@ PRESION_OUTLET_MIN = -200
 PRESION_OUTLET_MAX = 0
 
 # ===== TEMPERATURA DEL CABEZAL (por el PMB): cabezal_pmb.py =====
-# Parametros del Print Controller (nombres tal como aparecen en el Print Controller
-# de GIS); se leen/escriben con P,C,G / P,C,P como XOffset (pmb.py). Si el comando
-# de lectura no es ese, la interfaz muestra "--" y el PMB responde con error en el log.
-PARAMETRO_TEMPERATURA_CABEZAL = "CurrentControllerTemperature"
-PARAMETRO_CONSIGNA_CABEZAL    = "TargetControllerTemp"
+# La real y la consigna llegan en los mensajes de estado de cabezales del Print
+# Controller (I,<id>,H,...). La consigna se escribe en este parametro del Print
+# Controller con P,C,P (como XOffset).
+PARAMETRO_CONSIGNA_CABEZAL = "TargetControllerTemp"
 # Consigna que admite GUARDAR (PROVISIONAL: confirmar el maximo del cabezal)
 TEMPERATURA_CABEZAL_MIN_C = 20.0
 TEMPERATURA_CABEZAL_MAX_C = 60.0
