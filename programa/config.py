@@ -69,6 +69,32 @@ MESA_ALTO_MM  = 210
 # El tamano fisico de la imagen sale de su resolucion, no del modo de impresion.
 DPI_IMAGEN_POR_DEFECTO = 600
 
+# ===== SISTEMA DE TINTA (IMB, CoAP puerto 5683): tinta.py =====
+# PROVISIONAL: IP de la app de 4 canales (IDS); cambiarla aqui si es otra.
+IP_TINTA    = "192.168.79.74"
+CANAL_TINTA = 1
+# Tiempo maximo para que el IMB confirme un cambio de estado (pasar a Dormant
+# puede tardar bastante)
+TINTA_CONFIRMACION_S = 180.0
+# Limites que admite GUARDAR (PROVISIONAL: confirmar con el fabricante). Como en
+# la app de 4 canales: idle y delta - negativas, delta + positiva.
+PRESION_IDLE_MIN   = -200
+PRESION_IDLE_MAX   = 0
+PRESION_INLET_MIN  = 0
+PRESION_INLET_MAX  = 200
+PRESION_OUTLET_MIN = -200
+PRESION_OUTLET_MAX = 0
+
+# ===== TEMPERATURA DEL CABEZAL (por el PMB): cabezal_pmb.py =====
+# Parametros del Print Controller (nombres tal como aparecen en el Print Controller
+# de GIS); se leen/escriben con P,C,G / P,C,P como XOffset (pmb.py). Si el comando
+# de lectura no es ese, la interfaz muestra "--" y el PMB responde con error en el log.
+PARAMETRO_TEMPERATURA_CABEZAL = "CurrentControllerTemperature"
+PARAMETRO_CONSIGNA_CABEZAL    = "TargetControllerTemp"
+# Consigna que admite GUARDAR (PROVISIONAL: confirmar el maximo del cabezal)
+TEMPERATURA_CABEZAL_MIN_C = 20.0
+TEMPERATURA_CABEZAL_MAX_C = 60.0
+
 # ===== OFFSET X DE IMPRESION (Print Controller) =====
 # XOffset = DISTANCIA_CABEZAL (pagina Programa) - X_IMAGEN (mesa) - POSICION_PULSE_MM
 POSICION_PULSE_MM   = POSICION_REPOSO_MM   # posicion del carro cuando se envia el PULSE

@@ -20,7 +20,6 @@ Uso:
 
 import re
 import socket
-import xml.etree.ElementTree as ET
 
 from PySide6.QtCore import QObject, QThread, Signal
 
@@ -35,17 +34,19 @@ CMD_PEDIR_MODOS     = "S,T,N"
 CMD_INFO_MODO       = "S,T,I"
 CMD_CARGAR_VPI      = "R,D"
 CMD_RENDERIZAR      = "R,R"
-CMD_CAMBIAR_PARAM_PC = "P,C,P"
+CMD_OFFSET_BOQUILLA = "P,C,P,XOffset"
+# PROVISIONAL: lectura/escritura generica de un parametro del Print Controller
+# (temperatura del cabezal). Confirmar el formato en el manual de la interfaz
+# remota del Print Server: aqui se asume "P,C,G,<parametro>" para leer y
+# "P,C,P,<parametro>,<valor>" para escribir (como XOffset).
+CMD_LEER_PARAMETRO     = "P,C,G"
+CMD_ESCRIBIR_PARAMETRO = "P,C,P"
 CMD_IMPRIMIR        = "P,P"
-CMD_ESCUCHAR_PC     = "P,L"     # registrar listener del Print Controller (mensajes I,...)
-CMD_PRINT_GO_SW     = "P,SPG"   # print go por software (requiere PrintGoSource = Software)
-CMD_ABORTAR_IMPRESION = "P,A"   # se envia por un socket independiente (manual, 2.2)
 
 PARAM_RENDER_POR_DEFECTO   = "0"
 PARAM_COPIAS_POR_DEFECTO   = "1"
 PARAM_PRIMERA_COPIA        = "1"
 TERMINADOR                 = "\n"
-TIMEOUT_ACUSE_APARTE       = 3     # s de espera del acuse en los comandos enviados por socket aparte
 
 # ===== TIPOS DE MENSAJE DE RESPUESTA =====
 TIPO_RED       = "N"   # notificacion de red
@@ -60,23 +61,7 @@ INFO_PASADA          = "SP"
 INFO_IMPRIMIENDO     = "P"
 INFO_LISTO_IMPRIMIR  = "RTP"
 INFO_FIN_IMPRESION   = "EP"
-INFO_ETIQUETA_ACTUAL = "L"    # numero de etiqueta/pasada en curso (informativo, no se registra)
-INFO_PASADA_IMPRESA  = "SPI"  # no documentado en el manual; llega al terminar cada pasada
 INFO_REGISTRO        = "G"
-INFO_CABEZALES       = "H"    # XML de estado de cabezales (llega cada PrintHeadStatusReadDelay ms)
-
-# ===== CONEXION: codigos de etapa (N,<codigo>) =====
-ETAPA_CONEXION_OK     = "C"
-ETAPA_CONEXION_AUTH   = "A"
-ETAPA_CONEXION_FALLO  = "F"
-ETAPA_CONEXION_CERRADA = "N"
-
-# ===== XML de estado de cabezales =====
-SEPARADOR_XML_H   = chr(23)   # ASCII 23 separa los elementos del XML (manual, 6.7)
-ATRIBUTO_NOMBRE   = "Name"
-ATRIBUTO_TEMP     = "CurrentTemperature"
-ATRIBUTO_OBJETIVO = "TargetTemperature"
-ATRIBUTO_ACTIVO   = "HeadEnabled"
 
 # ===== POSICIONES DENTRO DE LOS MENSAJES =====
 POS_TIPO          = 0
@@ -168,12 +153,11 @@ class ClientePMB(QObject):
     mensaje = Signal(str)            # linea para el registro de la interfaz
     modos_recibidos = Signal(list)   # lista de modos de sistema disponibles
     dpi_recibido = Signal(int, int)  # resolucion del modo seleccionado
-    listo_para_imprimir = Signal()   # I,<id>,RTP: el PMB tiene datos y espera el print go
+    render_terminado = Signal()
     impresion_terminada = Signal()
     conexion_perdida = Signal(str)
     comando_completado = Signal(str)  # id del comando que ha terminado bien
-    comando_fallido = Signal(str, int)  # id del comando y codigo de error
-    estado_cabezales = Signal(list)   # [{"nombre", "temperatura", "objetivo", "activo"}, ...]
+    parametro_recibido = Signal(str, str)   # (parametro, texto de la respuesta) de leer_parametro
 
     def __init__(self, host=HOST_PMB, puerto=PUERTO_PMB, parent=None):
         super().__init__(parent)
@@ -182,6 +166,7 @@ class ClientePMB(QObject):
         self.sock = None
         self.lector = None
         self.esperando_info_modo = False
+        self._parametro_pendiente = None   # parametro cuya lectura espera respuesta
 
     # ----- conexion -----
 
@@ -201,8 +186,7 @@ class ClientePMB(QObject):
         self.lector.linea_recibida.connect(self._procesar_linea)
         self.lector.desconectado.connect(self._al_desconectar)
         self.lector.start()
-        # sin esto el servidor solo envia A y C; los I (RTP, EP, estado) no llegan
-        self._enviar(CMD_ESCUCHAR_PC)
+        self.mensaje.emit(f"[PMB] Conectado a {self.host}:{self.puerto}")
         return True
 
     def conectado(self):
@@ -254,52 +238,20 @@ class ClientePMB(QObject):
     def renderizar(self, ruta_salida):
         self._enviar(f"{CMD_RENDERIZAR},{ruta_salida},{PARAM_RENDER_POR_DEFECTO}")
 
-    def cambiar_parametro_pc(self, nombre, valor):
-        """Change Parameter Value en el Print Controller (nombre = Data Unique ID)."""
-        self._enviar(f"{CMD_CAMBIAR_PARAM_PC},{nombre},{valor}")
+    def set_offset_boquilla(self, offset_mm):
+        self._enviar(f"{CMD_OFFSET_BOQUILLA},{offset_mm}")
+
+    def leer_parametro(self, parametro):
+        """Pide el valor de un parametro del Print Controller; llega por parametro_recibido."""
+        if self._enviar(f"{CMD_LEER_PARAMETRO},{parametro}"):
+            self._parametro_pendiente = parametro
+
+    def escribir_parametro(self, parametro, valor):
+        self._enviar(f"{CMD_ESCRIBIR_PARAMETRO},{parametro},{valor}")
 
     def imprimir(self, ruta_bmp):
         self._enviar(f"{CMD_IMPRIMIR},{PARAM_PRIMERA_COPIA},{ruta_bmp},"
                      f"{PARAM_COPIAS_POR_DEFECTO}")
-
-    def _enviar_por_socket_aparte(self, comando, etiqueta):
-        """Comandos que deben llegar mientras el Print Controller esta ocupado con
-        la impresion (aborto, print go por software): el manual pide una conexion
-        nueva. Espera el acuse y vuelca al registro lo que responda el servidor."""
-        patron_acuse = re.compile(rf"^{TIPO_ACUSE},\d+,{re.escape(comando)}$", re.MULTILINE)
-        recibido = ""
-        acusado = False
-        try:
-            with socket.create_connection((self.host, self.puerto), timeout=TIMEOUT_SOCKET) as s:
-                s.sendall((comando + TERMINADOR).encode("utf-8"))
-                s.settimeout(TIMEOUT_ACUSE_APARTE)
-                while not acusado:
-                    datos = s.recv(TAM_BUFFER)
-                    if not datos:
-                        break
-                    recibido += datos.decode("utf-8", errors="replace")
-                    acusado = patron_acuse.search(recibido) is not None
-        except socket.timeout:
-            pass
-        except OSError as e:
-            self.mensaje.emit(f"[PMB] No se ha podido enviar {etiqueta}: {e}")
-            return False
-        for linea in recibido.split(TERMINADOR):
-            linea = linea.strip()
-            if linea and not linea.startswith(TIPO_RED):
-                self.mensaje.emit(f"[PMB] ({etiqueta}) {linea}")
-        if not acusado:
-            self.mensaje.emit(f"[PMB] {etiqueta} enviado, sin acuse en {TIMEOUT_ACUSE_APARTE} s")
-        return True
-
-    def print_go_software(self):
-        """Print go por software a todos los PMB (manual 5.3, P,SPG). Socket aparte:
-        el Print Controller esta ocupado con el P,P armado."""
-        return self._enviar_por_socket_aparte(CMD_PRINT_GO_SW, "print go")
-
-    def abortar_impresion(self):
-        """Aborta la impresion en curso por una conexion nueva (manual 2.2)."""
-        return self._enviar_por_socket_aparte(CMD_ABORTAR_IMPRESION, "aborto")
 
     # ----- recepcion -----
 
@@ -308,7 +260,7 @@ class ClientePMB(QObject):
         tipo = partes[POS_TIPO]
 
         if tipo == TIPO_RED:
-            self._procesar_red(partes)
+            self.mensaje.emit("[PMB] Notificacion de red")
         elif tipo == TIPO_ACUSE:
             pass   # el acuse no aporta nada a la interfaz
         elif tipo == TIPO_INFO:
@@ -317,19 +269,6 @@ class ClientePMB(QObject):
             self._procesar_completo(partes)
         else:
             self.mensaje.emit(f"[PMB] Mensaje no reconocido: {linea}")
-
-    def _procesar_red(self, partes):
-        etapa = partes[POS_ID_COMANDO] if len(partes) > POS_ID_COMANDO else ""
-        if etapa == ETAPA_CONEXION_OK:
-            self.mensaje.emit("[PMB] Conexion aceptada por el servidor")
-        elif etapa == ETAPA_CONEXION_AUTH:
-            self.mensaje.emit("[PMB] El servidor pide autenticacion (no implementada)")
-        elif etapa == ETAPA_CONEXION_FALLO:
-            self.mensaje.emit("[PMB] Autenticacion rechazada")
-        elif etapa == ETAPA_CONEXION_CERRADA:
-            self.mensaje.emit("[PMB] El servidor no acepta conexiones")
-        else:
-            self.mensaje.emit(f"[PMB] Notificacion de red: {','.join(partes)}")
 
     def _procesar_completo(self, partes):
         if len(partes) < CAMPOS_MINIMOS_C:
@@ -350,10 +289,16 @@ class ClientePMB(QObject):
             self.mensaje.emit(f"[PMB] ERROR {codigo} en el comando {id_comando}: "
                               f"{descripcion}. {info}")
             self.esperando_info_modo = False
-            self.comando_fallido.emit(id_comando, codigo)
+            self._parametro_pendiente = None
             return
 
-        # la informacion devuelta (lista de modos, dpi...) se procesa abajo, no se registra en bruto
+        if self._parametro_pendiente is not None:
+            # lectura de parametro: no se traza en el registro (se repite periodicamente)
+            parametro, self._parametro_pendiente = self._parametro_pendiente, None
+            self.parametro_recibido.emit(parametro, info)
+            return
+
+        self.mensaje.emit(f"[PMB] Comando {id_comando} completado. {info}")
         self.comando_completado.emit(id_comando)
 
         if info.startswith(PREFIJO_LISTA_MODOS):
@@ -373,52 +318,28 @@ class ClientePMB(QObject):
         codigo = partes[POS_CODIGO]
         datos = partes[POS_CODIGO + 1:]
 
-        # Los mensajes I llegan por duplicado (uno por el listener P,L y otro por el
-        # comando en curso); los que solo informan se registran, los que disparan
-        # acciones salen por senal y la interfaz decide que escribir.
-        if codigo == INFO_ESTADO and datos:
-            self.mensaje.emit(f"[PMB] Estado: {datos[0]}")
+        if codigo == INFO_ESTADO and len(datos) >= 2:
+            self.mensaje.emit(f"[PMB] Estado: {datos[0]} (codigo {datos[1]})")
+        elif codigo == INFO_SEMAFORO and datos:
+            self.mensaje.emit(f"[PMB] Semaforo: {self._texto_semaforo(datos[0])}")
         elif codigo == INFO_PASADA and datos:
-            self.mensaje.emit(f"[PMB] Pasada {datos[0]} descargada al PMB")
-        elif codigo in (INFO_SEMAFORO, INFO_ETIQUETA_ACTUAL, INFO_IMPRIMIENDO, INFO_PASADA_IMPRESA):
-            pass   # sin interes para el operario: semaforo, etiqueta en curso, print started
-        elif codigo == INFO_LISTO_IMPRIMIR:
-            self.listo_para_imprimir.emit()
+            self.mensaje.emit(f"[PMB] Pasada procesada: {datos[0]}")
+        elif codigo == INFO_IMPRIMIENDO:
+            self.mensaje.emit("[PMB] Impresion iniciada")
+        elif codigo == INFO_LISTO_IMPRIMIR and datos:
+            self.mensaje.emit(f"[PMB] Listo para imprimir ({datos[0]} pasadas)")
+            self.render_terminado.emit()
         elif codigo == INFO_FIN_IMPRESION:
+            self.mensaje.emit("[PMB] Impresion completada")
             self.impresion_terminada.emit()
         elif codigo == INFO_REGISTRO and datos:
             nivel = self._texto_nivel(datos[0])
             self.mensaje.emit(f"[PMB] {nivel}: {', '.join(datos[1:])}")
-        elif codigo == INFO_CABEZALES:
-            # llega periodicamente; no se vuelca al registro, se emite parseado
-            self.estado_cabezales.emit(self._parsear_cabezales(",".join(datos)))
         else:
             self.mensaje.emit(f"[PMB] Info {codigo} del comando {id_comando}: "
                               f"{', '.join(datos)}")
 
     # ----- utilidades -----
-
-    @staticmethod
-    def _parsear_cabezales(texto):
-        """Extrae nombre, temperaturas y habilitado de cada cabezal del XML de estado."""
-        cabezales = []
-        try:
-            raiz = ET.fromstring(texto.replace(SEPARADOR_XML_H, ""))
-        except ET.ParseError:
-            return cabezales
-        for nodo in raiz.iter():
-            if ATRIBUTO_TEMP not in nodo.attrib:
-                continue
-            try:
-                cabezales.append({
-                    "nombre": nodo.get(ATRIBUTO_NOMBRE, ""),
-                    "temperatura": float(nodo.get(ATRIBUTO_TEMP)),
-                    "objetivo": float(nodo.get(ATRIBUTO_OBJETIVO, 0)),
-                    "activo": nodo.get(ATRIBUTO_ACTIVO, "") == "True",
-                })
-            except ValueError:
-                continue
-        return cabezales
 
     @staticmethod
     def _extraer_dpi(texto):

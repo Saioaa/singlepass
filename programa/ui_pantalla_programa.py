@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'pantalla_programa.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.11.2
+## Created by: Qt User Interface Compiler version 6.12.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -92,7 +92,7 @@ class Ui_MainWindow(object):
 "}")
         self.label_2 = QLabel(self.movimientos)
         self.label_2.setObjectName(u"label_2")
-        self.label_2.setGeometry(QRect(750, 100, 270, 90))
+        self.label_2.setGeometry(QRect(650, 100, 270, 90))
         self.label_2.setStyleSheet(u"color: #62CBC9;\n"
 "font-size: 36px;\n"
 "font-weight: bold;\n"
@@ -101,7 +101,7 @@ class Ui_MainWindow(object):
         self.label_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.horizontalLayoutWidget = QWidget(self.movimientos)
         self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
-        self.horizontalLayoutWidget.setGeometry(QRect(690, 550, 451, 91))
+        self.horizontalLayoutWidget.setGeometry(QRect(410, 550, 451, 91))
         self.horizontalLayout = QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
@@ -202,7 +202,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayoutWidget = QWidget(self.movimientos)
         self.verticalLayoutWidget.setObjectName(u"verticalLayoutWidget")
-        self.verticalLayoutWidget.setGeometry(QRect(580, 310, 160, 191))
+        self.verticalLayoutWidget.setGeometry(QRect(300, 310, 160, 191))
         self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -246,7 +246,7 @@ class Ui_MainWindow(object):
 
         self.gridLayoutWidget = QWidget(self.movimientos)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
-        self.gridLayoutWidget.setGeometry(QRect(770, 310, 281, 191))
+        self.gridLayoutWidget.setGeometry(QRect(490, 310, 281, 191))
         self.gridLayout = QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
@@ -292,7 +292,7 @@ class Ui_MainWindow(object):
 
         self.bt_ir_objetivo = QPushButton(self.movimientos)
         self.bt_ir_objetivo.setObjectName(u"bt_ir_objetivo")
-        self.bt_ir_objetivo.setGeometry(QRect(1080, 340, 151, 51))
+        self.bt_ir_objetivo.setGeometry(QRect(800, 340, 151, 51))
         self.bt_ir_objetivo.setStyleSheet(u"QPushButton {\n"
 "    background-color: #62CBC9;\n"
 "    border: 2px solid #333333;\n"
@@ -309,14 +309,14 @@ class Ui_MainWindow(object):
 "}")
         self.label_5 = QLabel(self.movimientos)
         self.label_5.setObjectName(u"label_5")
-        self.label_5.setGeometry(QRect(840, 520, 151, 16))
+        self.label_5.setGeometry(QRect(560, 520, 151, 16))
         self.label_5.setStyleSheet(u"color: #62CBC9;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
         self.label_5.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.formLayoutWidget = QWidget(self.movimientos)
         self.formLayoutWidget.setObjectName(u"formLayoutWidget")
-        self.formLayoutWidget.setGeometry(QRect(1390, 340, 271, 188))
+        self.formLayoutWidget.setGeometry(QRect(1030, 340, 271, 188))
         self.formLayout = QFormLayout(self.formLayoutWidget)
         self.formLayout.setObjectName(u"formLayout")
         self.formLayout.setContentsMargins(0, 0, 0, 0)
@@ -382,7 +382,7 @@ class Ui_MainWindow(object):
 
         self.label_6 = QLabel(self.movimientos)
         self.label_6.setObjectName(u"label_6")
-        self.label_6.setGeometry(QRect(1410, 300, 231, 19))
+        self.label_6.setGeometry(QRect(1050, 300, 231, 19))
         self.label_6.setStyleSheet(u"color: #62CBC9;\n"
 "font-size: 16px;\n"
 "font-family: nunito;\n"
@@ -396,7 +396,210 @@ class Ui_MainWindow(object):
 "border: 2px solid #62CBC9;\n"
 "border-radius: 5px;")
         self.txtMessage_2.setReadOnly(True)
+        self.label_lenta_2 = QLabel(self.movimientos)
+        self.label_lenta_2.setObjectName(u"label_lenta_2")
+        self.label_lenta_2.setGeometry(QRect(1470, 550, 261, 30))
+        self.label_lenta_2.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        self.label_lenta_2.setStyleSheet(u"color: #62CBC9;\n"
+"font-size: 30px;\n"
+"font-weight: bold;\n"
+"font-family: nunito;\n"
+"text-align: center;")
+        self.label_lenta_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.gridLayoutWidget_4 = QWidget(self.movimientos)
+        self.gridLayoutWidget_4.setObjectName(u"gridLayoutWidget_4")
+        self.gridLayoutWidget_4.setGeometry(QRect(1470, 590, 261, 341))
+        self.gridLayout_tinta = QGridLayout(self.gridLayoutWidget_4)
+        self.gridLayout_tinta.setObjectName(u"gridLayout_tinta")
+        self.gridLayout_tinta.setContentsMargins(0, 0, 0, 0)
+        self.tinta_purgapressure = QLineEdit(self.gridLayoutWidget_4)
+        self.tinta_purgapressure.setObjectName(u"tinta_purgapressure")
+        self.tinta_purgapressure.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
+"color: rgb(0, 0, 0);\n"
+"border: 2px solid #62CBC9;\n"
+"border-radius: 5px;\n"
+"padding: 10px;\n"
+"font-size: 18px;\n"
+"font-family: nunito;")
+
+        self.gridLayout_tinta.addWidget(self.tinta_purgapressure, 4, 1, 1, 1)
+
+        self.label_33 = QLabel(self.gridLayoutWidget_4)
+        self.label_33.setObjectName(u"label_33")
+        self.label_33.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 18px;\n"
+"	font-family: nunito;")
+
+        self.gridLayout_tinta.addWidget(self.label_33, 4, 0, 1, 1)
+
+        self.label_34 = QLabel(self.gridLayoutWidget_4)
+        self.label_34.setObjectName(u"label_34")
+        self.label_34.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 18px;\n"
+"	font-family: nunito;")
+
+        self.gridLayout_tinta.addWidget(self.label_34, 5, 0, 1, 1)
+
+        self.tinta_outletpressure = QLineEdit(self.gridLayoutWidget_4)
+        self.tinta_outletpressure.setObjectName(u"tinta_outletpressure")
+        self.tinta_outletpressure.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
+"color: rgb(0, 0, 0);\n"
+"border: 2px solid #62CBC9;\n"
+"border-radius: 5px;\n"
+"padding: 10px;\n"
+"font-size: 18px;\n"
+"font-family: nunito;")
+
+        self.gridLayout_tinta.addWidget(self.tinta_outletpressure, 3, 1, 1, 1)
+
+        self.tinta_temperatura = QLineEdit(self.gridLayoutWidget_4)
+        self.tinta_temperatura.setObjectName(u"tinta_temperatura")
+        self.tinta_temperatura.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
+"color: rgb(0, 0, 0);\n"
+"border: 2px solid #62CBC9;\n"
+"border-radius: 5px;\n"
+"padding: 10px;\n"
+"font-size: 18px;\n"
+"font-family: nunito;")
+
+        self.gridLayout_tinta.addWidget(self.tinta_temperatura, 0, 1, 1, 1)
+
+        self.label_17 = QLabel(self.gridLayoutWidget_4)
+        self.label_17.setObjectName(u"label_17")
+        self.label_17.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 18px;\n"
+"	font-family: nunito;")
+
+        self.gridLayout_tinta.addWidget(self.label_17, 0, 0, 1, 1)
+
+        self.tinta_inletpressure = QLineEdit(self.gridLayoutWidget_4)
+        self.tinta_inletpressure.setObjectName(u"tinta_inletpressure")
+        self.tinta_inletpressure.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
+"color: rgb(0, 0, 0);\n"
+"border: 2px solid #62CBC9;\n"
+"border-radius: 5px;\n"
+"padding: 10px;\n"
+"font-size: 18px;\n"
+"font-family: nunito;")
+
+        self.gridLayout_tinta.addWidget(self.tinta_inletpressure, 2, 1, 1, 1)
+
+        self.label_35 = QLabel(self.gridLayoutWidget_4)
+        self.label_35.setObjectName(u"label_35")
+        self.label_35.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 18px;\n"
+"	font-family: nunito;")
+
+        self.gridLayout_tinta.addWidget(self.label_35, 2, 0, 1, 1)
+
+        self.tinta_idlepressure = QLineEdit(self.gridLayoutWidget_4)
+        self.tinta_idlepressure.setObjectName(u"tinta_idlepressure")
+        self.tinta_idlepressure.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
+"color: rgb(0, 0, 0);\n"
+"border: 2px solid #62CBC9;\n"
+"border-radius: 5px;\n"
+"padding: 10px;\n"
+"font-size: 18px;\n"
+"font-family: nunito;")
+
+        self.gridLayout_tinta.addWidget(self.tinta_idlepressure, 1, 1, 1, 1)
+
+        self.tinta_purgatiempo = QLineEdit(self.gridLayoutWidget_4)
+        self.tinta_purgatiempo.setObjectName(u"tinta_purgatiempo")
+        self.tinta_purgatiempo.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
+"color: rgb(0, 0, 0);\n"
+"border: 2px solid #62CBC9;\n"
+"border-radius: 5px;\n"
+"padding: 10px;\n"
+"font-size: 18px;\n"
+"font-family: nunito;")
+
+        self.gridLayout_tinta.addWidget(self.tinta_purgatiempo, 5, 1, 1, 1)
+
+        self.label_36 = QLabel(self.gridLayoutWidget_4)
+        self.label_36.setObjectName(u"label_36")
+        self.label_36.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 18px;\n"
+"	font-family: nunito;")
+
+        self.gridLayout_tinta.addWidget(self.label_36, 3, 0, 1, 1)
+
+        self.label_18 = QLabel(self.gridLayoutWidget_4)
+        self.label_18.setObjectName(u"label_18")
+        self.label_18.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 18px;\n"
+"	font-family: nunito;")
+
+        self.gridLayout_tinta.addWidget(self.label_18, 1, 0, 1, 1)
+
+        self.btn_save_tinta = QPushButton(self.movimientos)
+        self.btn_save_tinta.setObjectName(u"btn_save_tinta")
+        self.btn_save_tinta.setGeometry(QRect(1470, 940, 261, 41))
+        self.btn_save_tinta.setStyleSheet(u"QPushButton {\n"
+"    background-color: #62CBC9;\n"
+"	color: #FFFFFF;\n"
+"    border: 2px solid #333333;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;\n"
+"	font-weight: bold;\n"
+"}\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(170, 255, 255);\n"
+"}\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(206, 255, 252);\n"
+"}")
+        self.tinta_flow = QPushButton(self.movimientos)
+        self.tinta_flow.setObjectName(u"tinta_flow")
+        self.tinta_flow.setGeometry(QRect(1600, 280, 100, 100))
+        self.tinta_idle = QPushButton(self.movimientos)
+        self.tinta_idle.setObjectName(u"tinta_idle")
+        self.tinta_idle.setGeometry(QRect(1490, 280, 100, 100))
+        self.tinta_label_temp = QLabel(self.movimientos)
+        self.tinta_label_temp.setObjectName(u"tinta_label_temp")
+        self.tinta_label_temp.setGeometry(QRect(1540, 210, 51, 40))
+        self.tinta_label_temp.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.tinta_reset = QPushButton(self.movimientos)
+        self.tinta_reset.setObjectName(u"tinta_reset")
+        self.tinta_reset.setGeometry(QRect(1600, 390, 100, 100))
+        self.label_botella = QLabel(self.movimientos)
+        self.label_botella.setObjectName(u"label_botella")
+        self.label_botella.setGeometry(QRect(1470, 70, 250, 450))
+        self.label_botella.setPixmap(QPixmap(u"../../MBD-F-500/recursos/imagenes/botella.png"))
+        self.label_botella.setScaledContents(True)
+        self.tinta_real_temp = QLabel(self.movimientos)
+        self.tinta_real_temp.setObjectName(u"tinta_real_temp")
+        self.tinta_real_temp.setGeometry(QRect(1590, 210, 70, 40))
+        self.tinta_real_temp.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.tinta_purge = QPushButton(self.movimientos)
+        self.tinta_purge.setObjectName(u"tinta_purge")
+        self.tinta_purge.setGeometry(QRect(1490, 390, 100, 100))
         self.stackedWidget.addWidget(self.movimientos)
+        self.label_botella.raise_()
+        self.label_2.raise_()
+        self.horizontalLayoutWidget.raise_()
+        self.verticalLayoutWidget.raise_()
+        self.gridLayoutWidget.raise_()
+        self.bt_ir_objetivo.raise_()
+        self.label_5.raise_()
+        self.formLayoutWidget.raise_()
+        self.label_6.raise_()
+        self.txtMessage_2.raise_()
+        self.label_lenta_2.raise_()
+        self.gridLayoutWidget_4.raise_()
+        self.btn_save_tinta.raise_()
+        self.tinta_flow.raise_()
+        self.tinta_idle.raise_()
+        self.tinta_label_temp.raise_()
+        self.tinta_reset.raise_()
+        self.tinta_real_temp.raise_()
+        self.tinta_purge.raise_()
         self.print_server = QWidget()
         self.print_server.setObjectName(u"print_server")
         self.label_28 = QLabel(self.print_server)
@@ -1500,7 +1703,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(2)
+        self.stackedWidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -1526,6 +1729,21 @@ class Ui_MainWindow(object):
         self.label_8.setText(QCoreApplication.translate("MainWindow", u"Aceleraci\u00f3n", None))
         self.label_9.setText(QCoreApplication.translate("MainWindow", u"Deceleraci\u00f3n", None))
         self.label_6.setText(QCoreApplication.translate("MainWindow", u"Parametros de movimiento", None))
+        self.label_lenta_2.setText(QCoreApplication.translate("MainWindow", u"TINTA", None))
+        self.label_33.setText(QCoreApplication.translate("MainWindow", u"Presi\u00f3n Purga:", None))
+        self.label_34.setText(QCoreApplication.translate("MainWindow", u"Duraci\u00f3n Purga:", None))
+        self.label_17.setText(QCoreApplication.translate("MainWindow", u"Temperatura \u00baC:", None))
+        self.label_35.setText(QCoreApplication.translate("MainWindow", u"Presi\u00f3n Delta +:", None))
+        self.label_36.setText(QCoreApplication.translate("MainWindow", u"Presi\u00f3n Delta -:", None))
+        self.label_18.setText(QCoreApplication.translate("MainWindow", u"Presi\u00f3n Idle:", None))
+        self.btn_save_tinta.setText(QCoreApplication.translate("MainWindow", u"GUARDAR", None))
+        self.tinta_flow.setText("")
+        self.tinta_idle.setText("")
+        self.tinta_label_temp.setText(QCoreApplication.translate("MainWindow", u"Temp:", None))
+        self.tinta_reset.setText("")
+        self.label_botella.setText("")
+        self.tinta_real_temp.setText("")
+        self.tinta_purge.setText("")
         self.label_28.setText(QCoreApplication.translate("MainWindow", u"Y:", None))
         self.label_29.setText(QCoreApplication.translate("MainWindow", u"X:", None))
         self.lblCoordsText.setText(QCoreApplication.translate("MainWindow", u"Position:", None))

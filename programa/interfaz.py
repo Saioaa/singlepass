@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Ventana principal: navegacion, pagina de movimientos, ajustes y escalado.
+"""Ventana principal: navegacion, pagina de movimientos, tinta, ajustes y escalado.
 
 Los dispositivos (MotorD1, ClienteMDuino, ClientePMB) los crea main.py y
 llegan por el constructor. La pagina Print Server vive en print_server.py y la pagina
@@ -24,7 +24,10 @@ import config
 from d1 import MODO_POSICION
 from board_pmb import BoardPMB
 from board_epson import BoardEpson
+from cabezal_pmb import TemperaturaCabezal
+from pagina_tinta import PaginaTinta
 from print_server import PrintServer
+from tinta import Tinta
 from pagina_programa import PaginaPrograma
 from secuencia import SecuenciaImpresion
 from ui_pantalla_programa import Ui_MainWindow
@@ -41,6 +44,7 @@ PRIMER_MODULO = 1
 ULTIMO_MODULO = 8
 
 # ===== CAMPOS DE TEXTO QUE SE GUARDAN ENTRE SESIONES =====
+CLAVE_AJUSTES_TINTA = "tinta"   # estado y ajustes de la tinta (pagina_tinta.estado())
 CAMPOS_TEXTO = [
     "objetivo", "vel_objetivo", "aceleracion", "deceleracion",
     "pg_prog_vel_impresion", "pg_prog_acel_impresion", "pg_prog_decel_impresion",
@@ -195,6 +199,13 @@ class VentanaPrincipal(QMainWindow):
         self.homing_en_curso = False   # impide leer la posicion durante el homing
         self.posicion_mm = None        # ultima posicion leida del D1
 
+        # ===== tinta (IMB por CoAP) y temperatura del cabezal (PMB) =====
+        self.tinta = Tinta(parent=self)
+        self.temperatura = TemperaturaCabezal(self.pmb, parent=self)
+        self.pagina_tinta = PaginaTinta(self.ui, self.tinta, self.temperatura,
+                                        registrar=self.print_server.registrar,
+                                        guardar_ajustes=self.guardar_ajustes)
+
         self.pagina_programa = PaginaPrograma(
             self.ui, self.secuencia, self.mduino,
             boards_listas=self.print_server.esta_lista,
@@ -257,6 +268,7 @@ class VentanaPrincipal(QMainWindow):
         self.timer_latido.start()
 
         self.cargar_ajustes()
+        self.tinta.conectar()
 
     # ===== identidad =====
     def _poner_identidad(self):
@@ -304,6 +316,8 @@ class VentanaPrincipal(QMainWindow):
     # ===== cierre =====
     def closeEvent(self, evento):
         self.guardar_ajustes()
+        self.temperatura.cerrar()
+        self.tinta.cerrar()
         for board in self.boards:
             if hasattr(board, "cerrar"):
                 board.cerrar()   # Epson: apaga cabezales y host board del HMB
@@ -464,7 +478,8 @@ class VentanaPrincipal(QMainWindow):
     # ===== persistencia de los campos de la interfaz =====
     def guardar_ajustes(self):
         """Vuelca los campos rellenables a disco."""
-        ajustes = {"campos": {}, "modulos": {}, "distancias": {}, "activos": {}}
+        ajustes = {"campos": {}, "modulos": {}, "distancias": {}, "activos": {},
+                   CLAVE_AJUSTES_TINTA: self.pagina_tinta.estado()}
         for nombre in CAMPOS_TEXTO:
             ajustes["campos"][nombre] = getattr(self.ui, nombre).text()
         for i in range(PRIMER_MODULO, ULTIMO_MODULO + 1):
@@ -506,3 +521,4 @@ class VentanaPrincipal(QMainWindow):
             widget = getattr(self.ui, f"M{clave}Check", None)
             if widget is not None:
                 widget.setChecked(bool(activo))
+        self.pagina_tinta.restaurar(ajustes.get(CLAVE_AJUSTES_TINTA))
