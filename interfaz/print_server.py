@@ -41,19 +41,19 @@ COMBOS_MODO = {
 NOMBRES_REGISTRO = ("txtMessage", "txtMessage_2", "txtMessage_3")
 
 # ===== IMAGEN A IMPRIMIR =====
-# El tamano fisico sale de la resolucion grabada en el archivo (Photoshop, GIMP...),
-# no del modo de impresion: la misma imagen mide lo mismo a 600 y a 1200 dpi.
+# El tamano fisico sale de los pixeles de la imagen y de la resolucion del MODO de
+# impresion seleccionado (las boards la anuncian por dpi_recibido): un pixel de la
+# imagen es un pixel impreso. Los dpi grabados en el archivo se ignoran. Mientras no
+# hay modo cargado se usa config.DPI_IMAGEN_POR_DEFECTO.
 FILTRO_IMAGENES = "Imagenes (*.tif *.tiff *.bmp *.jpg *.jpeg *.png)"
 # carpetas iniciales de los dialogos: New Image abre la carpeta Imagenes del usuario y
 # Select job la de salida del RIP (vpi.CARPETA_SALIDA). Si no existen, Qt abre la ultima usada.
 CARPETA_INICIAL_IMAGENES = QStandardPaths.writableLocation(QStandardPaths.PicturesLocation)
 CARPETA_INICIAL_TRABAJOS = vpi.CARPETA_SALIDA
 MM_POR_PULGADA  = 25.4
-MM_POR_METRO    = 1000
 GRADOS_POR_GIRO = 90
 GRADOS_VUELTA   = 360
 GIRO_PERPENDICULAR = 90
-DPI_GENERICOS   = (72, 96)   # lo que graban los programas cuando la imagen no tiene resolucion real
 # Qt rechaza por defecto imagenes que descomprimidas superan 256 MB (una A4 a 1200 dpi en
 # color ya pasa de 500 MB). Es un limite del lector de imagenes, no de la memoria del PC.
 LIMITE_MEMORIA_IMAGEN_MB = 0   # 0 = sin limite
@@ -85,7 +85,8 @@ class PrintServer(QObject):
         self._posicion_eje = posicion_eje               # callable -> mm | None
         self._board_por_tipo = {tipo: b for b in self.boards for tipo in b.tipos_modulo}
 
-        self.dpi_imagen = None       # (dpi_x, dpi_y) del archivo cargado
+        self.dpi_imagen = None       # (dpi_x, dpi_y) con los que se mide la imagen cargada
+        self._dpi_modo = {}          # board.nombre -> (dpi_x, dpi_y) del modo seleccionado
         self.ruta_imagen = None
         self.ancho_imagen_mm = None
         self.alto_imagen_mm = None
@@ -233,8 +234,21 @@ class PrintServer(QObject):
         board.seleccionar_modo(modo)
 
     def _guardar_dpi(self, board, dpi_x, dpi_y):
-        """Resolucion de rasterizado del modo; solo informativa, no cambia el tamano de la imagen."""
+        """Resolucion del modo seleccionado: con ella se mide la imagen en la mesa."""
+        self._dpi_modo[board.nombre] = (dpi_x, dpi_y)
         self.registrar(f"[{board.nombre}] Modo activo: {dpi_x} x {dpi_y} dpi")
+        if self.ruta_imagen is not None and self._dpi_actual() != self.dpi_imagen:
+            self._refrescar_vista()   # misma imagen, nuevo tamano fisico
+            self.registrar(f"[PRINT SERVER] Imagen medida a {self.dpi_imagen[0]} x {self.dpi_imagen[1]} dpi: "
+                           f"{self.ancho_imagen_mm:.2f} x {self.alto_imagen_mm:.2f} mm")
+
+    def _dpi_actual(self):
+        """dpi de la primera board activa con modo cargado, o los por defecto."""
+        for board, _x in self.boards_activas():
+            dpi = self._dpi_modo.get(board.nombre)
+            if dpi is not None:
+                return dpi
+        return (config.DPI_IMAGEN_POR_DEFECTO, config.DPI_IMAGEN_POR_DEFECTO)
 
     # ===== posicion en la mesa =====
     def actualizar_posicion(self, x_mm, y_mm):
@@ -263,19 +277,8 @@ class PrintServer(QObject):
         return posicion[0], self.ancho_imagen_mm
 
     # ===== imagen =====
-    @staticmethod
-    def _leer_dpi(ruta):
-        """(dpi_x, dpi_y) grabados en el archivo, o None si no lleva resolucion real."""
-        imagen = QImageReader(ruta).read()
-        if imagen.isNull():
-            return None
-        dpi_x = round(imagen.dotsPerMeterX() * MM_POR_PULGADA / MM_POR_METRO)
-        dpi_y = round(imagen.dotsPerMeterY() * MM_POR_PULGADA / MM_POR_METRO)
-        if dpi_x <= 0 or dpi_y <= 0 or dpi_x in DPI_GENERICOS or dpi_y in DPI_GENERICOS:
-            return None
-        return dpi_x, dpi_y
-
     def _mostrar_pixmap(self, pixmap, x_mm=None, y_mm=None):
+        self.dpi_imagen = self._dpi_actual()
         dpi_x, dpi_y = self.dpi_imagen
         if self.rotacion_imagen % (GRADOS_VUELTA // 2) == GIRO_PERPENDICULAR:
             dpi_x, dpi_y = dpi_y, dpi_x   # el pixmap girado tiene los ejes intercambiados
@@ -293,19 +296,16 @@ class PrintServer(QObject):
         if pixmap.isNull():
             self.registrar(f"[PRINT SERVER] No se ha podido abrir: {ruta}")
             return
-        self.dpi_imagen = self._leer_dpi(ruta)
-        if self.dpi_imagen is None:
-            self.dpi_imagen = (config.DPI_IMAGEN_POR_DEFECTO, config.DPI_IMAGEN_POR_DEFECTO)
-            self.registrar(f"[PRINT SERVER] La imagen no lleva resolucion grabada: "
-                           f"se asumen {config.DPI_IMAGEN_POR_DEFECTO} dpi")
         self.ruta_imagen = os.path.normpath(ruta)
         self.rotacion_imagen = 0
         self.espejo_x = False
         self.espejo_y = False
         self._mostrar_pixmap(pixmap, POSICION_INICIAL_X_MM, POSICION_INICIAL_Y_MM)
+        origen = "del modo" if any(b.nombre in self._dpi_modo for b, _ in self.boards_activas()) \
+            else "por defecto, sin modo cargado"
         self.registrar(f"[PRINT SERVER] Imagen: {pixmap.width()} x {pixmap.height()} px a "
-                       f"{self.dpi_imagen[0]} x {self.dpi_imagen[1]} dpi "
-                       f"({self.ancho_imagen_mm:.2f} x {self.alto_imagen_mm:.2f} mm)")
+                       f"{self.dpi_imagen[0]} x {self.dpi_imagen[1]} dpi ({origen}) "
+                       f"= {self.ancho_imagen_mm:.2f} x {self.alto_imagen_mm:.2f} mm")
 
     def _refrescar_vista(self):
         if self.ruta_imagen is None:

@@ -62,11 +62,19 @@ PUERTO_HMB    = 8080
 IP_SM200      = "192.168.79.1"     # tarjeta encoder / print go: solo habla con el Atlas Server
 PUERTO_SM200  = 8080
 
-# ===== MESA DE IMPRESION (A4 apaisado: X = direccion del movimiento) =====
-MESA_ANCHO_MM = 297
-MESA_ALTO_MM  = 210
-# Resolucion que se asume para una imagen que no lleva dpi grabados en el archivo.
-# El tamano fisico de la imagen sale de su resolucion, no del modo de impresion.
+# ===== MESA DE IMPRESION (X = direccion del movimiento) =====
+# La mesa se define en pixeles a una resolucion de referencia: el alto son los
+# MESA_ALTO_PX del area de impresion y el ancho, los pixeles enteros mas cercanos
+# a MESA_ANCHO_OBJETIVO_MM a esa misma resolucion.
+MM_POR_PULGADA = 25.4
+DPI_MESA       = 600      # resolucion de referencia en la que se cuentan los pixeles de la mesa
+MESA_ALTO_PX   = 5072
+MESA_ANCHO_OBJETIVO_MM = 297
+MESA_ANCHO_PX  = round(MESA_ANCHO_OBJETIVO_MM * DPI_MESA / MM_POR_PULGADA)   # 7016 px
+MESA_ANCHO_MM  = MESA_ANCHO_PX * MM_POR_PULGADA / DPI_MESA                    # 297.01 mm
+MESA_ALTO_MM   = MESA_ALTO_PX * MM_POR_PULGADA / DPI_MESA                     # 214.71 mm
+# Resolucion con la que se mide una imagen mientras no hay modo de impresion cargado.
+# El tamano fisico de la imagen = pixeles / dpi del modo (los dpi del archivo se ignoran).
 DPI_IMAGEN_POR_DEFECTO = 600
 
 # ===== SISTEMA DE TINTA (IMB, CoAP puerto 5683): tinta.py =====
@@ -89,6 +97,10 @@ PRESION_OUTLET_MAX = 0
 # La real y la consigna llegan en los mensajes de estado de cabezales del Print
 # Controller (I,<id>,H,...). La consigna se escribe en este parametro del Print
 # Controller con P,C,P (como XOffset).
+# Los parametros se nombran con su ruta en el arbol del Print Controller (como XOffset):
+# "<RUTA_NODO_PMB>,<nombre del cabezal>,TargetControllerTemp". El nombre del cabezal
+# (HIB-1...) sale del estado de cabezales que envia el propio Print Controller.
+RUTA_NODO_PMB = "Print Manager,Print Line Manager,Master PMB"
 PARAMETRO_CONSIGNA_CABEZAL = "TargetControllerTemp"
 # Consigna que admite GUARDAR (PROVISIONAL: confirmar el maximo del cabezal)
 TEMPERATURA_CABEZAL_MIN_C = 20.0
@@ -100,4 +112,4 @@ POSICION_PULSE_MM   = POSICION_REPOSO_MM   # posicion del carro cuando se envia 
 # Con print go por software (PROVISIONAL): si la mesa ya esta a menos de esto de reposo,
 # la secuencia no la mueve (la board ya compenso la posicion real en el XOffset al armar).
 TOLERANCIA_REPOSO_MM = 5.0
-PARAMETRO_OFFSET_X  = '"Print Manager,Print Line Manager,Master PMB,PhysicalPrePrintBufferLength"'
+PARAMETRO_OFFSET_X  = f'"{RUTA_NODO_PMB},PhysicalPrePrintBufferLength"'
