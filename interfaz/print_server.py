@@ -24,11 +24,11 @@ from PySide6.QtCore import QLocale, QObject, QStandardPaths, Qt, QTimer
 from PySide6.QtGui import QColor, QDoubleValidator, QImageReader, QPainter, QPixmap, QTransform
 from PySide6.QtWidgets import QFileDialog
 
-import config
-import vpi
-from board import (ESTADO_ARMANDO, ESTADO_LISTO, ESTADO_RENDER_LISTO, ESTADO_SIN_TRABAJO,
+from programa import config
+from programa.gis import vpi
+from programa.gis.board import (ESTADO_ARMANDO, ESTADO_LISTO, ESTADO_RENDER_LISTO, ESTADO_SIN_TRABAJO,
                    ORDEN_ESTADOS, Trabajo)
-from mesa import MesaImpresion
+from interfaz.mesa import MesaImpresion
 
 # ===== WIDGETS =====
 NOMBRES_PAGINA = ("print_server",)          # objectName de la pagina (tupla: la coma importa)

@@ -25,7 +25,7 @@ Ordenes: se envian una vez. Si el IMB no contesta en TIMEOUT_ORDEN_S puede que
 la haya recibido igual, asi que no se da por fallida: la interfaz sigue
 esperando a ver el estado pedido (config.TINTA_CONFIRMACION_S).
 
-Requiere:  python -m pip install coapthon3==1.0.2   y CoAPIMB_external.py en programa/.
+Requiere:  python -m pip install coapthon3==1.0.2   y CoAPIMB_external.py en programa/tinta/.
 """
 
 import queue
@@ -34,7 +34,7 @@ import time
 
 from PySide6.QtCore import QObject, Signal
 
-import config
+from programa import config
 
 # ===== ESTADOS =====
 IDLE = "idle"
@@ -139,7 +139,7 @@ class Tinta(QObject):
 
     def _abrir(self):
         try:
-            import CoAPIMB_external as imb
+            from programa.tinta import CoAPIMB_external as imb
             if imb.setupClient(self.ip, False):
                 self._cliente = imb.client
                 return True

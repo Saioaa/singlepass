@@ -7,9 +7,9 @@ VPI + Render Engine, XOffset en el Print Controller y armado con P,P.
 
 import os
 
-import config
-import vpi
-from board import (ESTADO_ARMANDO, ESTADO_LISTO, ESTADO_RENDER_LISTO, ESTADO_SIN_TRABAJO,
+from programa import config
+from programa.gis import vpi
+from programa.gis.board import (ESTADO_ARMANDO, ESTADO_LISTO, ESTADO_RENDER_LISTO, ESTADO_SIN_TRABAJO,
                    Board, calcular_offset_x)
 
 NOMBRE_OFFSET_X = "XOffset"   # como se llama en los mensajes al parametro del Print Controller

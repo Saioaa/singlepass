@@ -6,7 +6,7 @@ llegan por el constructor. La pagina Print Server vive en print_server.py y la p
 Programa (secuencia, plan y grafico) en pagina_programa.py.
 
 ui_pantalla_programa.py debe generarse con:
-    pyside6-uic pantalla_programa.ui -o ui_pantalla_programa.py
+    pyside6-uic interfaz/pantalla_programa.ui -o interfaz/ui_pantalla_programa.py
 """
 
 import ctypes
@@ -20,17 +20,17 @@ from PySide6.QtGui import QDoubleValidator, QGuiApplication, QIcon, QPixmap
 from PySide6.QtWidgets import (QAbstractButton, QDialog, QLabel, QMainWindow, QVBoxLayout,
                                QWidget)
 
-import config
-from d1 import MODO_POSICION
-from board_pmb import BoardPMB
-from board_epson import BoardEpson
-from cabezal_pmb import TemperaturaCabezal
-from pagina_tinta import PaginaTinta
-from print_server import PrintServer
-from tinta import Tinta
-from pagina_programa import PaginaPrograma
-from secuencia import SecuenciaImpresion
-from ui_pantalla_programa import Ui_MainWindow
+from programa import config
+from programa.d1 import MODO_POSICION
+from programa.gis.board_pmb import BoardPMB
+from programa.gis.board_epson import BoardEpson
+from programa.gis.cabezal_pmb import TemperaturaCabezal
+from interfaz.pagina_tinta import PaginaTinta
+from interfaz.print_server import PrintServer
+from programa.tinta.tinta import Tinta
+from interfaz.pagina_programa import PaginaPrograma
+from programa.secuencia import SecuenciaImpresion
+from interfaz.ui_pantalla_programa import Ui_MainWindow
 
 # ===== IDENTIDAD DE LA APLICACION =====
 TITULO_VENTANA = "MATERIALIGHT"

@@ -32,8 +32,8 @@ import time
 from PySide6.QtCore import QLocale, QSize, QTimer
 from PySide6.QtGui import QDoubleValidator, QIcon, QPixmap
 
-import config
-from tinta import (AJUSTES, ESTADOS, FLOW, IDLE, NOMBRES, PRESION_IDLE, PRESION_INLET,
+from programa import config
+from programa.tinta.tinta import (AJUSTES, ESTADOS, FLOW, IDLE, NOMBRES, PRESION_IDLE, PRESION_INLET,
                    PRESION_OUTLET, PURGE, RESET)
 
 # ===== IMAGENES (en config.CARPETA_IMAGENES) =====

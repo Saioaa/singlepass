@@ -1,24 +1,27 @@
 # -*- coding: utf-8 -*-
-"""Punto de entrada de singlepass:  python main.py
+"""Punto de entrada de singlepass:  python main.py  (desde esta carpeta)
 
 Crea los dispositivos, arranca la interfaz y cierra todo al salir.
+
+Estructura (paquetes con __init__.py; imports absolutos desde esta carpeta):
+    programa/        config, d1, mduino, registro, secuencia (comunes a todas las maquinas)
+    programa/gis/    boards GIS (PMB y Epson/Atlas), pmb, vpi, temperatura del cabezal
+    programa/tinta/  sistema de tinta IMB (CoAP)
+    interfaz/        ventana, paginas, mesa, .ui y ui_*.py generado
+    recursos/        imagenes, template.vpi (datos que acompanan al programa)
+    herramientas/    scripts sueltos para pruebas; la app no los usa
 """
 
-import os
 import sys
 
-CARPETA_RAIZ     = os.path.dirname(os.path.realpath(__file__))
-CARPETA_PROGRAMA = os.path.join(CARPETA_RAIZ, "programa")
-sys.path.insert(0, CARPETA_PROGRAMA)   # para importar los modulos de programa/
+from PySide6.QtWidgets import QApplication, QMessageBox
 
-from PySide6.QtWidgets import QApplication, QMessageBox   # noqa: E402
-
-import config                                   # noqa: E402
-import registro                                 # noqa: E402
-from d1 import MotorD1                          # noqa: E402
-from interfaz import VentanaPrincipal           # noqa: E402
-from mduino import ClienteMDuino                # noqa: E402
-from pmb import ClientePMB                      # noqa: E402
+from programa import config
+from programa import registro
+from programa.d1 import MotorD1
+from interfaz.interfaz import VentanaPrincipal
+from programa.mduino import ClienteMDuino
+from programa.gis.pmb import ClientePMB
 
 CODIGO_ERROR_MOTOR = 2
 
@@ -35,9 +38,6 @@ def crear_dispositivos():
 def main():
     # lo primero: a partir de aqui todo print y traceback va tambien al .log del dia
     registro.iniciar(config.CARPETA_LOGS)
-    # los iconos del .ui usan rutas relativas (../imagenes/...): fijar el
-    # directorio de trabajo para que se resuelvan igual desde cualquier sitio
-    os.chdir(config.CARPETA_PROGRAMA)
     app = QApplication(sys.argv)
 
     try:

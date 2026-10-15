@@ -20,14 +20,15 @@ import shutil
 import xml.etree.ElementTree as ET
 from datetime import datetime
 
+from programa import config
+
 # ===== AREA DE IMPRESION =====
 # PROVISIONAL: valor tomado de template.vpi. Sustituir por el ancho real que
 # cubre el cabezal de la maquina, perpendicular al movimiento de la barra.
 ANCHO_CABEZAL_MM = 215.8575
 
 # ===== RUTAS =====
-CARPETA_BASE    = os.path.join(os.path.expanduser("~"), "MATERIALIGHT")
-CARPETA_SALIDA  = os.path.join(CARPETA_BASE, "RIPOutput")
+CARPETA_SALIDA  = os.path.join(config.CARPETA_DATOS, "RIPOutput")
 NOMBRE_PLANTILLA = "template.vpi"
 NOMBRE_POSICION  = "position_x.json"
 CLAVE_OFFSET_X   = "offset_x_mm"
@@ -46,7 +47,7 @@ GIRO_PERPENDICULAR = 90
 
 
 def _ruta_plantilla():
-    return os.path.join(os.path.dirname(os.path.realpath(__file__)), NOMBRE_PLANTILLA)
+    return config.RUTA_PLANTILLA_VPI
 
 
 def generar_vpi(ruta_imagen, ancho_mm, alto_mm, pos_y_mm, offset_x_mm,

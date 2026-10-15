@@ -37,9 +37,9 @@ from datetime import datetime
 from PySide6.QtCore import QThread, Signal
 from PySide6.QtGui import QImage
 
-import config
-import vpi
-from board import (ESTADO_ARMANDO, ESTADO_LISTO, ESTADO_RENDER_LISTO, ESTADO_SIN_TRABAJO,
+from programa import config
+from programa.gis import vpi
+from programa.gis.board import (ESTADO_ARMANDO, ESTADO_LISTO, ESTADO_RENDER_LISTO, ESTADO_SIN_TRABAJO,
                    Board, calcular_offset_x)
 
 # ===== SERVIDOR (direcciones en config.py) =====

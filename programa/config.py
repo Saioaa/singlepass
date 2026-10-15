@@ -8,17 +8,17 @@ import os
 import sys
 
 # ===== RUTAS DEL PROGRAMA =====
-# Ejecutando desde el codigo: singlepass/programa/*.py y singlepass/imagenes/.
-# Empaquetado con PyInstaller (sys.frozen): todo cuelga de sys._MEIPASS, con las
-# imagenes anadidas con --add-data "imagenes;imagenes".
+# Ejecutando desde el codigo: singlepass/ es la raiz (este fichero esta en programa/).
+# Empaquetado con PyInstaller (sys.frozen): la raiz es sys._MEIPASS y recursos/
+# se anade con --add-data "recursos;recursos".
 if getattr(sys, "frozen", False):
-    CARPETA_RAIZ     = sys._MEIPASS
-    CARPETA_PROGRAMA = CARPETA_RAIZ
+    CARPETA_RAIZ = sys._MEIPASS
 else:
-    CARPETA_PROGRAMA = os.path.dirname(os.path.realpath(__file__))
-    CARPETA_RAIZ     = os.path.normpath(os.path.join(CARPETA_PROGRAMA, ".."))
-CARPETA_IMAGENES = os.path.join(CARPETA_RAIZ, "imagenes")
-RUTA_GUIA_EJE    = os.path.join(CARPETA_IMAGENES, "guia_eje_x_blanca.png")
+    CARPETA_RAIZ = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
+CARPETA_RECURSOS  = os.path.join(CARPETA_RAIZ, "recursos")
+CARPETA_IMAGENES  = os.path.join(CARPETA_RECURSOS, "imagenes")
+RUTA_GUIA_EJE     = os.path.join(CARPETA_IMAGENES, "guia_eje_x_blanca.png")
+RUTA_PLANTILLA_VPI = os.path.join(CARPETA_RECURSOS, "template.vpi")   # base de los VPI (gis/vpi.py)
 
 # ===== RUTAS DE DATOS DEL USUARIO (fuera del programa: sobreviven a reinstalar) =====
 CARPETA_DATOS = os.path.join(os.path.expanduser("~"), "MATERIALIGHT")   # tambien RIPOutput (vpi.py)

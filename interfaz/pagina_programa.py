@@ -16,10 +16,10 @@ from PySide6.QtGui import QBrush, QColor, QDoubleValidator, QFont, QIntValidator
 from PySide6.QtWidgets import (QFrame, QGraphicsRectItem, QGraphicsScene,
                                QGraphicsSimpleTextItem, QGraphicsTextItem)
 
-import config
-from mduino import CMD_PULSO
-from board import recorrido_impresion_mm
-from secuencia import ParametrosPrograma
+from programa import config
+from programa.mduino import CMD_PULSO
+from programa.gis.board import recorrido_impresion_mm
+from programa.secuencia import ParametrosPrograma
 
 # ===== MODULOS DE LA BARRA =====
 PRIMER_MODULO = 1

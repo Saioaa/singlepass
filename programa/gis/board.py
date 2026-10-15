@@ -15,7 +15,7 @@ from dataclasses import dataclass
 
 from PySide6.QtCore import QObject, Signal
 
-import config
+from programa import config
 
 # ===== ESTADOS DE UNA BOARD (en orden creciente de preparacion) =====
 ESTADO_SIN_TRABAJO  = "sin_trabajo"    # nada ripeado

@@ -15,7 +15,7 @@ Si el PMB no esta conectado o deja de enviar estados, la interfaz muestra "--".
 
 from PySide6.QtCore import QObject, QTimer, Signal
 
-import config
+from programa import config
 
 CLAVE_TEMPERATURA = "temperatura"
 CLAVE_OBJETIVO = "objetivo"
