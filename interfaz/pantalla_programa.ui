@@ -31,7 +31,7 @@
 </string>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="menu">
      <property name="styleSheet">
@@ -1650,8 +1650,8 @@ text-align: center;</string>
      <widget class="QWidget" name="formLayoutWidget_2">
       <property name="geometry">
        <rect>
-        <x>1530</x>
-        <y>250</y>
+        <x>1490</x>
+        <y>220</y>
         <width>251</width>
         <height>191</height>
        </rect>
@@ -1743,69 +1743,11 @@ color: #62CBC9;
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="verticalLayoutWidget_3">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>380</y>
-        <width>221</width>
-        <height>111</height>
-       </rect>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <widget class="QPushButton" name="bt_pg_prog_start">
-         <property name="styleSheet">
-          <string notr="true">QPushButton {
-    background-color: #62CBC9;
-    border: 2px solid #333333;
-    border-radius: 5px;
-    padding: 10px;
-	font-size: 16px;
-	font-family: nunito;
-}
-QPushButton:hover {
-    background-color: rgb(170, 255, 255);
-}
-QPushButton:pressed {
-    background-color: rgb(206, 255, 252);
-}</string>
-         </property>
-         <property name="text">
-          <string>Iniciar programa</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="bt_pg_prog_stop">
-         <property name="styleSheet">
-          <string notr="true">QPushButton {
-    background-color: #62CBC9;
-    border: 2px solid #333333;
-    border-radius: 5px;
-    padding: 10px;
-	font-size: 16px;
-	font-family: nunito;
-}
-QPushButton:hover {
-    background-color: rgb(170, 255, 255);
-}
-QPushButton:pressed {
-    background-color: rgb(206, 255, 252);
-}</string>
-         </property>
-         <property name="text">
-          <string>Parar programa</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
      <widget class="QWidget" name="gridLayoutWidget_2">
       <property name="geometry">
        <rect>
-        <x>480</x>
-        <y>670</y>
+        <x>380</x>
+        <y>650</y>
         <width>851</width>
         <height>131</height>
        </rect>
@@ -2472,8 +2414,8 @@ QCheckBox::indicator {
      <widget class="QLabel" name="label_26">
       <property name="geometry">
        <rect>
-        <x>790</x>
-        <y>620</y>
+        <x>690</x>
+        <y>600</y>
         <width>231</width>
         <height>29</height>
        </rect>
@@ -2494,8 +2436,8 @@ font-weight: bold;</string>
      <widget class="QGraphicsView" name="pg_vista">
       <property name="geometry">
        <rect>
-        <x>350</x>
-        <y>330</y>
+        <x>250</x>
+        <y>310</y>
         <width>1121</width>
         <height>211</height>
        </rect>
@@ -2511,8 +2453,8 @@ font-weight: bold;</string>
      <widget class="QWidget" name="formLayoutWidget_3">
       <property name="geometry">
        <rect>
-        <x>1530</x>
-        <y>530</y>
+        <x>1490</x>
+        <y>500</y>
         <width>251</width>
         <height>381</height>
        </rect>
@@ -2693,8 +2635,8 @@ color: #62CBC9;
      <widget class="QLabel" name="label_27">
       <property name="geometry">
        <rect>
-        <x>1530</x>
-        <y>200</y>
+        <x>1490</x>
+        <y>170</y>
         <width>251</width>
         <height>31</height>
        </rect>
@@ -2721,8 +2663,8 @@ color: #62CBC9;
      <widget class="QLabel" name="label_32">
       <property name="geometry">
        <rect>
-        <x>1530</x>
-        <y>480</y>
+        <x>1490</x>
+        <y>450</y>
         <width>251</width>
         <height>31</height>
        </rect>

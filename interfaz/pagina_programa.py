@@ -6,7 +6,8 @@ El grafico dibuja la barra (BARRA_MM) con sus modulos, los perfiles de
 velocidad del plan y la mesa como un rectangulo que sigue la posicion real
 del eje leida del D1.
 
-Botones del .ui: bt_pg_prog_start, bt_pg_prog_stop.
+La secuencia se arranca y se para desde el boton Print / Abort de la pagina Print
+Server (print_server.py llama a start() y stop()); esta pagina ya no tiene botones.
 """
 
 import time
@@ -109,9 +110,6 @@ class PaginaPrograma(QObject):
         validador_potencia = QIntValidator(POTENCIA_MIN, POTENCIA_MAX)
         self.ui.pg_prog_potencia_NIR.setValidator(validador_potencia)
         self.ui.pg_prog_potencia_secador.setValidator(validador_potencia)
-
-        self.ui.bt_pg_prog_start.clicked.connect(self.start)
-        self.ui.bt_pg_prog_stop.clicked.connect(self.stop)
 
         self.mduino.mensaje_enviado.connect(self._mensaje_mduino)
         self.secuencia.terminada.connect(lambda: self.registrar("[PROGRAMA] Secuencia terminada"))
@@ -268,22 +266,23 @@ class PaginaPrograma(QObject):
 
     # ===== arranque / parada =====
     def start(self):
-        """Arranca la secuencia: D1 + M-Duino, con el PMB armado."""
+        """Arranca la secuencia: D1 + M-Duino, con las boards armadas. Devuelve True si arranca."""
         try:
             parametros = self.leer_parametros()
         except PlanInvalido as e:
             self.registrar(f"[PROGRAMA] No se puede planificar: {e}")
-            return
+            return False
         except ValueError:
             self.registrar("[PROGRAMA] Faltan parametros de impresion o curado")
-            return
+            return False
         if parametros.hay_impresion and parametros.requiere_armado and not self._boards_listas():
-            self.registrar("[PROGRAMA] Las boards no estan armadas: pulsa Print en la pagina Print Server")
-            return
+            self.registrar("[PROGRAMA] Las boards no estan armadas")
+            return False
         if not self.secuencia.start(parametros):
             self.registrar("[PROGRAMA] No se puede arrancar: seta o referencia pendiente")
-            return
+            return False
         self.registrar(f"[PROGRAMA] Plan: {self.describir_plan(parametros)}")
+        return True
 
     def stop(self):
         if self.secuencia.en_marcha():

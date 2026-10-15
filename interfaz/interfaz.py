@@ -186,7 +186,11 @@ class VentanaPrincipal(QMainWindow):
         self.boards = [BoardPMB(self.pmb, parent=self), BoardEpson(parent=self)]
         self.print_server = PrintServer(self.ui, self.boards,
                                         cabezales_activos=lambda: self.pagina_programa.cabezales_activos(),
-                                        posicion_eje=lambda: self.posicion_mm, parent=self)
+                                        posicion_eje=lambda: self.posicion_mm,
+                                        iniciar_programa=lambda: self.pagina_programa.start(),
+                                        parar_programa=lambda: self.pagina_programa.stop(),
+                                        programa_en_marcha=lambda: self.secuencia.en_marcha(),
+                                        parent=self)
         print_go_extra = self.print_server.print_go_software if config.PRINT_GO_TAMBIEN_POR_SOFTWARE else None
         tolerancia_reposo = (config.TOLERANCIA_REPOSO_MM if config.PRINT_GO_TAMBIEN_POR_SOFTWARE
                              else SIN_TOLERANCIA_REPOSO)
@@ -197,6 +201,7 @@ class VentanaPrincipal(QMainWindow):
                                             tolerancia_reposo=tolerancia_reposo, parent=self)
         if config.PRINT_GO_TAMBIEN_POR_SOFTWARE:
             print("[CONFIG] PROVISIONAL: print go tambien por software (P,SPG)")
+        self.secuencia.terminada.connect(self.print_server.programa_terminado)
         self.mduino.seta_cambiada.connect(self.secuencia.set_seta)
         self.mduino.seta_cambiada.connect(self.seta_cambiada)
         self.seta_pulsada = False
@@ -215,7 +220,7 @@ class VentanaPrincipal(QMainWindow):
         self.pagina_programa = PaginaPrograma(
             self.ui, self.secuencia, self.mduino,
             boards_listas=self.print_server.esta_lista,
-            abortar_boards=self.print_server.abortar,
+            abortar_boards=self.print_server.abortar_boards,
             geometria_imagen=self.print_server.geometria_imagen,
             posicion_real=lambda: self.posicion_mm,
             registrar=self.print_server.registrar,

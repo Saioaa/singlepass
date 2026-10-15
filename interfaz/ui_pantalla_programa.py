@@ -941,7 +941,7 @@ class Ui_MainWindow(object):
         self.label_10.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.formLayoutWidget_2 = QWidget(self.programa)
         self.formLayoutWidget_2.setObjectName(u"formLayoutWidget_2")
-        self.formLayoutWidget_2.setGeometry(QRect(1530, 250, 251, 191))
+        self.formLayoutWidget_2.setGeometry(QRect(1490, 220, 251, 191))
         self.formLayout_2 = QFormLayout(self.formLayoutWidget_2)
         self.formLayout_2.setObjectName(u"formLayout_2")
         self.formLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -1008,53 +1008,9 @@ class Ui_MainWindow(object):
 
         self.formLayout_2.setWidget(2, QFormLayout.ItemRole.FieldRole, self.pg_prog_decel_impresion)
 
-        self.verticalLayoutWidget_3 = QWidget(self.programa)
-        self.verticalLayoutWidget_3.setObjectName(u"verticalLayoutWidget_3")
-        self.verticalLayoutWidget_3.setGeometry(QRect(40, 380, 221, 111))
-        self.verticalLayout_3 = QVBoxLayout(self.verticalLayoutWidget_3)
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.bt_pg_prog_start = QPushButton(self.verticalLayoutWidget_3)
-        self.bt_pg_prog_start.setObjectName(u"bt_pg_prog_start")
-        self.bt_pg_prog_start.setStyleSheet(u"QPushButton {\n"
-"    background-color: #62CBC9;\n"
-"    border: 2px solid #333333;\n"
-"    border-radius: 5px;\n"
-"    padding: 10px;\n"
-"	font-size: 16px;\n"
-"	font-family: nunito;\n"
-"}\n"
-"QPushButton:hover {\n"
-"    background-color: rgb(170, 255, 255);\n"
-"}\n"
-"QPushButton:pressed {\n"
-"    background-color: rgb(206, 255, 252);\n"
-"}")
-
-        self.verticalLayout_3.addWidget(self.bt_pg_prog_start)
-
-        self.bt_pg_prog_stop = QPushButton(self.verticalLayoutWidget_3)
-        self.bt_pg_prog_stop.setObjectName(u"bt_pg_prog_stop")
-        self.bt_pg_prog_stop.setStyleSheet(u"QPushButton {\n"
-"    background-color: #62CBC9;\n"
-"    border: 2px solid #333333;\n"
-"    border-radius: 5px;\n"
-"    padding: 10px;\n"
-"	font-size: 16px;\n"
-"	font-family: nunito;\n"
-"}\n"
-"QPushButton:hover {\n"
-"    background-color: rgb(170, 255, 255);\n"
-"}\n"
-"QPushButton:pressed {\n"
-"    background-color: rgb(206, 255, 252);\n"
-"}")
-
-        self.verticalLayout_3.addWidget(self.bt_pg_prog_stop)
-
         self.gridLayoutWidget_2 = QWidget(self.programa)
         self.gridLayoutWidget_2.setObjectName(u"gridLayoutWidget_2")
-        self.gridLayoutWidget_2.setGeometry(QRect(480, 670, 851, 131))
+        self.gridLayoutWidget_2.setGeometry(QRect(380, 650, 851, 131))
         self.gridLayout_2 = QGridLayout(self.gridLayoutWidget_2)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -1428,7 +1384,7 @@ class Ui_MainWindow(object):
 
         self.label_26 = QLabel(self.programa)
         self.label_26.setObjectName(u"label_26")
-        self.label_26.setGeometry(QRect(790, 620, 231, 29))
+        self.label_26.setGeometry(QRect(690, 600, 231, 29))
         self.label_26.setStyleSheet(u"color: #62CBC9;\n"
 "font-size: 16px;\n"
 "font-family: nunito;\n"
@@ -1436,7 +1392,7 @@ class Ui_MainWindow(object):
         self.label_26.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.pg_vista = QGraphicsView(self.programa)
         self.pg_vista.setObjectName(u"pg_vista")
-        self.pg_vista.setGeometry(QRect(350, 330, 1121, 211))
+        self.pg_vista.setGeometry(QRect(250, 310, 1121, 211))
         self.pg_vista.setStyleSheet(u"QGraphicsView {\n"
 "    background-color: #3F4D4C;\n"
 "    border: 2px solid #62CBC9;\n"
@@ -1444,7 +1400,7 @@ class Ui_MainWindow(object):
 "}")
         self.formLayoutWidget_3 = QWidget(self.programa)
         self.formLayoutWidget_3.setObjectName(u"formLayoutWidget_3")
-        self.formLayoutWidget_3.setGeometry(QRect(1530, 530, 251, 381))
+        self.formLayoutWidget_3.setGeometry(QRect(1490, 500, 251, 381))
         self.formLayout_3 = QFormLayout(self.formLayoutWidget_3)
         self.formLayout_3.setObjectName(u"formLayout_3")
         self.formLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -1576,7 +1532,7 @@ class Ui_MainWindow(object):
 
         self.label_27 = QLabel(self.programa)
         self.label_27.setObjectName(u"label_27")
-        self.label_27.setGeometry(QRect(1530, 200, 251, 31))
+        self.label_27.setGeometry(QRect(1490, 170, 251, 31))
         font1 = QFont()
         font1.setFamilies([u"nunito"])
         font1.setBold(True)
@@ -1587,7 +1543,7 @@ class Ui_MainWindow(object):
         self.label_27.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_32 = QLabel(self.programa)
         self.label_32.setObjectName(u"label_32")
-        self.label_32.setGeometry(QRect(1530, 480, 251, 31))
+        self.label_32.setGeometry(QRect(1490, 450, 251, 31))
         self.label_32.setFont(font1)
         self.label_32.setStyleSheet(u"color: #62CBC9;\n"
 "	font-size: 20px;\n"
@@ -1703,7 +1659,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(1)
+        self.stackedWidget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -1774,8 +1730,6 @@ class Ui_MainWindow(object):
         self.label_11.setText(QCoreApplication.translate("MainWindow", u"Velocidad", None))
         self.label_12.setText(QCoreApplication.translate("MainWindow", u"Aceleracion", None))
         self.label_14.setText(QCoreApplication.translate("MainWindow", u"Deceleraci\u00f3n", None))
-        self.bt_pg_prog_start.setText(QCoreApplication.translate("MainWindow", u"Iniciar programa", None))
-        self.bt_pg_prog_stop.setText(QCoreApplication.translate("MainWindow", u"Parar programa", None))
         self.M1Check.setText(QCoreApplication.translate("MainWindow", u"1", None))
         self.modulo7.setItemText(0, QCoreApplication.translate("MainWindow", u"-", None))
         self.modulo7.setItemText(1, QCoreApplication.translate("MainWindow", u"PMB-C8", None))

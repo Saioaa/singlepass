@@ -9,7 +9,8 @@ Equivalente a aprint_cabezal.py de MBD-F-500, pero con el PMB:
     aqui se toma el primer cabezal activo (o el primero si ninguno lo esta).
   - Consigna: se escribe el parametro TargetControllerTemp del nodo del cabezal
     activo en el arbol del Print Controller ("Print Manager,...,Master PMB,HIB-2,
-    TargetControllerTemp", ver config.RUTA_NODO_PMB) con cambiar_parametro_pc.
+    Heater Controllers,Head 1 Heater Controller,TargetControllerTemp", ver
+    config.RUTA_NODO_PMB y SUBRUTA_CALENTADOR) con cambiar_parametro_pc.
 
 Si el PMB no esta conectado o deja de enviar estados, la interfaz muestra "--".
 """
@@ -57,7 +58,8 @@ class TemperaturaCabezal(QObject):
         if not self._nombre_cabezal:
             self.mensaje.emit("[CABEZAL] Aun no se conoce el cabezal activo: consigna no enviada")
             return
-        parametro = f'"{config.RUTA_NODO_PMB},{self._nombre_cabezal},{config.PARAMETRO_CONSIGNA_CABEZAL}"'
+        parametro = (f'"{config.RUTA_NODO_PMB},{self._nombre_cabezal},{config.SUBRUTA_CALENTADOR},'
+                     f'{config.PARAMETRO_CONSIGNA_CABEZAL}"')
         self.pmb.cambiar_parametro_pc(parametro, f"{grados:g}")
         self.mensaje.emit(f"[CABEZAL] Consigna {grados:g} ºC enviada a {self._nombre_cabezal}")
 

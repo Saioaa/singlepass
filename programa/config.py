@@ -98,9 +98,10 @@ PRESION_OUTLET_MAX = 0
 # Controller (I,<id>,H,...). La consigna se escribe en este parametro del Print
 # Controller con P,C,P (como XOffset).
 # Los parametros se nombran con su ruta en el arbol del Print Controller (como XOffset):
-# "<RUTA_NODO_PMB>,<nombre del cabezal>,TargetControllerTemp". El nombre del cabezal
-# (HIB-1...) sale del estado de cabezales que envia el propio Print Controller.
+# "<RUTA_NODO_PMB>,<cabezal>,<SUBRUTA_CALENTADOR>,TargetControllerTemp". El nombre del
+# cabezal (HIB-1...) sale del estado de cabezales que envia el propio Print Controller.
 RUTA_NODO_PMB = "Print Manager,Print Line Manager,Master PMB"
+SUBRUTA_CALENTADOR = "Heater Controllers,Head 1 Heater Controller"
 PARAMETRO_CONSIGNA_CABEZAL = "TargetControllerTemp"
 # Consigna que admite GUARDAR (PROVISIONAL: confirmar el maximo del cabezal)
 TEMPERATURA_CABEZAL_MIN_C = 20.0

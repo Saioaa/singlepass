@@ -13,7 +13,8 @@ Widgets del .ui:
              segun COMBOS_MODO; un combo se habilita solo si su board esta activa
     imagen:  btnNewjob, btnRotate, btnMirrorX, btnMirrorY, btn_clear, labelImage (-> MesaImpresion),
              lblSizeValue, pos_x_real/pos_y_real, pos_x_target/pos_y_target
-    trabajo: btnRip (ripear en todas), btnSelect (carpeta), btnPrint (armar), btnAbort
+    trabajo: btnRip (ripear en todas), btnSelect (carpeta), btnPrint (armar y arrancar
+             la secuencia de impresion), btnAbort (parar la secuencia y desarmar)
     previews: rip1..rip4
 """
 
@@ -66,8 +67,12 @@ COLOR_FONDO_PREVIEW = "white"
 COLORES_PLANOS = ("#00AEEF", "#EC008C", "#FFF100", "#000000")   # CMYK, orden del render
 
 # ===== REGISTRO Y BOTON PRINT =====
+# Print arma las boards activas y, en cuanto todas estan armadas, arranca la secuencia
+# (pagina Programa). Aspecto: naranja parpadeando = hay render / armando; verde
+# "Printing" = secuencia en marcha; al terminar vuelve a parpadear si queda render.
 VENTANA_DUPLICADOS_S = 2.0    # un mensaje identico al anterior dentro de esta ventana no se repite
 TEXTO_PRINT   = "Print"
+TEXTO_IMPRIMIENDO = "Printing"
 TEXTO_LISTO   = "Ready\nto\nPrint"
 COLOR_AVISO   = "#F39C12"     # naranja: hay render, falta armar
 COLOR_LISTO   = "#27AE60"     # verde: todas las boards armadas
@@ -76,12 +81,20 @@ PERIODO_PARPADEO_MS = 500
 
 class PrintServer(QObject):
 
-    def __init__(self, ui, boards, cabezales_activos, posicion_eje, parent=None):
+    def __init__(self, ui, boards, cabezales_activos, posicion_eje, iniciar_programa,
+                 parar_programa, programa_en_marcha, parent=None):
+        """iniciar_programa: callable -> bool, arranca la secuencia (pagina Programa).
+        parar_programa: callable, la para y desarma las boards.
+        programa_en_marcha: callable -> bool."""
         super().__init__(parent)
         QImageReader.setAllocationLimit(LIMITE_MEMORIA_IMAGEN_MB)   # global para QPixmap/QImage
         self.ui = ui
         self.boards = list(boards)                      # todas las boards conocidas
         self._cabezales_activos = cabezales_activos     # callable -> [(tipo_modulo, x_mm), ...]
+        self._iniciar_programa = iniciar_programa
+        self._parar_programa = parar_programa
+        self._programa_en_marcha = programa_en_marcha
+        self._arranque_pendiente = False                # Print pulsado: arrancar al quedar armadas
         self._posicion_eje = posicion_eje               # callable -> mm | None
         self._board_por_tipo = {tipo: b for b in self.boards for tipo in b.tipos_modulo}
 
@@ -380,16 +393,45 @@ class PrintServer(QObject):
             self.registrar(f"[PRINT SERVER] Ninguna board activa reconoce el trabajo {carpeta}")
 
     def imprimir(self):
-        """Boton Print: arma todas las boards activas. La mesa la mueve la pagina Programa."""
+        """Boton Print: arma todas las boards activas y, cuando todas estan armadas,
+        arranca la secuencia. Sin cabezal activo (solo curado) arranca directamente."""
+        if self._programa_en_marcha():
+            self.registrar("[PRINT SERVER] Ya hay una impresion en marcha")
+            return
         activas = self.boards_activas()
         if not activas:
-            self.registrar("[PRINT SERVER] No hay ningun cabezal activo en la pagina Programa")
+            self._iniciar_programa()   # solo curado: la pagina Programa decide si es posible
             return
+        if self.estado == ESTADO_LISTO:
+            self._arrancar_programa()  # ya armadas (p. ej. un arranque anterior fallo)
+            return
+        self._arranque_pendiente = True
         posicion = self._posicion_eje()
         for board, _x in activas:
-            board.armar(posicion)
+            if not board.armar(posicion):
+                self._arranque_pendiente = False
+                return
+
+    def _arrancar_programa(self):
+        self._arranque_pendiente = False
+        if self._iniciar_programa():
+            self._pintar_estado()
+
+    def programa_terminado(self):
+        """La secuencia ha vuelto a espera: el boton refleja de nuevo el estado de las boards."""
+        self._pintar_estado()
 
     def abortar(self):
+        """Boton Abort: para la secuencia si esta en marcha (que a su vez desarma las
+        boards, abortar_boards) o desarma las boards directamente."""
+        self._arranque_pendiente = False
+        if self._programa_en_marcha():
+            self._parar_programa()
+            return
+        self.abortar_boards()
+
+    def abortar_boards(self):
+        """Desarma las boards activas (lo usa tambien la pagina Programa al parar)."""
         for board, _x in self.boards_activas():
             board.abortar()
 
@@ -413,6 +455,8 @@ class PrintServer(QObject):
         if estado != self.estado:
             self.estado = estado
             self._pintar_estado()
+            if estado == ESTADO_LISTO and self._arranque_pendiente:
+                self._arrancar_programa()
 
     def _pintar_print(self, color=None, texto=TEXTO_PRINT):
         hoja = self._estilo_print_base
@@ -432,7 +476,10 @@ class PrintServer(QObject):
             self._parpadeo_encendido = False
             self.timer_parpadeo.start()
         elif self.estado == ESTADO_LISTO:
-            self._pintar_print(COLOR_LISTO, TEXTO_LISTO)
+            if self._programa_en_marcha():
+                self._pintar_print(COLOR_LISTO, TEXTO_IMPRIMIENDO)
+            else:
+                self._pintar_print(COLOR_LISTO, TEXTO_LISTO)   # armadas pero sin arrancar: Print reintenta
         else:
             self._pintar_print()
 
