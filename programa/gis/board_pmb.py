@@ -14,9 +14,11 @@ from programa.gis.board import (ESTADO_ARMANDO, ESTADO_LISTO, ESTADO_RENDER_LIST
 
 NOMBRE_OFFSET_X = "XOffset"   # como se llama en los mensajes al parametro del Print Controller
 DECIMALES_MM = 2
-# Con print go por software el servidor dispara al ARMAR (P,P), no cuando la secuencia
-# envia el pulso: la mesa tiene que estar ya en la posicion de pulso al pulsar Print.
-TOLERANCIA_ARMADO_MM = 2.0
+# Con print go por software el servidor empieza a contar encoder al ARMAR (P,P), no
+# cuando la secuencia envia el pulso. La mesa no siempre se queda clavada en reposo
+# (el D1 la deja a +-2 mm segun venga de home o de una impresion), asi que el XOffset
+# se corrige con la posicion real al armar; solo se rechaza si esta lejos de reposo.
+TOLERANCIA_ARMADO_MM = 10.0
 NUMERO_PLANOS = 4   # img_0..img_3 (CMYK)
 
 
@@ -140,16 +142,23 @@ class BoardPMB(Board):
             return False
         if self.estado == ESTADO_LISTO:
             return True   # ya armada: no repetir P,P (daria -201 Print Controller busy)
-        if config.PRINT_GO_TAMBIEN_POR_SOFTWARE:
-            if posicion_eje_mm is None or abs(posicion_eje_mm - config.POSICION_PULSE_MM) > TOLERANCIA_ARMADO_MM:
-                self.registrar(f"Con print go por software el PMB empieza a contar al armar: "
-                               f"lleva la mesa a {config.POSICION_PULSE_MM:.0f} mm (reposo) antes de pulsar Print"
-                               + (f"; ahora esta en {posicion_eje_mm:.1f} mm" if posicion_eje_mm is not None else ""))
-                return False
         offset_x_mm = vpi.leer_offset_x(self.carpeta_trabajo)
         if offset_x_mm is None:
             self.registrar("El trabajo no tiene offset X guardado (falta position_x.json)")
             return False
+        if config.PRINT_GO_TAMBIEN_POR_SOFTWARE:
+            if posicion_eje_mm is None or abs(posicion_eje_mm - config.POSICION_PULSE_MM) > TOLERANCIA_ARMADO_MM:
+                self.registrar(f"Con print go por software el PMB empieza a contar al armar: "
+                               f"lleva la mesa a {config.POSICION_PULSE_MM:.0f} mm (reposo, +-{TOLERANCIA_ARMADO_MM:.0f} mm) "
+                               f"antes de pulsar Print"
+                               + (f"; ahora esta en {posicion_eje_mm:.1f} mm" if posicion_eje_mm is not None else ""))
+                return False
+            # la mesa ya ha recorrido (posicion - reposo) mm del camino hasta la imagen
+            desvio_mm = posicion_eje_mm - config.POSICION_PULSE_MM
+            if abs(desvio_mm) > 0:
+                offset_x_mm = round(offset_x_mm - desvio_mm, DECIMALES_MM)
+                self.registrar(f"Mesa en {posicion_eje_mm:.1f} mm ({desvio_mm:+.1f} mm respecto a reposo): "
+                               f"XOffset corregido a {offset_x_mm:.{DECIMALES_MM}f} mm")
         self._poner_estado(ESTADO_ARMANDO)
         self._encadenar(self._enviar_print)
         self.pmb.cambiar_parametro_pc(config.PARAMETRO_OFFSET_X, offset_x_mm)

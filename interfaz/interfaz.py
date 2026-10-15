@@ -43,6 +43,9 @@ ID_APP_WINDOWS = "Materialight.Singlepass"
 PRIMER_MODULO = 1
 ULTIMO_MODULO = 8
 
+# ===== SECUENCIA =====
+SIN_TOLERANCIA_REPOSO = 0.0   # con PD por hardware la mesa va siempre a reposo antes del PULSE
+
 # ===== CAMPOS DE TEXTO QUE SE GUARDAN ENTRE SESIONES =====
 CLAVE_AJUSTES_TINTA = "tinta"   # estado y ajustes de la tinta (pagina_tinta.estado())
 CAMPOS_TEXTO = [
@@ -185,10 +188,13 @@ class VentanaPrincipal(QMainWindow):
                                         cabezales_activos=lambda: self.pagina_programa.cabezales_activos(),
                                         posicion_eje=lambda: self.posicion_mm, parent=self)
         print_go_extra = self.print_server.print_go_software if config.PRINT_GO_TAMBIEN_POR_SOFTWARE else None
+        tolerancia_reposo = (config.TOLERANCIA_REPOSO_MM if config.PRINT_GO_TAMBIEN_POR_SOFTWARE
+                             else SIN_TOLERANCIA_REPOSO)
         self.secuencia = SecuenciaImpresion(self.motor, self.mduino,
                                             self.print_server.esta_lista,
                                             config.POSICION_REPOSO_MM,
-                                            print_go_extra=print_go_extra, parent=self)
+                                            print_go_extra=print_go_extra,
+                                            tolerancia_reposo=tolerancia_reposo, parent=self)
         if config.PRINT_GO_TAMBIEN_POR_SOFTWARE:
             print("[CONFIG] PROVISIONAL: print go tambien por software (P,SPG)")
         self.mduino.seta_cambiada.connect(self.secuencia.set_seta)

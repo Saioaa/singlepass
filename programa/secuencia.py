@@ -67,13 +67,18 @@ class SecuenciaImpresion(QObject):
     terminada = Signal()    # la secuencia ha vuelto a ESPERA
 
     def __init__(self, motor, mduino, boards_listas, posicion_reposo, print_go_extra=None,
-                 parent=None):
+                 tolerancia_reposo=0.0, parent=None):
+        """tolerancia_reposo: si la mesa ya esta a menos de esta distancia (mm) de
+        reposo, la etapa de reposo no la mueve. 0 = ir siempre a reposo. Con print
+        go por software la board ya ha compensado la posicion real al armar, y un
+        movimiento posterior desplazaria la imagen."""
         super().__init__(parent)
         self.motor = motor
         self.mduino = mduino
         self._print_go_extra = print_go_extra   # callable opcional que se lanza junto al PULSE
         self._boards_listas = boards_listas   # callable -> bool: todas las boards activas armadas
         self.posicion_reposo = posicion_reposo
+        self.tolerancia_reposo = tolerancia_reposo
 
         self.timer = QTimer(self)
         self.timer.setInterval(PERIODO_SECUENCIA_MS)
@@ -182,12 +187,23 @@ class SecuenciaImpresion(QObject):
         self.motor.set_aceleracion(self.parametros.acel_curado)
         self.motor.set_deceleracion(self.parametros.decel_curado)
 
+    def _en_reposo(self):
+        """True si la mesa ya esta en reposo dentro de la tolerancia (y hay tolerancia)."""
+        if self.tolerancia_reposo <= 0:
+            return False
+        try:
+            posicion = self.motor.leer_posicion()
+        except Exception:
+            return False
+        return abs(posicion - self.posicion_reposo) <= self.tolerancia_reposo
+
     # ===== etapas =====
     def etapa_reposo(self):
         """asegurar la posicion de reposo antes de empezar la pasada."""
         if self.subpaso == 0:
             self.params_impresion()
-            self.mover_secuencia(self.posicion_reposo)
+            if not self._en_reposo():
+                self.mover_secuencia(self.posicion_reposo)
             self.subpaso = 1
         elif self.subpaso == 1:
             curando = self.parametros.hay_curado and self.contpas > 0

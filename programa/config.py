@@ -76,12 +76,13 @@ CANAL_TINTA = 1
 # puede tardar bastante)
 TINTA_CONFIRMACION_S = 180.0
 # Limites que admite GUARDAR (PROVISIONAL: confirmar con el fabricante). Como en
-# la app de 4 canales: idle y delta - negativas, delta + positiva.
-PRESION_IDLE_MIN   = -200
+# la app de 4 canales: idle y delta - negativas, delta + positiva. El IMB tiene
+# ahora idle -300, delta + 1000 y delta - -1500.
+PRESION_IDLE_MIN   = -1000
 PRESION_IDLE_MAX   = 0
 PRESION_INLET_MIN  = 0
-PRESION_INLET_MAX  = 200
-PRESION_OUTLET_MIN = -200
+PRESION_INLET_MAX  = 3000
+PRESION_OUTLET_MIN = -3000
 PRESION_OUTLET_MAX = 0
 
 # ===== TEMPERATURA DEL CABEZAL (por el PMB): cabezal_pmb.py =====
@@ -96,4 +97,7 @@ TEMPERATURA_CABEZAL_MAX_C = 60.0
 # ===== OFFSET X DE IMPRESION (Print Controller) =====
 # XOffset = DISTANCIA_CABEZAL (pagina Programa) - X_IMAGEN (mesa) - POSICION_PULSE_MM
 POSICION_PULSE_MM   = POSICION_REPOSO_MM   # posicion del carro cuando se envia el PULSE
+# Con print go por software (PROVISIONAL): si la mesa ya esta a menos de esto de reposo,
+# la secuencia no la mueve (la board ya compenso la posicion real en el XOffset al armar).
+TOLERANCIA_REPOSO_MM = 5.0
 PARAMETRO_OFFSET_X  = '"Print Manager,Print Line Manager,Master PMB,PhysicalPrePrintBufferLength"'
