@@ -8,6 +8,9 @@ Botones IDLE / FLOW / PURGA / RESET (con sus imagenes):
     (si no lo confirma en config.TINTA_CONFIRMACION_S se avisa y se vuelve al
     estado real)
   - sin fondo (el de la app): inactivo
+PURGA solo esta habilitado en FLOW (el IMB la ignora en Idle o Dormant). La purga
+es transitoria: el boton parpadea mientras dura y, cuando el IMB vuelve a Flow,
+FLOW queda en verde otra vez.
 Al arrancar se muestra el ultimo estado conocido (guardado en los ajustes), o
 RESET si no hay ninguno, hasta que el IMB diga el real.
 
@@ -120,6 +123,7 @@ class PaginaTinta:
         self._pedido = None            # estado pedido sin confirmar
         self._t_pedido = 0.0
         self._encendido = False        # fase del parpadeo
+        self._purga_vista = False      # el IMB ha salido de Flow desde que se pidio la purga
         self._ajustes = {}             # ultimos ajustes guardados / leidos
         self._consigna_mostrada = None
 
@@ -181,9 +185,13 @@ class PaginaTinta:
         if not self.tinta.conectado:
             self._log("[TINTA] Sistema de tinta no conectado")
             return
+        if estado == PURGE and (self._estado != FLOW or self._pedido is not None):
+            self._log("[TINTA] La purga solo se puede hacer con el sistema en FLOW")
+            return
         if estado == self._estado and estado != PURGE and self._pedido is None:
             return   # ya esta en ese estado (la purga se puede repetir)
         self._pedido = estado
+        self._purga_vista = False
         self._t_pedido = time.monotonic()
         self._log(f"[TINTA] {NOMBRES[estado]} pedido")
         self.tinta.pedir_estado(estado)
@@ -191,9 +199,21 @@ class PaginaTinta:
 
     def _estado_leido(self, estado):
         if estado is None:
-            return   # texto del IMB no reconocido: queda en el fichero de log
+            # texto transitorio (PreFlow, ReturnHighPressurePurge...): queda en el log
+            if self._pedido == PURGE:
+                self._purga_vista = True
+            return
         anterior, self._estado = self._estado, estado
-        if self._pedido is not None and estado == self._pedido:
+        if self._pedido == PURGE:
+            # la purga es transitoria: termina cuando el IMB vuelve a Flow
+            if estado == PURGE:
+                if not self._purga_vista:
+                    self._log("[TINTA] PURGA en curso")
+                self._purga_vista = True
+            elif estado == FLOW and self._purga_vista:
+                self._pedido = None
+                self._log("[TINTA] PURGA terminada, de vuelta en FLOW")
+        elif self._pedido is not None and estado == self._pedido:
             self._pedido = None
             self._log(f"[TINTA] {NOMBRES[estado]} activo")
         elif estado != anterior and self._pedido is None:
@@ -236,6 +256,8 @@ class PaginaTinta:
                 self._timer_parpadeo.start()
         else:
             self._timer_parpadeo.stop()
+        purga_posible = self.tinta.conectado and self._estado == FLOW and self._pedido is None
+        self._botones[PURGE].setEnabled(purga_posible or self._pedido == PURGE)
         for estado, boton in self._botones.items():
             if estado == self._pedido:
                 fondo = COLOR_PEDIDO if self._encendido else COLOR_INACTIVO

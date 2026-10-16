@@ -13,10 +13,11 @@ peticiones simultaneas):
   - cada PERIODO_LECTURA_S lee el estado del canal
   - entre lecturas atiende las ordenes de la interfaz (cambio de estado, ajustes)
 
-Estados: idle, flow, purge, reset (la orden "stop" del IMB). Textos exactos del
-IMB (con mayusculas): Idle, Flow, Dormant (reset) y HighPressureTimePurge. Se
-lee el subestado del canal (/state/sub) y, si no es uno de esos, el estado
-superior (/state/top); cada texto nuevo va al fichero de log.
+Estados: idle, flow, purge, reset (orden config.ORDEN_RESET_IMB). Textos exactos
+del IMB (con mayusculas): Idle, Flow, Dormant (reset) y HighPressureTimedPurge
+(purga; solo se admite desde Flow y al terminar vuelve a Flow). Se lee el
+subestado del canal (/state/sub) y, si no es uno de esos, el estado superior
+(/state/top); cada texto nuevo va al fichero de log.
 
 La temperatura no es del IMB (el sensor del tanque no se usa): es la del
 cabezal, por el PMB (cabezal_pmb.py).
@@ -43,9 +44,11 @@ PURGE = "purge"
 RESET = "reset"
 ESTADOS = (IDLE, FLOW, PURGE, RESET)
 NOMBRES = {IDLE: "IDLE", FLOW: "FLOW", PURGE: "PURGA", RESET: "RESET"}
-ORDEN_IMB = {IDLE: "idle", FLOW: "flow", PURGE: "purge", RESET: "stop"}
-# texto exacto del IMB -> estado
-ESTADOS_IMB = {"Idle": IDLE, "Flow": FLOW, "Dormant": RESET, "HighPressureTimePurge": PURGE}
+ORDEN_IMB = {IDLE: "idle", FLOW: "flow", PURGE: "purge", RESET: config.ORDEN_RESET_IMB}
+# texto exacto del IMB -> estado. Los demas textos (PreFlow..., PostFlow...,
+# ReturnHighPressurePurge...) son transitorios: se emiten como None.
+ESTADOS_IMB = {"Idle": IDLE, "Flow": FLOW, "Dormant": RESET,
+               "HighPressureTimedPurge": PURGE, "HighPressureTimePurge": PURGE}
 
 # ===== AJUSTES =====
 PRESION_IDLE = "idle"

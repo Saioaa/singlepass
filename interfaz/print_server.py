@@ -66,6 +66,16 @@ DECIMALES_POSICION = 2
 COLOR_FONDO_PREVIEW = "white"
 COLORES_PLANOS = ("#00AEEF", "#EC008C", "#FFF100", "#000000")   # CMYK, orden del render
 
+# ===== RENDER =====
+# Cualquier cambio que afecte a lo que se imprime (mover, rotar o espejar la imagen,
+# cambiar de modo, cambiar los cabezales en Programa) invalida el render: se descarta
+# en las boards, se vacian las previews y Print deja de parpadear hasta el siguiente
+# Render. Durante una impresion no se toca nada.
+MOTIVO_IMAGEN_MOVIDA  = "imagen movida"
+MOTIVO_IMAGEN_GIRADA  = "imagen girada o espejada"
+MOTIVO_MODO_CAMBIADO  = "modo de impresion cambiado"
+MOTIVO_CABEZALES      = "cabezales o modulos cambiados en Programa"
+
 # ===== REGISTRO Y BOTON PRINT =====
 # Print arma las boards activas y, en cuanto todas estan armadas, arranca la secuencia
 # (pagina Programa). Aspecto: naranja parpadeando = hay render / armando; verde
@@ -108,6 +118,7 @@ class PrintServer(QObject):
         self.espejo_y = False
         self._ultimo_mensaje = ("", 0.0)
         self._ultimo_modo = {}   # board.nombre -> ultimo modo elegido en esta sesion
+        self._posicion_render = None   # (x_mm, y_mm) de la imagen en el ultimo Render
         self._previews_cargadas = False   # ya hay planos del trabajo actual en los recuadros
 
         self.pagina = next(getattr(self.ui, n) for n in NOMBRES_PAGINA if hasattr(self.ui, n))
@@ -243,6 +254,8 @@ class PrintServer(QObject):
     def _modo_seleccionado(self, board, modo):
         if not modo:
             return
+        if self._ultimo_modo.get(board.nombre) not in (None, modo):
+            self.invalidar_render(MOTIVO_MODO_CAMBIADO)
         self._ultimo_modo[board.nombre] = modo
         board.seleccionar_modo(modo)
 
@@ -267,6 +280,8 @@ class PrintServer(QObject):
     def actualizar_posicion(self, x_mm, y_mm):
         self.ui.pos_x_real.setText(f"{x_mm:.{DECIMALES_POSICION}f}")
         self.ui.pos_y_real.setText(f"{y_mm:.{DECIMALES_POSICION}f}")
+        if self._posicion_render is not None and (x_mm, y_mm) != self._posicion_render:
+            self.invalidar_render(MOTIVO_IMAGEN_MOVIDA)
 
     def ir_a_posicion(self):
         posicion = self.mesa.posicion_imagen_mm()
@@ -329,18 +344,41 @@ class PrintServer(QObject):
         self._mostrar_pixmap(QPixmap(self.ruta_imagen).transformed(transformacion, Qt.SmoothTransformation))
 
     def rotar_imagen(self):
+        self.invalidar_render(MOTIVO_IMAGEN_GIRADA)
         self.rotacion_imagen = (self.rotacion_imagen + GRADOS_POR_GIRO) % GRADOS_VUELTA
         self._refrescar_vista()
 
     def espejar_x(self):
+        self.invalidar_render(MOTIVO_IMAGEN_GIRADA)
         self.espejo_x = not self.espejo_x
         self._refrescar_vista()
 
     def espejar_y(self):
+        self.invalidar_render(MOTIVO_IMAGEN_GIRADA)
         self.espejo_y = not self.espejo_y
         self._refrescar_vista()
 
+    # ===== render invalidado =====
+    def hay_render(self):
+        return any(b.estado != ESTADO_SIN_TRABAJO for b, _ in self.boards_activas())
+
+    def invalidar_render(self, motivo):
+        """Descarta el render de las boards (desarmandolas si hiciera falta), vacia las
+        previews y deja Print sin parpadear: hay que volver a pulsar Render."""
+        if self._programa_en_marcha() or not self.hay_render():
+            return
+        self._arranque_pendiente = False
+        self._posicion_render = None
+        for board, _x in self.boards_activas():
+            if board.estado in (ESTADO_ARMANDO, ESTADO_LISTO):
+                board.abortar()
+            board.descartar()
+        self.limpiar_previews()
+        self._previews_cargadas = False
+        self.registrar(f"[PRINT SERVER] Render descartado ({motivo}): pulsa Render para aplicar el cambio")
+
     def limpiar_imagen(self):
+        self._posicion_render = None
         self.ruta_imagen = None
         self.dpi_imagen = None
         self.ancho_imagen_mm = None
@@ -374,6 +412,7 @@ class PrintServer(QObject):
             self.registrar("[PRINT SERVER] No hay ningun cabezal activo en la pagina Programa")
             return
         trabajo = self._trabajo()
+        self._posicion_render = (trabajo.x_mm, trabajo.y_mm)
         self.limpiar_previews()
         self._previews_cargadas = False
         for board, x_cabezal in activas:

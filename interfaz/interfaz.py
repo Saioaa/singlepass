@@ -26,7 +26,7 @@ from programa.gis.board_pmb import BoardPMB
 from programa.gis.board_epson import BoardEpson
 from programa.gis.cabezal_pmb import TemperaturaCabezal
 from interfaz.pagina_tinta import PaginaTinta
-from interfaz.print_server import PrintServer
+from interfaz.print_server import MOTIVO_CABEZALES, PrintServer
 from programa.tinta.tinta import Tinta
 from interfaz.pagina_programa import PaginaPrograma
 from programa.secuencia import SecuenciaImpresion
@@ -225,6 +225,8 @@ class VentanaPrincipal(QMainWindow):
             posicion_real=lambda: self.posicion_mm,
             registrar=self.print_server.registrar,
             parent=self)
+        self.pagina_programa.cabezales_cambiados.connect(
+            lambda: self.print_server.invalidar_render(MOTIVO_CABEZALES))
 
         # ===== navegacion =====
         self.ui.bt_pg_movimientos1.clicked.connect(self.ir_pg_movimientos)
@@ -390,6 +392,17 @@ class VentanaPrincipal(QMainWindow):
             self.ventana_emergencia.ocultar()
             self.print_server.registrar("[SEGURIDAD] Home para continuar")
 
+    def _orden_motor(self, descripcion, orden):
+        """Ejecuta una orden manual al D1 y, si falla (fallo del variador, sin acuse
+        tras una seta...), lo deja en el registro en vez de en un traceback."""
+        try:
+            orden()
+            return True
+        except Exception as e:
+            self.print_server.registrar(f"[MOTOR] No se ha podido {descripcion}: {e}. "
+                                        "Haz Home y vuelve a intentarlo")
+            return False
+
     def _movimiento_permitido(self):
         if self.seta_pulsada:
             self.print_server.registrar("[SEGURIDAD] Movimiento ignorado: parada de emergencia activa")
@@ -406,19 +419,26 @@ class VentanaPrincipal(QMainWindow):
         decel = _leer_float(self.ui.deceleracion)
         if None in (posicion, velocidad, acel, decel):
             return
-        self.motor.set_velocidad(velocidad)
-        self.motor.set_aceleracion(acel)
-        self.motor.set_deceleracion(decel)
-        self.motor.mover_a(posicion)
+        def mover():
+            self.motor.set_velocidad(velocidad)
+            self.motor.set_aceleracion(acel)
+            self.motor.set_deceleracion(decel)
+            self.motor.mover_a(posicion)
+        self._orden_motor("ir al objetivo", mover)
 
     def home(self):
         if not self._movimiento_permitido():
             return
         self.homing_en_curso = True
-        self.motor.habilitar()
-        self.motor.home()
         self.secuencia.set_referencia_pendiente(True)   # hasta que confirme
-        self.timer_home.start()
+
+        def lanzar():
+            self.motor.habilitar()
+            self.motor.home()
+        if self._orden_motor("lanzar el home", lanzar):
+            self.timer_home.start()
+        else:
+            self.homing_en_curso = False
 
     def comprobar_home(self):
         try:
@@ -439,10 +459,13 @@ class VentanaPrincipal(QMainWindow):
     def _jog(self, velocidad, aceleracion, deceleracion, sentido):
         if not self._movimiento_permitido():
             return
-        self.motor.set_velocidad(velocidad)
-        self.motor.set_aceleracion(aceleracion)
-        self.motor.set_deceleracion(deceleracion)
-        self.motor.mover_manual(velocidad, sentido)
+        def mover():
+            self.motor.set_velocidad(velocidad)
+            self.motor.set_aceleracion(aceleracion)
+            self.motor.set_deceleracion(deceleracion)
+            self.motor.mover_manual(velocidad, sentido)
+        if not self._orden_motor("mover manualmente", mover):
+            return
         self._vigilante_jog = self.comprobar_derecha if sentido == SENTIDO_DERECHA else self.comprobar_izquierda
         self.timer_jog.timeout.connect(self._vigilante_jog)
         self.timer_jog.start()
@@ -472,7 +495,7 @@ class VentanaPrincipal(QMainWindow):
             self.stop_motor()
 
     def stop_motor(self):
-        self.motor.parar()
+        self._orden_motor("parar", self.motor.parar)
         self.timer_jog.stop()
         if self._vigilante_jog is not None:
             self.timer_jog.timeout.disconnect(self._vigilante_jog)
@@ -481,10 +504,12 @@ class VentanaPrincipal(QMainWindow):
     def mov_reposo(self):
         if not self._movimiento_permitido():
             return
-        self.motor.set_velocidad(VELOCIDAD_REPOSO)
-        self.motor.set_aceleracion(ACELERACION_REPOSO)
-        self.motor.set_deceleracion(DECELERACION_REPOSO)
-        self.motor.mover_a(config.POSICION_REPOSO_MM)
+        def mover():
+            self.motor.set_velocidad(VELOCIDAD_REPOSO)
+            self.motor.set_aceleracion(ACELERACION_REPOSO)
+            self.motor.set_deceleracion(DECELERACION_REPOSO)
+            self.motor.mover_a(config.POSICION_REPOSO_MM)
+        self._orden_motor("ir a reposo", mover)
 
     # ===== persistencia de los campos de la interfaz =====
     def guardar_ajustes(self):

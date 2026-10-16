@@ -65,6 +65,7 @@ class ParametrosPrograma:
 class SecuenciaImpresion(QObject):
 
     terminada = Signal()    # la secuencia ha vuelto a ESPERA
+    fallo = Signal(str)     # abortada por un error del motor (fallo del D1, timeout de acuse)
 
     def __init__(self, motor, mduino, boards_listas, posicion_reposo, print_go_extra=None,
                  tolerancia_reposo=0.0, parent=None):
@@ -159,11 +160,24 @@ class SecuenciaImpresion(QObject):
             return
         if time.time() - self.t_ultimo_mov < RETARDO_ARRANQUE_MOV:
             return
-        if not self.motor.movimiento_terminado():
-            return
-        accion = self._etapas.get(self.etapa)
-        if accion is not None:
-            accion()
+        try:
+            if not self.motor.movimiento_terminado():
+                return
+            accion = self._etapas.get(self.etapa)
+            if accion is not None:
+                accion()
+        except Exception as e:   # el D1 ha fallado o no contesta: la secuencia no puede seguir
+            self._abortar_por_fallo(str(e))
+
+    def _abortar_por_fallo(self, motivo):
+        """Para la secuencia sin intentar mas movimientos (volverian a fallar) y
+        obliga a referenciar antes del proximo start, como tras una seta."""
+        self.timer.stop()
+        self.senal_lamparas = PWM_APAGADAS
+        self.mduino.lamparas(PWM_APAGADAS)
+        self.referencia_pendiente = True
+        self.fallo.emit(motivo)
+        self._terminar()
 
     # ===== auxiliares =====
     def print_go(self):

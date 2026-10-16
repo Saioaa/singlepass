@@ -12,7 +12,7 @@ Server (print_server.py llama a start() y stop()); esta pagina ya no tiene boton
 
 import time
 
-from PySide6.QtCore import QEvent, QLocale, QObject, QRectF, Qt, QTimer
+from PySide6.QtCore import QEvent, QLocale, QObject, QRectF, Qt, QTimer, Signal
 from PySide6.QtGui import QBrush, QColor, QDoubleValidator, QFont, QIntValidator, QPen
 from PySide6.QtWidgets import (QFrame, QGraphicsRectItem, QGraphicsScene,
                                QGraphicsSimpleTextItem, QGraphicsTextItem)
@@ -85,6 +85,8 @@ def _leer_float(campo, por_defecto=None):
 
 class PaginaPrograma(QObject):
 
+    cabezales_cambiados = Signal()   # modulos, distancias o activos editados: el render ya no vale
+
     def __init__(self, ui, secuencia, mduino, boards_listas, abortar_boards, geometria_imagen,
                  posicion_real, registrar, parent=None):
         super().__init__(parent)
@@ -113,6 +115,7 @@ class PaginaPrograma(QObject):
 
         self.mduino.mensaje_enviado.connect(self._mensaje_mduino)
         self.secuencia.terminada.connect(lambda: self.registrar("[PROGRAMA] Secuencia terminada"))
+        self.secuencia.fallo.connect(self._fallo_secuencia)
 
         # grafico de la barra a escala
         self.escena = QGraphicsScene(self)
@@ -128,11 +131,11 @@ class PaginaPrograma(QObject):
         self._y_base = 0.0
 
         for i in range(PRIMER_MODULO, ULTIMO_MODULO + 1):
-            self.combo_modulo(i).currentIndexChanged.connect(self.dibujar_modulos)
-            self.campo_distancia(i).textChanged.connect(self.dibujar_modulos)
+            self.combo_modulo(i).currentIndexChanged.connect(self._modulos_editados)
+            self.campo_distancia(i).textChanged.connect(self._modulos_editados)
             check = self.check_modulo(i)
             if check is not None:
-                check.toggled.connect(self.dibujar_modulos)
+                check.toggled.connect(self._modulos_editados)
         for campo in (self.ui.pg_prog_vel_impresion, self.ui.pg_prog_acel_impresion,
                       self.ui.pg_prog_decel_impresion, self.ui.pg_prog_vel_curado,
                       self.ui.pg_prog_acel_curado, self.ui.pg_prog_decel_curado,
@@ -284,6 +287,11 @@ class PaginaPrograma(QObject):
         self.registrar(f"[PROGRAMA] Plan: {self.describir_plan(parametros)}")
         return True
 
+    def _fallo_secuencia(self, motivo):
+        self.registrar(f"[PROGRAMA] Secuencia abortada por el motor: {motivo}. Haz Home para continuar")
+        if self._boards_listas():
+            self._abortar_boards()
+
     def stop(self):
         if self.secuencia.en_marcha():
             self.secuencia.stop()
@@ -351,6 +359,11 @@ class PaginaPrograma(QObject):
         self.escena.addLine(x0, y_base, x1, y_pico, lapiz)
         self.escena.addLine(x1, y_pico, x2, y_pico, lapiz)
         self.escena.addLine(x2, y_pico, x3, y_base, lapiz)
+
+    def _modulos_editados(self):
+        """Cambio en la barra (que cabezal hay, donde, si esta activo): redibuja y avisa."""
+        self.dibujar_modulos()
+        self.cabezales_cambiados.emit()
 
     def dibujar_modulos(self):
         self.escena.clear()

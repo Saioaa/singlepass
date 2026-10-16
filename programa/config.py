@@ -80,9 +80,12 @@ DPI_IMAGEN_POR_DEFECTO = 600
 # ===== SISTEMA DE TINTA (IMB, CoAP puerto 5683): tinta.py =====
 IP_TINTA    = "192.168.79.75"
 CANAL_TINTA = 1
-# Tiempo maximo para que el IMB confirme un cambio de estado (pasar a Dormant
-# puede tardar bastante)
-TINTA_CONFIRMACION_S = 180.0
+# Tiempo maximo para que el IMB confirme un cambio de estado. Medido: Dormant 1 s,
+# Idle < 1 s, Flow 4 s, una purga completa unos 10 s.
+TINTA_CONFIRMACION_S = 30.0
+# Orden CoAP del boton RESET (/cmd/<orden>?uc=<canal>): "stop" lleva el IMB a Dormant
+# al instante, como la seta de la app de GIS (a proposito: es la parada rapida).
+ORDEN_RESET_IMB = "stop"
 # Limites que admite GUARDAR (PROVISIONAL: confirmar con el fabricante). Como en
 # la app de 4 canales: idle y delta - negativas, delta + positiva. El IMB tiene
 # ahora idle -300, delta + 1000 y delta - -1500.
