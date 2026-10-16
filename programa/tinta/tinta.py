@@ -54,7 +54,8 @@ ESTADOS_IMB = {"Idle": IDLE, "Flow": FLOW, "Dormant": RESET,
 PRESION_IDLE = "idle"
 PRESION_INLET = "inlet"       # ITPD: presion delta de entrada (+)
 PRESION_OUTLET = "outlet"     # OTPD: presion delta de salida (-)
-AJUSTES = (PRESION_IDLE, PRESION_INLET, PRESION_OUTLET)
+TIEMPO_PURGA = "purga_s"      # PUTO: duracion de la purga en segundos
+AJUSTES = (PRESION_IDLE, PRESION_INLET, PRESION_OUTLET, TIEMPO_PURGA)
 
 # ===== COAP =====
 PUERTO_COAP = 5683
@@ -117,7 +118,7 @@ class Tinta(QObject):
         self._ordenes.put(("estado", estado))
 
     def enviar_ajustes(self, ajustes):
-        """ajustes: {PRESION_IDLE, PRESION_INLET, PRESION_OUTLET}."""
+        """ajustes: {PRESION_IDLE, PRESION_INLET, PRESION_OUTLET, TIEMPO_PURGA}."""
         self._ordenes.put(("ajustes", dict(ajustes)))
 
     # ===== hilo =====
@@ -236,6 +237,7 @@ class Tinta(QObject):
                 PRESION_IDLE: self._get_numero(f"/fc/{c}/cset/vac/IP/store"),
                 PRESION_INLET: self._get_numero(f"/fc/{c}/cset/vac/ITPD/store"),
                 PRESION_OUTLET: self._get_numero(f"/fc/{c}/cset/vac/OTPD/store"),
+                TIEMPO_PURGA: self._get_numero(f"/fc/{c}/cset/pu/PUTO"),
             }
         except (ErrorTinta, ValueError) as e:
             self.mensaje.emit("[TINTA] No se han podido leer los ajustes del sistema de tinta")
@@ -285,7 +287,9 @@ class Tinta(QObject):
 
     def _escribir_ajustes(self, ajustes):
         """Presiones con la transaccion de validacion del IMB (la de
-        CoAPIMB_external.setChannelPressures)."""
+        CoAPIMB_external.setChannelPressures) y duracion de la purga (PUTO,
+        escritura directa: el IMB ignora un valor fuera de rango y conserva el
+        anterior, por eso se relee)."""
         c = self.canal
         presiones = (("IP", ajustes[PRESION_IDLE]), ("ITPD", ajustes[PRESION_INLET]),
                      ("OTPD", ajustes[PRESION_OUTLET]))
@@ -302,4 +306,10 @@ class Tinta(QObject):
             raise ErrorTinta("el IMB no ha cerrado la validacion")
         for nombre, valor in presiones:
             self._put(f"/fc/{c}/cset/vac/{nombre}/store", str(int(valor)))
+        tiempo_purga = int(ajustes[TIEMPO_PURGA])
+        self._put(f"/fc/{c}/cset/pu/PUTO", str(tiempo_purga))
+        if int(self._get(f"/fc/{c}/cset/pu/PUTO")) != tiempo_purga:
+            raise ErrorTinta(f"el IMB rechaza la duracion de purga {tiempo_purga} s")
         self._put(f"/cmd/applysettings?uc={c}")
+        if config.GUARDAR_AJUSTES_EN_IMB:
+            self._put("/nv/save")

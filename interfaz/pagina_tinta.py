@@ -26,7 +26,7 @@ podria ser PUTO, sin confirmar unidades).
 Widgets del .ui (pagina movimientos): tinta_idle, tinta_flow, tinta_purge,
 tinta_reset, label_botella, tinta_real_temp, tinta_temperatura,
 tinta_idlepressure, tinta_inletpressure, tinta_outletpressure,
-tinta_purgapressure, tinta_purgatiempo, btn_save_tinta.
+tinta_purgatiempo (duracion de la purga, s), btn_save_tinta.
 """
 
 import os
@@ -37,7 +37,7 @@ from PySide6.QtGui import QDoubleValidator, QIcon, QPixmap
 
 from programa import config
 from programa.tinta.tinta import (AJUSTES, ESTADOS, FLOW, IDLE, NOMBRES, PRESION_IDLE, PRESION_INLET,
-                   PRESION_OUTLET, PURGE, RESET)
+                   PRESION_OUTLET, PURGE, RESET, TIEMPO_PURGA)
 
 # ===== IMAGENES (en config.CARPETA_IMAGENES) =====
 IMAGEN_BOTELLA = "botella.png"
@@ -68,10 +68,11 @@ PERIODO_VIGILANCIA_MS = 1000
 # ===== TEMPERATURA Y PRESIONES =====
 TEMPERATURA = "temperatura"        # consigna del cabezal (PMB), junto a las presiones
 SUFIJO_TEMPERATURA = "ºC"
+SUFIJO_SEGUNDOS = "s"
+DECIMALES_TIEMPO = 0
 DECIMALES_TEMPERATURA = 1
 TEXTO_SIN_DATO = "--"
 DECIMALES_PRESION = 0
-TEXTO_PENDIENTE = "Pendiente"
 
 # ===== PERSISTENCIA (clave "tinta" de ajustes.json) =====
 CLAVE_ESTADO = "estado"
@@ -109,7 +110,8 @@ class PaginaTinta:
                          PURGE: ui.tinta_purge, RESET: ui.tinta_reset}
         self._campos = {TEMPERATURA: ui.tinta_temperatura, PRESION_IDLE: ui.tinta_idlepressure,
                         PRESION_INLET: ui.tinta_inletpressure,
-                        PRESION_OUTLET: ui.tinta_outletpressure}
+                        PRESION_OUTLET: ui.tinta_outletpressure,
+                        TIEMPO_PURGA: ui.tinta_purgatiempo}
         self._limites = {
             TEMPERATURA: (config.TEMPERATURA_CABEZAL_MIN_C, config.TEMPERATURA_CABEZAL_MAX_C,
                           DECIMALES_TEMPERATURA),
@@ -118,6 +120,8 @@ class PaginaTinta:
                             DECIMALES_PRESION),
             PRESION_OUTLET: (config.PRESION_OUTLET_MIN, config.PRESION_OUTLET_MAX,
                              DECIMALES_PRESION),
+            TIEMPO_PURGA: (config.TIEMPO_PURGA_MIN_S, config.TIEMPO_PURGA_MAX_S,
+                           DECIMALES_TIEMPO),
         }
         self._estado = RESET           # ultimo estado conocido (o guardado)
         self._pedido = None            # estado pedido sin confirmar
@@ -175,9 +179,7 @@ class PaginaTinta:
             minimo, maximo, decimales = self._limites[clave]
             campo.setValidator(validador_decimal(minimo, maximo, decimales, self.ui.movimientos))
         self.ui.tinta_temperatura.setPlaceholderText(SUFIJO_TEMPERATURA)
-        for campo in (self.ui.tinta_purgapressure, self.ui.tinta_purgatiempo):
-            campo.setEnabled(False)
-            campo.setPlaceholderText(TEXTO_PENDIENTE)
+        self.ui.tinta_purgatiempo.setPlaceholderText(SUFIJO_SEGUNDOS)
         self.ui.btn_save_tinta.clicked.connect(self.guardar)
 
     # ===== botones de estado =====
@@ -223,7 +225,7 @@ class PaginaTinta:
             self._pintar()
         elif descripcion == "ajustes":
             if correcta:
-                self._log("[TINTA] Presiones guardadas en el sistema de tinta")
+                self._log("[TINTA] Presiones y tiempo de purga guardados en el sistema de tinta")
 
     def _orden_sin_respuesta(self, descripcion):
         if self._pedido is not None:
@@ -314,7 +316,7 @@ class PaginaTinta:
         if not self.tinta.conectado:
             self._log("[TINTA] Sistema de tinta no conectado: presiones no enviadas")
             return
-        self._log("[TINTA] Enviando presiones al sistema de tinta...")
+        self._log("[TINTA] Enviando presiones y tiempo de purga al sistema de tinta...")
         self.tinta.enviar_ajustes({clave: valores[clave] for clave in AJUSTES})
 
     # ===== persistencia (la gestiona la ventana principal) =====

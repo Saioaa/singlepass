@@ -87,14 +87,20 @@ TINTA_CONFIRMACION_S = 30.0
 # al instante, como la seta de la app de GIS (a proposito: es la parada rapida).
 ORDEN_RESET_IMB = "stop"
 # Limites que admite GUARDAR (PROVISIONAL: confirmar con el fabricante). Como en
-# la app de 4 canales: idle y delta - negativas, delta + positiva. El IMB tiene
-# ahora idle -300, delta + 1000 y delta - -1500.
-PRESION_IDLE_MIN   = -1000
+# la app de 4 canales: idle y delta - negativas, delta + positiva.
+PRESION_IDLE_MIN   = -5000
 PRESION_IDLE_MAX   = 0
 PRESION_INLET_MIN  = 0
-PRESION_INLET_MAX  = 3000
-PRESION_OUTLET_MIN = -3000
+PRESION_INLET_MAX  = 5000
+PRESION_OUTLET_MIN = -5000
 PRESION_OUTLET_MAX = 0
+# Duracion de la purga (parametro PUTO del IMB, en segundos; de fabrica 6).
+# Medido: la purga dura PUTO s y luego ~4-6 s de retorno a Flow.
+TIEMPO_PURGA_MIN_S = 1
+TIEMPO_PURGA_MAX_S = 60
+# Tras GUARDAR, pedir al IMB que persista los ajustes en su memoria no volatil
+# (/nv/save); si no, PUTO vuelve al valor anterior al reiniciar el IMB.
+GUARDAR_AJUSTES_EN_IMB = True
 
 # ===== TEMPERATURA DEL CABEZAL (por el PMB): cabezal_pmb.py =====
 # La real y la consigna llegan en los mensajes de estado de cabezales del Print

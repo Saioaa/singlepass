@@ -31,7 +31,7 @@
 </string>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="menu">
      <property name="styleSheet">
@@ -602,7 +602,7 @@ border-radius: 5px;</string>
        <rect>
         <x>1470</x>
         <y>550</y>
-        <width>261</width>
+        <width>251</width>
         <height>30</height>
        </rect>
       </property>
@@ -628,13 +628,50 @@ text-align: center;</string>
        <rect>
         <x>1470</x>
         <y>590</y>
-        <width>261</width>
-        <height>341</height>
+        <width>251</width>
+        <height>276</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_tinta">
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_36">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;;
+	font-size: 18px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Presión Delta -:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_35">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;;
+	font-size: 18px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Presión Delta +:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="tinta_inletpressure">
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);
+border: 2px solid #62CBC9;
+border-radius: 5px;
+padding: 10px;
+font-size: 18px;
+font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
        <item row="4" column="1">
-        <widget class="QLineEdit" name="tinta_purgapressure">
+        <widget class="QLineEdit" name="tinta_purgatiempo">
          <property name="styleSheet">
           <string notr="true">background-color: rgb(255, 255, 255);
 color: rgb(0, 0, 0);
@@ -647,18 +684,6 @@ font-family: nunito;</string>
         </widget>
        </item>
        <item row="4" column="0">
-        <widget class="QLabel" name="label_33">
-         <property name="styleSheet">
-          <string notr="true">color: #62CBC9;;
-	font-size: 18px;
-	font-family: nunito;</string>
-         </property>
-         <property name="text">
-          <string>Presión Purga:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
         <widget class="QLabel" name="label_34">
          <property name="styleSheet">
           <string notr="true">color: #62CBC9;;
@@ -670,8 +695,45 @@ font-family: nunito;</string>
          </property>
         </widget>
        </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_17">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;;
+	font-size: 18px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Temperatura ºC:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_18">
+         <property name="styleSheet">
+          <string notr="true">color: #62CBC9;;
+	font-size: 18px;
+	font-family: nunito;</string>
+         </property>
+         <property name="text">
+          <string>Presión Idle:</string>
+         </property>
+        </widget>
+       </item>
        <item row="3" column="1">
         <widget class="QLineEdit" name="tinta_outletpressure">
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);
+border: 2px solid #62CBC9;
+border-radius: 5px;
+padding: 10px;
+font-size: 18px;
+font-family: nunito;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="tinta_idlepressure">
          <property name="styleSheet">
           <string notr="true">background-color: rgb(255, 255, 255);
 color: rgb(0, 0, 0);
@@ -696,101 +758,14 @@ font-family: nunito;</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_17">
-         <property name="styleSheet">
-          <string notr="true">color: #62CBC9;;
-	font-size: 18px;
-	font-family: nunito;</string>
-         </property>
-         <property name="text">
-          <string>Temperatura ºC:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="tinta_inletpressure">
-         <property name="styleSheet">
-          <string notr="true">background-color: rgb(255, 255, 255);
-color: rgb(0, 0, 0);
-border: 2px solid #62CBC9;
-border-radius: 5px;
-padding: 10px;
-font-size: 18px;
-font-family: nunito;</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_35">
-         <property name="styleSheet">
-          <string notr="true">color: #62CBC9;;
-	font-size: 18px;
-	font-family: nunito;</string>
-         </property>
-         <property name="text">
-          <string>Presión Delta +:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="tinta_idlepressure">
-         <property name="styleSheet">
-          <string notr="true">background-color: rgb(255, 255, 255);
-color: rgb(0, 0, 0);
-border: 2px solid #62CBC9;
-border-radius: 5px;
-padding: 10px;
-font-size: 18px;
-font-family: nunito;</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1">
-        <widget class="QLineEdit" name="tinta_purgatiempo">
-         <property name="styleSheet">
-          <string notr="true">background-color: rgb(255, 255, 255);
-color: rgb(0, 0, 0);
-border: 2px solid #62CBC9;
-border-radius: 5px;
-padding: 10px;
-font-size: 18px;
-font-family: nunito;</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_36">
-         <property name="styleSheet">
-          <string notr="true">color: #62CBC9;;
-	font-size: 18px;
-	font-family: nunito;</string>
-         </property>
-         <property name="text">
-          <string>Presión Delta -:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_18">
-         <property name="styleSheet">
-          <string notr="true">color: #62CBC9;;
-	font-size: 18px;
-	font-family: nunito;</string>
-         </property>
-         <property name="text">
-          <string>Presión Idle:</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
      <widget class="QPushButton" name="btn_save_tinta">
       <property name="geometry">
        <rect>
         <x>1470</x>
-        <y>940</y>
-        <width>261</width>
+        <y>880</y>
+        <width>251</width>
         <height>41</height>
        </rect>
       </property>

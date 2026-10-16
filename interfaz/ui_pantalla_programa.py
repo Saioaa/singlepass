@@ -398,7 +398,7 @@ class Ui_MainWindow(object):
         self.txtMessage_2.setReadOnly(True)
         self.label_lenta_2 = QLabel(self.movimientos)
         self.label_lenta_2.setObjectName(u"label_lenta_2")
-        self.label_lenta_2.setGeometry(QRect(1470, 550, 261, 30))
+        self.label_lenta_2.setGeometry(QRect(1470, 550, 251, 30))
         self.label_lenta_2.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
         self.label_lenta_2.setStyleSheet(u"color: #62CBC9;\n"
 "font-size: 30px;\n"
@@ -408,69 +408,25 @@ class Ui_MainWindow(object):
         self.label_lenta_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.gridLayoutWidget_4 = QWidget(self.movimientos)
         self.gridLayoutWidget_4.setObjectName(u"gridLayoutWidget_4")
-        self.gridLayoutWidget_4.setGeometry(QRect(1470, 590, 261, 341))
+        self.gridLayoutWidget_4.setGeometry(QRect(1470, 590, 251, 276))
         self.gridLayout_tinta = QGridLayout(self.gridLayoutWidget_4)
         self.gridLayout_tinta.setObjectName(u"gridLayout_tinta")
         self.gridLayout_tinta.setContentsMargins(0, 0, 0, 0)
-        self.tinta_purgapressure = QLineEdit(self.gridLayoutWidget_4)
-        self.tinta_purgapressure.setObjectName(u"tinta_purgapressure")
-        self.tinta_purgapressure.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
-"color: rgb(0, 0, 0);\n"
-"border: 2px solid #62CBC9;\n"
-"border-radius: 5px;\n"
-"padding: 10px;\n"
-"font-size: 18px;\n"
-"font-family: nunito;")
-
-        self.gridLayout_tinta.addWidget(self.tinta_purgapressure, 4, 1, 1, 1)
-
-        self.label_33 = QLabel(self.gridLayoutWidget_4)
-        self.label_33.setObjectName(u"label_33")
-        self.label_33.setStyleSheet(u"color: #62CBC9;;\n"
+        self.label_36 = QLabel(self.gridLayoutWidget_4)
+        self.label_36.setObjectName(u"label_36")
+        self.label_36.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 18px;\n"
 "	font-family: nunito;")
 
-        self.gridLayout_tinta.addWidget(self.label_33, 4, 0, 1, 1)
+        self.gridLayout_tinta.addWidget(self.label_36, 3, 0, 1, 1)
 
-        self.label_34 = QLabel(self.gridLayoutWidget_4)
-        self.label_34.setObjectName(u"label_34")
-        self.label_34.setStyleSheet(u"color: #62CBC9;;\n"
+        self.label_35 = QLabel(self.gridLayoutWidget_4)
+        self.label_35.setObjectName(u"label_35")
+        self.label_35.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 18px;\n"
 "	font-family: nunito;")
 
-        self.gridLayout_tinta.addWidget(self.label_34, 5, 0, 1, 1)
-
-        self.tinta_outletpressure = QLineEdit(self.gridLayoutWidget_4)
-        self.tinta_outletpressure.setObjectName(u"tinta_outletpressure")
-        self.tinta_outletpressure.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
-"color: rgb(0, 0, 0);\n"
-"border: 2px solid #62CBC9;\n"
-"border-radius: 5px;\n"
-"padding: 10px;\n"
-"font-size: 18px;\n"
-"font-family: nunito;")
-
-        self.gridLayout_tinta.addWidget(self.tinta_outletpressure, 3, 1, 1, 1)
-
-        self.tinta_temperatura = QLineEdit(self.gridLayoutWidget_4)
-        self.tinta_temperatura.setObjectName(u"tinta_temperatura")
-        self.tinta_temperatura.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
-"color: rgb(0, 0, 0);\n"
-"border: 2px solid #62CBC9;\n"
-"border-radius: 5px;\n"
-"padding: 10px;\n"
-"font-size: 18px;\n"
-"font-family: nunito;")
-
-        self.gridLayout_tinta.addWidget(self.tinta_temperatura, 0, 1, 1, 1)
-
-        self.label_17 = QLabel(self.gridLayoutWidget_4)
-        self.label_17.setObjectName(u"label_17")
-        self.label_17.setStyleSheet(u"color: #62CBC9;;\n"
-"	font-size: 18px;\n"
-"	font-family: nunito;")
-
-        self.gridLayout_tinta.addWidget(self.label_17, 0, 0, 1, 1)
+        self.gridLayout_tinta.addWidget(self.label_35, 2, 0, 1, 1)
 
         self.tinta_inletpressure = QLineEdit(self.gridLayoutWidget_4)
         self.tinta_inletpressure.setObjectName(u"tinta_inletpressure")
@@ -484,13 +440,53 @@ class Ui_MainWindow(object):
 
         self.gridLayout_tinta.addWidget(self.tinta_inletpressure, 2, 1, 1, 1)
 
-        self.label_35 = QLabel(self.gridLayoutWidget_4)
-        self.label_35.setObjectName(u"label_35")
-        self.label_35.setStyleSheet(u"color: #62CBC9;;\n"
+        self.tinta_purgatiempo = QLineEdit(self.gridLayoutWidget_4)
+        self.tinta_purgatiempo.setObjectName(u"tinta_purgatiempo")
+        self.tinta_purgatiempo.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
+"color: rgb(0, 0, 0);\n"
+"border: 2px solid #62CBC9;\n"
+"border-radius: 5px;\n"
+"padding: 10px;\n"
+"font-size: 18px;\n"
+"font-family: nunito;")
+
+        self.gridLayout_tinta.addWidget(self.tinta_purgatiempo, 4, 1, 1, 1)
+
+        self.label_34 = QLabel(self.gridLayoutWidget_4)
+        self.label_34.setObjectName(u"label_34")
+        self.label_34.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 18px;\n"
 "	font-family: nunito;")
 
-        self.gridLayout_tinta.addWidget(self.label_35, 2, 0, 1, 1)
+        self.gridLayout_tinta.addWidget(self.label_34, 4, 0, 1, 1)
+
+        self.label_17 = QLabel(self.gridLayoutWidget_4)
+        self.label_17.setObjectName(u"label_17")
+        self.label_17.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 18px;\n"
+"	font-family: nunito;")
+
+        self.gridLayout_tinta.addWidget(self.label_17, 0, 0, 1, 1)
+
+        self.label_18 = QLabel(self.gridLayoutWidget_4)
+        self.label_18.setObjectName(u"label_18")
+        self.label_18.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 18px;\n"
+"	font-family: nunito;")
+
+        self.gridLayout_tinta.addWidget(self.label_18, 1, 0, 1, 1)
+
+        self.tinta_outletpressure = QLineEdit(self.gridLayoutWidget_4)
+        self.tinta_outletpressure.setObjectName(u"tinta_outletpressure")
+        self.tinta_outletpressure.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
+"color: rgb(0, 0, 0);\n"
+"border: 2px solid #62CBC9;\n"
+"border-radius: 5px;\n"
+"padding: 10px;\n"
+"font-size: 18px;\n"
+"font-family: nunito;")
+
+        self.gridLayout_tinta.addWidget(self.tinta_outletpressure, 3, 1, 1, 1)
 
         self.tinta_idlepressure = QLineEdit(self.gridLayoutWidget_4)
         self.tinta_idlepressure.setObjectName(u"tinta_idlepressure")
@@ -504,9 +500,9 @@ class Ui_MainWindow(object):
 
         self.gridLayout_tinta.addWidget(self.tinta_idlepressure, 1, 1, 1, 1)
 
-        self.tinta_purgatiempo = QLineEdit(self.gridLayoutWidget_4)
-        self.tinta_purgatiempo.setObjectName(u"tinta_purgatiempo")
-        self.tinta_purgatiempo.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
+        self.tinta_temperatura = QLineEdit(self.gridLayoutWidget_4)
+        self.tinta_temperatura.setObjectName(u"tinta_temperatura")
+        self.tinta_temperatura.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
 "color: rgb(0, 0, 0);\n"
 "border: 2px solid #62CBC9;\n"
 "border-radius: 5px;\n"
@@ -514,27 +510,11 @@ class Ui_MainWindow(object):
 "font-size: 18px;\n"
 "font-family: nunito;")
 
-        self.gridLayout_tinta.addWidget(self.tinta_purgatiempo, 5, 1, 1, 1)
-
-        self.label_36 = QLabel(self.gridLayoutWidget_4)
-        self.label_36.setObjectName(u"label_36")
-        self.label_36.setStyleSheet(u"color: #62CBC9;;\n"
-"	font-size: 18px;\n"
-"	font-family: nunito;")
-
-        self.gridLayout_tinta.addWidget(self.label_36, 3, 0, 1, 1)
-
-        self.label_18 = QLabel(self.gridLayoutWidget_4)
-        self.label_18.setObjectName(u"label_18")
-        self.label_18.setStyleSheet(u"color: #62CBC9;;\n"
-"	font-size: 18px;\n"
-"	font-family: nunito;")
-
-        self.gridLayout_tinta.addWidget(self.label_18, 1, 0, 1, 1)
+        self.gridLayout_tinta.addWidget(self.tinta_temperatura, 0, 1, 1, 1)
 
         self.btn_save_tinta = QPushButton(self.movimientos)
         self.btn_save_tinta.setObjectName(u"btn_save_tinta")
-        self.btn_save_tinta.setGeometry(QRect(1470, 940, 261, 41))
+        self.btn_save_tinta.setGeometry(QRect(1470, 880, 251, 41))
         self.btn_save_tinta.setStyleSheet(u"QPushButton {\n"
 "    background-color: #62CBC9;\n"
 "	color: #FFFFFF;\n"
@@ -1659,7 +1639,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(3)
+        self.stackedWidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -1686,11 +1666,10 @@ class Ui_MainWindow(object):
         self.label_9.setText(QCoreApplication.translate("MainWindow", u"Deceleraci\u00f3n", None))
         self.label_6.setText(QCoreApplication.translate("MainWindow", u"Parametros de movimiento", None))
         self.label_lenta_2.setText(QCoreApplication.translate("MainWindow", u"TINTA", None))
-        self.label_33.setText(QCoreApplication.translate("MainWindow", u"Presi\u00f3n Purga:", None))
+        self.label_36.setText(QCoreApplication.translate("MainWindow", u"Presi\u00f3n Delta -:", None))
+        self.label_35.setText(QCoreApplication.translate("MainWindow", u"Presi\u00f3n Delta +:", None))
         self.label_34.setText(QCoreApplication.translate("MainWindow", u"Duraci\u00f3n Purga:", None))
         self.label_17.setText(QCoreApplication.translate("MainWindow", u"Temperatura \u00baC:", None))
-        self.label_35.setText(QCoreApplication.translate("MainWindow", u"Presi\u00f3n Delta +:", None))
-        self.label_36.setText(QCoreApplication.translate("MainWindow", u"Presi\u00f3n Delta -:", None))
         self.label_18.setText(QCoreApplication.translate("MainWindow", u"Presi\u00f3n Idle:", None))
         self.btn_save_tinta.setText(QCoreApplication.translate("MainWindow", u"GUARDAR", None))
         self.tinta_flow.setText("")
