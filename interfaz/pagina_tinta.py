@@ -193,8 +193,7 @@ class PaginaTinta:
         self._pedido = estado
         self._purga_vista = False
         self._t_pedido = time.monotonic()
-        self._log(f"[TINTA] {NOMBRES[estado]} pedido")
-        self.tinta.pedir_estado(estado)
+        self.tinta.pedir_estado(estado)   # la orden y cada estado del IMB quedan en el archivo de log (tinta.py)
         self._pintar()
 
     def _estado_leido(self, estado):
@@ -207,17 +206,13 @@ class PaginaTinta:
         if self._pedido == PURGE:
             # la purga es transitoria: termina cuando el IMB vuelve a Flow
             if estado == PURGE:
-                if not self._purga_vista:
-                    self._log("[TINTA] PURGA en curso")
                 self._purga_vista = True
             elif estado == FLOW and self._purga_vista:
                 self._pedido = None
-                self._log("[TINTA] PURGA terminada, de vuelta en FLOW")
         elif self._pedido is not None and estado == self._pedido:
             self._pedido = None
-            self._log(f"[TINTA] {NOMBRES[estado]} activo")
-        elif estado != anterior and self._pedido is None:
-            self._log(f"[TINTA] Estado: {NOMBRES[estado]}")
+        # los cambios normales de estado no se anuncian en la interfaz: los botones
+        # (naranja parpadeando -> verde) ya lo muestran; en la app solo salen avisos
         if estado != anterior:
             self._guardar_ajustes()
         self._pintar()
