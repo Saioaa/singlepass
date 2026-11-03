@@ -11,10 +11,14 @@ RIPOutput, Logging) va a <usuario>\\MATERIALIGHT y lo crea la propia app: no se
 empaqueta. recursos/arduino y la configuracion del motor no los usa la app.
 """
 
+import sys
 from pathlib import Path
+
+from PyInstaller.utils.hooks import collect_submodules
 
 NOMBRE = "Singlepass"
 CARPETA = Path(SPECPATH)
+sys.path.insert(0, str(CARPETA))   # para que collect_submodules encuentre programa/ e interfaz/
 CARPETA_RECURSOS = CARPETA / "recursos"
 ICONO = CARPETA_RECURSOS / "imagenes" / "M_02.ico"
 PLANTILLA_VPI = CARPETA_RECURSOS / "template.vpi"
@@ -37,8 +41,11 @@ a = Analysis(
         (str(CARPETA_FUENTES), "recursos/fuentes"),
         (str(PLANTILLA_VPI), "recursos"),
     ],
-    # el sistema de tinta usa coapthon a traves de CoAPIMB_external
-    hiddenimports=["coapthon.client.helperclient"],
+    # Todos los modulos de programa/ e interfaz/ entran explicitamente, aunque el
+    # analisis de imports no los detecte (p. ej. "from programa import registro").
+    # coapthon lo usa el sistema de tinta a traves de CoAPIMB_external.
+    hiddenimports=(collect_submodules("programa") + collect_submodules("interfaz")
+                   + ["coapthon.client.helperclient"]),
     hookspath=[],
     runtime_hooks=[],
     excludes=["tkinter"],
