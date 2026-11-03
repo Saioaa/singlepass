@@ -17,6 +17,7 @@ else:
     CARPETA_RAIZ = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
 CARPETA_RECURSOS  = os.path.join(CARPETA_RAIZ, "recursos")
 CARPETA_IMAGENES  = os.path.join(CARPETA_RECURSOS, "imagenes")
+CARPETA_FUENTES   = os.path.join(CARPETA_RECURSOS, "fuentes")   # Nunito (.ttf): la carga interfaz.py
 RUTA_GUIA_EJE     = os.path.join(CARPETA_IMAGENES, "guia_eje_x_blanca.png")
 RUTA_PLANTILLA_VPI = os.path.join(CARPETA_RECURSOS, "template.vpi")   # base de los VPI (gis/vpi.py)
 

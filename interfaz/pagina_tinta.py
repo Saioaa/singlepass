@@ -26,7 +26,8 @@ podria ser PUTO, sin confirmar unidades).
 Widgets del .ui (pagina movimientos): tinta_idle, tinta_flow, tinta_purge,
 tinta_reset, label_botella, tinta_real_temp, tinta_temperatura,
 tinta_idlepressure, tinta_inletpressure, tinta_outletpressure,
-tinta_purgatiempo (duracion de la purga, s), btn_save_tinta.
+tinta_purgatiempo (duracion de la purga, s), tinta_real_inlet y
+tinta_real_outlet (presiones reales, las lee el IMB cada segundo), btn_save_tinta.
 """
 
 import os
@@ -36,6 +37,7 @@ from PySide6.QtCore import QLocale, QSize, QTimer
 from PySide6.QtGui import QDoubleValidator, QIcon, QPixmap
 
 from programa import config
+from interfaz.campos import poner_sufijo
 from programa.tinta.tinta import (AJUSTES, ESTADOS, FLOW, IDLE, NOMBRES, PRESION_IDLE, PRESION_INLET,
                    PRESION_OUTLET, PURGE, RESET, TIEMPO_PURGA)
 
@@ -69,6 +71,7 @@ PERIODO_VIGILANCIA_MS = 1000
 TEMPERATURA = "temperatura"        # consigna del cabezal (PMB), junto a las presiones
 SUFIJO_TEMPERATURA = "ºC"
 SUFIJO_SEGUNDOS = "s"
+SUFIJO_PRESION = "mmH2O"           # unidad del IMB (consignas y presiones reales)
 DECIMALES_TIEMPO = 0
 DECIMALES_TEMPERATURA = 1
 TEXTO_SIN_DATO = "--"
@@ -144,6 +147,7 @@ class PaginaTinta:
 
         tinta.estado_leido.connect(self._estado_leido)
         tinta.ajustes_leidos.connect(self._ajustes_leidos)
+        tinta.presiones_leidas.connect(self.mostrar_presiones)
         tinta.orden_terminada.connect(self._orden_terminada)
         tinta.orden_sin_respuesta.connect(self._orden_sin_respuesta)
         tinta.conexion_cambiada.connect(self._conexion_cambiada)
@@ -152,6 +156,7 @@ class PaginaTinta:
         temperatura.mensaje.connect(registrar)
 
         self.mostrar_temperatura(None)
+        self.mostrar_presiones(None, None)
         self._pintar()
 
     # ===== preparacion =====
@@ -178,8 +183,12 @@ class PaginaTinta:
         for clave, campo in self._campos.items():
             minimo, maximo, decimales = self._limites[clave]
             campo.setValidator(validador_decimal(minimo, maximo, decimales, self.ui.movimientos))
-        self.ui.tinta_temperatura.setPlaceholderText(SUFIJO_TEMPERATURA)
-        self.ui.tinta_purgatiempo.setPlaceholderText(SUFIJO_SEGUNDOS)
+        # unidades fijas dentro de los campos
+        poner_sufijo(self.ui.tinta_temperatura, SUFIJO_TEMPERATURA)
+        poner_sufijo(self.ui.tinta_purgatiempo, SUFIJO_SEGUNDOS)
+        for campo in (self.ui.tinta_idlepressure, self.ui.tinta_inletpressure,
+                      self.ui.tinta_outletpressure):
+            poner_sufijo(campo, SUFIJO_PRESION)
         self.ui.btn_save_tinta.clicked.connect(self.guardar)
 
     # ===== botones de estado =====
@@ -243,6 +252,7 @@ class PaginaTinta:
     def _conexion_cambiada(self, conectado):
         if not conectado:
             self._pedido = None
+            self.mostrar_presiones(None, None)
             self._pintar()
 
     # ===== aspecto de los botones =====
@@ -284,6 +294,13 @@ class PaginaTinta:
         texto = TEXTO_SIN_DATO if temperatura is None \
             else f"{temperatura:.{DECIMALES_TEMPERATURA}f}"
         self.ui.tinta_real_temp.setText(f"{texto} {SUFIJO_TEMPERATURA}")
+
+    # ===== presiones reales =====
+    def mostrar_presiones(self, inlet, outlet):
+        for etiqueta, valor in ((self.ui.tinta_real_inlet, inlet),
+                                (self.ui.tinta_real_outlet, outlet)):
+            texto = TEXTO_SIN_DATO if valor is None else f"{valor:.{DECIMALES_PRESION}f}"
+            etiqueta.setText(f"{texto} {SUFIJO_PRESION}")
 
     # ===== ajustes =====
     def _ajustes_leidos(self, ajustes):

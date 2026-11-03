@@ -84,6 +84,7 @@ class Tinta(QObject):
     conexion_cambiada = Signal(bool)
     estado_leido = Signal(object)        # estado (ESTADOS) o None si no se reconoce
     ajustes_leidos = Signal(dict)        # {PRESION_IDLE, ...}: valores del IMB
+    presiones_leidas = Signal(object, object)  # (inlet, outlet) reales; None si no hay dato
     orden_terminada = Signal(str, bool)  # (descripcion, correcta)
     orden_sin_respuesta = Signal(str)    # enviada pero sin respuesta: puede haber llegado
 
@@ -96,6 +97,7 @@ class Tinta(QObject):
         self._conectado = False
         self._cliente = None
         self._fallos = 0
+        self._presion_fallida = False
         self._textos_vistos = set()
 
     @property
@@ -222,6 +224,24 @@ class Tinta(QObject):
             return
         self._fallos = 0
         self.estado_leido.emit(estado)
+        self._leer_presiones()
+
+    def _leer_presiones(self):
+        """Presiones reales de entrada y salida (/pr/ITPS y /pr/OTPS, como
+        getInletPressure y getOutletPressure del fabricante). Un fallo aqui no
+        cuenta para la desconexion: deja el dato vacio y va al log solo el primer
+        fallo de cada racha."""
+        c = self.canal
+        presiones = []
+        for ruta in (f"/pr/ITPS?uc={c}", f"/pr/OTPS?uc={c}"):
+            try:
+                presiones.append(self._get_numero(ruta))
+            except (ErrorTinta, ValueError) as e:
+                if not self._presion_fallida:
+                    print(f"[TINTA] Presion real no disponible: {e}")
+                presiones.append(None)
+        self._presion_fallida = None in presiones
+        self.presiones_leidas.emit(*presiones)
 
     def _interpretar(self, texto):
         texto = (texto or "").strip()

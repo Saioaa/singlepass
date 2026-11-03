@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (QFrame, QGraphicsRectItem, QGraphicsScene,
                                QGraphicsSimpleTextItem, QGraphicsTextItem)
 
 from programa import config
+from interfaz.campos import poner_sufijo
 from programa.mduino import CMD_PULSO
 from programa.gis.board import recorrido_impresion_mm
 from programa.secuencia import ParametrosPrograma
@@ -27,6 +28,7 @@ PRIMER_MODULO = 1
 ULTIMO_MODULO = 8
 # cabezales de impresion; que board gobierna cada uno lo dice board.tipos_modulo (print_server.py)
 TIPOS_CABEZAL = ("PMB-C8", "PMB-C2", "APMB4", "SM-200")
+TIPO_AEWA     = "APMB4"       # cabezal Aewa: pagina Print Server AEWA (APRINT), no GIS
 MODULO_VACIO  = "-"
 TIPO_NIR      = "NIR"
 TIPO_SECADOR  = "Air dryver"
@@ -64,6 +66,10 @@ TIPOS_CURADO = (TIPO_NIR, TIPO_SECADOR)
 MARGEN_FIN_IMPRESION_MM = 20   # recorrido extra tras el fin de la imagen, por deceleracion y holgura
 
 # ===== POTENCIAS (%) =====
+SUFIJO_VELOCIDAD = "mm/s"
+SUFIJO_ACELERACION = "mm/s²"
+SUFIJO_PORCENTAJE = "%"
+COLOR_SUFIJO = "rgba(98, 203, 201, 160)"   # turquesa de los campos de esta pagina, atenuado
 POTENCIA_MIN = 0
 POTENCIA_MAX = 100
 
@@ -112,6 +118,14 @@ class PaginaPrograma(QObject):
         validador_potencia = QIntValidator(POTENCIA_MIN, POTENCIA_MAX)
         self.ui.pg_prog_potencia_NIR.setValidator(validador_potencia)
         self.ui.pg_prog_potencia_secador.setValidator(validador_potencia)
+        # unidades fijas dentro de los campos
+        for campo in (self.ui.pg_prog_vel_impresion, self.ui.pg_prog_vel_curado):
+            poner_sufijo(campo, SUFIJO_VELOCIDAD, COLOR_SUFIJO)
+        for campo in (self.ui.pg_prog_acel_impresion, self.ui.pg_prog_decel_impresion,
+                      self.ui.pg_prog_acel_curado, self.ui.pg_prog_decel_curado):
+            poner_sufijo(campo, SUFIJO_ACELERACION, COLOR_SUFIJO)
+        for campo in (self.ui.pg_prog_potencia_NIR, self.ui.pg_prog_potencia_secador):
+            poner_sufijo(campo, SUFIJO_PORCENTAJE, COLOR_SUFIJO)
 
         self.mduino.mensaje_enviado.connect(self._mensaje_mduino)
         self.secuencia.terminada.connect(lambda: self.registrar("[PROGRAMA] Secuencia terminada"))

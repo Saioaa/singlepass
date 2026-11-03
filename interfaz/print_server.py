@@ -32,14 +32,14 @@ from programa.gis.board import (ESTADO_ARMANDO, ESTADO_LISTO, ESTADO_RENDER_LIST
 from interfaz.mesa import MesaImpresion
 
 # ===== WIDGETS =====
-NOMBRES_PAGINA = ("print_server",)          # objectName de la pagina (tupla: la coma importa)
+NOMBRES_PAGINA = ("print_server_gis", "print_server")   # objectName de la pagina (el primero que exista)
 # combos de modo: board.nombre -> (widget del .ui, texto que muestra mientras no tiene modos)
 COMBOS_MODO = {
     "PMB":   ("systemode",       "PMB"),
     "EPSON": ("systemode_epson", "SM-200"),
     "AEWA":  ("systemode_aewa",  "APMB4"),
 }
-NOMBRES_REGISTRO = ("txtMessage", "txtMessage_2", "txtMessage_3")
+NOMBRES_REGISTRO = ("txtMessage", "txtMessage_2", "txtMessage_3", "txtMessage_printserver")
 
 # ===== IMAGEN A IMPRIMIR =====
 # El tamano fisico sale de los pixeles de la imagen y de la resolucion del MODO de

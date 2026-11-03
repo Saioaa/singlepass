@@ -17,21 +17,20 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFormLayout,
     QGraphicsView, QGridLayout, QHBoxLayout, QLabel,
-    QLineEdit, QMainWindow, QMenuBar, QPushButton,
-    QSizePolicy, QStackedWidget, QStatusBar, QTextEdit,
-    QVBoxLayout, QWidget)
+    QLineEdit, QMainWindow, QPushButton, QSizePolicy,
+    QStackedWidget, QTextEdit, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1957, 1072)
+        MainWindow.resize(2048, 1152)
         MainWindow.setStyleSheet(u"background-color: #62CBC9")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.stackedWidget = QStackedWidget(self.centralwidget)
         self.stackedWidget.setObjectName(u"stackedWidget")
-        self.stackedWidget.setGeometry(QRect(129, -1, 1831, 1061))
+        self.stackedWidget.setGeometry(QRect(149, -1, 1901, 1151))
         self.stackedWidget.setStyleSheet(u"background-color: #3F4D4C\n"
 "")
         self.menu = QWidget()
@@ -398,7 +397,7 @@ class Ui_MainWindow(object):
         self.txtMessage_2.setReadOnly(True)
         self.label_lenta_2 = QLabel(self.movimientos)
         self.label_lenta_2.setObjectName(u"label_lenta_2")
-        self.label_lenta_2.setGeometry(QRect(1470, 550, 251, 30))
+        self.label_lenta_2.setGeometry(QRect(1470, 560, 251, 30))
         self.label_lenta_2.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
         self.label_lenta_2.setStyleSheet(u"color: #62CBC9;\n"
 "font-size: 30px;\n"
@@ -408,7 +407,7 @@ class Ui_MainWindow(object):
         self.label_lenta_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.gridLayoutWidget_4 = QWidget(self.movimientos)
         self.gridLayoutWidget_4.setObjectName(u"gridLayoutWidget_4")
-        self.gridLayoutWidget_4.setGeometry(QRect(1470, 590, 251, 276))
+        self.gridLayoutWidget_4.setGeometry(QRect(1470, 600, 251, 276))
         self.gridLayout_tinta = QGridLayout(self.gridLayoutWidget_4)
         self.gridLayout_tinta.setObjectName(u"gridLayout_tinta")
         self.gridLayout_tinta.setContentsMargins(0, 0, 0, 0)
@@ -514,7 +513,7 @@ class Ui_MainWindow(object):
 
         self.btn_save_tinta = QPushButton(self.movimientos)
         self.btn_save_tinta.setObjectName(u"btn_save_tinta")
-        self.btn_save_tinta.setGeometry(QRect(1470, 880, 251, 41))
+        self.btn_save_tinta.setGeometry(QRect(1470, 890, 251, 41))
         self.btn_save_tinta.setStyleSheet(u"QPushButton {\n"
 "    background-color: #62CBC9;\n"
 "	color: #FFFFFF;\n"
@@ -533,33 +532,57 @@ class Ui_MainWindow(object):
 "}")
         self.tinta_flow = QPushButton(self.movimientos)
         self.tinta_flow.setObjectName(u"tinta_flow")
-        self.tinta_flow.setGeometry(QRect(1600, 280, 100, 100))
+        self.tinta_flow.setGeometry(QRect(1600, 300, 100, 100))
         self.tinta_idle = QPushButton(self.movimientos)
         self.tinta_idle.setObjectName(u"tinta_idle")
-        self.tinta_idle.setGeometry(QRect(1490, 280, 100, 100))
+        self.tinta_idle.setGeometry(QRect(1490, 300, 100, 100))
         self.tinta_label_temp = QLabel(self.movimientos)
         self.tinta_label_temp.setObjectName(u"tinta_label_temp")
-        self.tinta_label_temp.setGeometry(QRect(1540, 210, 51, 40))
+        self.tinta_label_temp.setGeometry(QRect(1540, 170, 51, 40))
         self.tinta_label_temp.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
         self.tinta_reset = QPushButton(self.movimientos)
         self.tinta_reset.setObjectName(u"tinta_reset")
-        self.tinta_reset.setGeometry(QRect(1600, 390, 100, 100))
+        self.tinta_reset.setGeometry(QRect(1600, 410, 100, 100))
         self.label_botella = QLabel(self.movimientos)
         self.label_botella.setObjectName(u"label_botella")
-        self.label_botella.setGeometry(QRect(1470, 70, 250, 450))
+        self.label_botella.setGeometry(QRect(1470, 70, 250, 461))
         self.label_botella.setPixmap(QPixmap(u"../../MBD-F-500/recursos/imagenes/botella.png"))
         self.label_botella.setScaledContents(True)
         self.tinta_real_temp = QLabel(self.movimientos)
         self.tinta_real_temp.setObjectName(u"tinta_real_temp")
-        self.tinta_real_temp.setGeometry(QRect(1590, 210, 70, 40))
+        self.tinta_real_temp.setGeometry(QRect(1590, 170, 70, 40))
         self.tinta_real_temp.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
         self.tinta_purge = QPushButton(self.movimientos)
         self.tinta_purge.setObjectName(u"tinta_purge")
-        self.tinta_purge.setGeometry(QRect(1490, 390, 100, 100))
+        self.tinta_purge.setGeometry(QRect(1490, 410, 100, 100))
+        self.tinta_real_outlet = QLabel(self.movimientos)
+        self.tinta_real_outlet.setObjectName(u"tinta_real_outlet")
+        self.tinta_real_outlet.setGeometry(QRect(1580, 250, 101, 40))
+        self.tinta_real_outlet.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.tinta_real_inlet = QLabel(self.movimientos)
+        self.tinta_real_inlet.setObjectName(u"tinta_real_inlet")
+        self.tinta_real_inlet.setGeometry(QRect(1580, 210, 101, 40))
+        self.tinta_real_inlet.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.tinta_label_inlet = QLabel(self.movimientos)
+        self.tinta_label_inlet.setObjectName(u"tinta_label_inlet")
+        self.tinta_label_inlet.setGeometry(QRect(1510, 210, 71, 40))
+        self.tinta_label_inlet.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.tinta_label_outlet = QLabel(self.movimientos)
+        self.tinta_label_outlet.setObjectName(u"tinta_label_outlet")
+        self.tinta_label_outlet.setGeometry(QRect(1510, 250, 71, 40))
+        self.tinta_label_outlet.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
         self.stackedWidget.addWidget(self.movimientos)
         self.label_botella.raise_()
         self.label_2.raise_()
@@ -580,27 +603,31 @@ class Ui_MainWindow(object):
         self.tinta_reset.raise_()
         self.tinta_real_temp.raise_()
         self.tinta_purge.raise_()
-        self.print_server = QWidget()
-        self.print_server.setObjectName(u"print_server")
-        self.label_28 = QLabel(self.print_server)
+        self.tinta_real_outlet.raise_()
+        self.tinta_real_inlet.raise_()
+        self.tinta_label_inlet.raise_()
+        self.tinta_label_outlet.raise_()
+        self.print_server_gis = QWidget()
+        self.print_server_gis.setObjectName(u"print_server_gis")
+        self.label_28 = QLabel(self.print_server_gis)
         self.label_28.setObjectName(u"label_28")
         self.label_28.setGeometry(QRect(20, 710, 25, 25))
         self.label_28.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.label_29 = QLabel(self.print_server)
+        self.label_29 = QLabel(self.print_server_gis)
         self.label_29.setObjectName(u"label_29")
         self.label_29.setGeometry(QRect(20, 660, 25, 25))
         self.label_29.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.lblCoordsText = QLabel(self.print_server)
+        self.lblCoordsText = QLabel(self.print_server_gis)
         self.lblCoordsText.setObjectName(u"lblCoordsText")
         self.lblCoordsText.setGeometry(QRect(30, 510, 130, 20))
         self.lblCoordsText.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.btnMirrorY = QPushButton(self.print_server)
+        self.btnMirrorY = QPushButton(self.print_server_gis)
         self.btnMirrorY.setObjectName(u"btnMirrorY")
         self.btnMirrorY.setGeometry(QRect(70, 270, 111, 61))
         self.btnMirrorY.setStyleSheet(u"QPushButton {\n"
@@ -617,7 +644,7 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
 "}")
-        self.systemode = QComboBox(self.print_server)
+        self.systemode = QComboBox(self.print_server_gis)
         self.systemode.setObjectName(u"systemode")
         self.systemode.setGeometry(QRect(240, 9, 370, 41))
         self.systemode.setStyleSheet(u" background-color: #62CBC9;\n"
@@ -626,13 +653,13 @@ class Ui_MainWindow(object):
 "    padding: 10px;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.rip2 = QLabel(self.print_server)
+        self.rip2 = QLabel(self.print_server_gis)
         self.rip2.setObjectName(u"rip2")
         self.rip2.setGeometry(QRect(1510, 290, 300, 210))
         self.rip2.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
 "border: 2px solid #62CBC9;\n"
 "border-radius: 5px;")
-        self.pos_x_target = QLineEdit(self.print_server)
+        self.pos_x_target = QLineEdit(self.print_server_gis)
         self.pos_x_target.setObjectName(u"pos_x_target")
         self.pos_x_target.setGeometry(QRect(60, 650, 161, 41))
         self.pos_x_target.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
@@ -642,7 +669,7 @@ class Ui_MainWindow(object):
 "padding: 10px;\n"
 "font-size: 20px;\n"
 "font-family: nunito;")
-        self.btnPrint = QPushButton(self.print_server)
+        self.btnPrint = QPushButton(self.print_server_gis)
         self.btnPrint.setObjectName(u"btnPrint")
         self.btnPrint.setGeometry(QRect(1390, 550, 100, 100))
         self.btnPrint.setStyleSheet(u"QPushButton {\n"
@@ -659,13 +686,13 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
 "}")
-        self.label_30 = QLabel(self.print_server)
+        self.label_30 = QLabel(self.print_server_gis)
         self.label_30.setObjectName(u"label_30")
         self.label_30.setGeometry(QRect(20, 550, 25, 25))
         self.label_30.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.btnSelect = QPushButton(self.print_server)
+        self.btnSelect = QPushButton(self.print_server_gis)
         self.btnSelect.setObjectName(u"btnSelect")
         self.btnSelect.setGeometry(QRect(1390, 190, 100, 100))
         font = QFont()
@@ -685,7 +712,7 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
 "}")
-        self.btn_clear = QPushButton(self.print_server)
+        self.btn_clear = QPushButton(self.print_server_gis)
         self.btn_clear.setObjectName(u"btn_clear")
         self.btn_clear.setGeometry(QRect(1610, 970, 100, 41))
         self.btn_clear.setStyleSheet(u"QPushButton {\n"
@@ -701,7 +728,7 @@ class Ui_MainWindow(object):
 "}\n"
 "QPushButton:pressed {rgb(229, 13, 35)\n"
 "}")
-        self.labelImage = QLabel(self.print_server)
+        self.labelImage = QLabel(self.print_server_gis)
         self.labelImage.setObjectName(u"labelImage")
         self.labelImage.setGeometry(QRect(240, 60, 1131, 800))
         self.labelImage.setAutoFillBackground(False)
@@ -709,13 +736,13 @@ class Ui_MainWindow(object):
 "border: 2px solid #62CBC9;\n"
 "border-radius: 5px;")
         self.labelImage.setScaledContents(False)
-        self.rip4 = QLabel(self.print_server)
+        self.rip4 = QLabel(self.print_server_gis)
         self.rip4.setObjectName(u"rip4")
         self.rip4.setGeometry(QRect(1510, 750, 300, 210))
         self.rip4.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
 "border: 2px solid #62CBC9;\n"
 "border-radius: 5px;")
-        self.btnRotate = QPushButton(self.print_server)
+        self.btnRotate = QPushButton(self.print_server_gis)
         self.btnRotate.setObjectName(u"btnRotate")
         self.btnRotate.setGeometry(QRect(70, 130, 111, 61))
         self.btnRotate.setStyleSheet(u"QPushButton {\n"
@@ -732,7 +759,7 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
 "}")
-        self.pos_y_target = QLineEdit(self.print_server)
+        self.pos_y_target = QLineEdit(self.print_server_gis)
         self.pos_y_target.setObjectName(u"pos_y_target")
         self.pos_y_target.setGeometry(QRect(60, 700, 161, 41))
         self.pos_y_target.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
@@ -742,13 +769,13 @@ class Ui_MainWindow(object):
 "padding: 10px;\n"
 "font-size: 20px;\n"
 "font-family: nunito;")
-        self.rip1 = QLabel(self.print_server)
+        self.rip1 = QLabel(self.print_server_gis)
         self.rip1.setObjectName(u"rip1")
         self.rip1.setGeometry(QRect(1510, 60, 300, 210))
         self.rip1.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
 "border: 2px solid #62CBC9;\n"
 "border-radius: 5px;")
-        self.lblSizeValue = QLabel(self.print_server)
+        self.lblSizeValue = QLabel(self.print_server_gis)
         self.lblSizeValue.setObjectName(u"lblSizeValue")
         self.lblSizeValue.setGeometry(QRect(60, 430, 160, 40))
         self.lblSizeValue.setStyleSheet(u"  background-color: #3F4D4C;\n"
@@ -758,13 +785,13 @@ class Ui_MainWindow(object):
 "    padding: 10px;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.rip3 = QLabel(self.print_server)
+        self.rip3 = QLabel(self.print_server_gis)
         self.rip3.setObjectName(u"rip3")
         self.rip3.setGeometry(QRect(1510, 520, 300, 210))
         self.rip3.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
 "border: 2px solid #62CBC9;\n"
 "border-radius: 5px;")
-        self.pos_x_real = QLabel(self.print_server)
+        self.pos_x_real = QLabel(self.print_server_gis)
         self.pos_x_real.setObjectName(u"pos_x_real")
         self.pos_x_real.setGeometry(QRect(60, 544, 161, 41))
         self.pos_x_real.setStyleSheet(u"  background-color: #3F4D4C;\n"
@@ -774,7 +801,7 @@ class Ui_MainWindow(object):
 "    padding: 10px;\n"
 "	font-size: 20px;\n"
 "	font-family: nunito;")
-        self.btnUpdateMode = QPushButton(self.print_server)
+        self.btnUpdateMode = QPushButton(self.print_server_gis)
         self.btnUpdateMode.setObjectName(u"btnUpdateMode")
         self.btnUpdateMode.setGeometry(QRect(60, 10, 130, 41))
         self.btnUpdateMode.setStyleSheet(u"QPushButton {\n"
@@ -791,7 +818,7 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
 "}")
-        self.btnNewjob = QPushButton(self.print_server)
+        self.btnNewjob = QPushButton(self.print_server_gis)
         self.btnNewjob.setObjectName(u"btnNewjob")
         self.btnNewjob.setGeometry(QRect(1390, 70, 100, 100))
         self.btnNewjob.setStyleSheet(u"QPushButton {\n"
@@ -808,7 +835,7 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
 "}")
-        self.btnRip = QPushButton(self.print_server)
+        self.btnRip = QPushButton(self.print_server_gis)
         self.btnRip.setObjectName(u"btnRip")
         self.btnRip.setGeometry(QRect(1390, 410, 100, 100))
         self.btnRip.setStyleSheet(u"QPushButton {\n"
@@ -825,7 +852,7 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
 "}")
-        self.txtMessage = QTextEdit(self.print_server)
+        self.txtMessage = QTextEdit(self.print_server_gis)
         self.txtMessage.setObjectName(u"txtMessage")
         self.txtMessage.setGeometry(QRect(240, 870, 1131, 151))
         self.txtMessage.setStyleSheet(u"background-color: rgb(174, 199, 232);\n"
@@ -833,7 +860,7 @@ class Ui_MainWindow(object):
 "border: 2px solid #62CBC9;\n"
 "border-radius: 5px;")
         self.txtMessage.setReadOnly(True)
-        self.pos_y_real = QLabel(self.print_server)
+        self.pos_y_real = QLabel(self.print_server_gis)
         self.pos_y_real.setObjectName(u"pos_y_real")
         self.pos_y_real.setGeometry(QRect(60, 594, 161, 41))
         self.pos_y_real.setStyleSheet(u"  background-color: #3F4D4C;\n"
@@ -843,7 +870,7 @@ class Ui_MainWindow(object):
 "    padding: 10px;\n"
 "	font-size: 20px;\n"
 "	font-family: nunito;")
-        self.btnMirrorX = QPushButton(self.print_server)
+        self.btnMirrorX = QPushButton(self.print_server_gis)
         self.btnMirrorX.setObjectName(u"btnMirrorX")
         self.btnMirrorX.setGeometry(QRect(70, 200, 111, 61))
         self.btnMirrorX.setStyleSheet(u"QPushButton {\n"
@@ -860,19 +887,19 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
 "}")
-        self.lblSizeText = QLabel(self.print_server)
+        self.lblSizeText = QLabel(self.print_server_gis)
         self.lblSizeText.setObjectName(u"lblSizeText")
         self.lblSizeText.setGeometry(QRect(30, 390, 81, 20))
         self.lblSizeText.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.label_31 = QLabel(self.print_server)
+        self.label_31 = QLabel(self.print_server_gis)
         self.label_31.setObjectName(u"label_31")
         self.label_31.setGeometry(QRect(20, 600, 25, 25))
         self.label_31.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.btnAbort = QPushButton(self.print_server)
+        self.btnAbort = QPushButton(self.print_server_gis)
         self.btnAbort.setObjectName(u"btnAbort")
         self.btnAbort.setGeometry(QRect(1390, 690, 100, 100))
         self.btnAbort.setStyleSheet(u"QPushButton {\n"
@@ -889,7 +916,7 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
 "}")
-        self.systemode_epson = QComboBox(self.print_server)
+        self.systemode_epson = QComboBox(self.print_server_gis)
         self.systemode_epson.setObjectName(u"systemode_epson")
         self.systemode_epson.setGeometry(QRect(620, 10, 370, 41))
         self.systemode_epson.setStyleSheet(u" background-color: #62CBC9;\n"
@@ -898,16 +925,396 @@ class Ui_MainWindow(object):
 "    padding: 10px;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.systemode_aewa = QComboBox(self.print_server)
-        self.systemode_aewa.setObjectName(u"systemode_aewa")
-        self.systemode_aewa.setGeometry(QRect(1000, 10, 370, 41))
-        self.systemode_aewa.setStyleSheet(u" background-color: #62CBC9;\n"
+        self.stackedWidget.addWidget(self.print_server_gis)
+        self.print_server_aewa = QWidget()
+        self.print_server_aewa.setObjectName(u"print_server_aewa")
+        self.tamano_imagen = QLabel(self.print_server_aewa)
+        self.tamano_imagen.setObjectName(u"tamano_imagen")
+        self.tamano_imagen.setGeometry(QRect(20, 470, 121, 40))
+        self.tamano_imagen.setStyleSheet(u"  background-color: #3F4D4C;\n"
+"color: #62CBC9;\n"
+"    border: 2px solid #62CBC9;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.labelImage_2 = QLabel(self.print_server_aewa)
+        self.labelImage_2.setObjectName(u"labelImage_2")
+        self.labelImage_2.setGeometry(QRect(160, 90, 1424, 1008))
+        self.labelImage_2.setAutoFillBackground(False)
+        self.labelImage_2.setStyleSheet(u"background-color: white;\n"
+"border: 2px solid #62CBC9;\n"
+"border-radius: 5px;")
+        self.labelImage_2.setScaledContents(False)
+        self.pos_x_real_2 = QLabel(self.print_server_aewa)
+        self.pos_x_real_2.setObjectName(u"pos_x_real_2")
+        self.pos_x_real_2.setGeometry(QRect(50, 594, 91, 41))
+        self.pos_x_real_2.setStyleSheet(u"  background-color: #3F4D4C;\n"
+"color: #62CBC9;\n"
+"    border: 2px solid #62CBC9;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.label_curado_nir = QLabel(self.print_server_aewa)
+        self.label_curado_nir.setObjectName(u"label_curado_nir")
+        self.label_curado_nir.setGeometry(QRect(1600, 290, 101, 40))
+        self.label_curado_nir.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.txtMessage_printserver = QTextEdit(self.print_server_aewa)
+        self.txtMessage_printserver.setObjectName(u"txtMessage_printserver")
+        self.txtMessage_printserver.setGeometry(QRect(1600, 729, 290, 401))
+        self.txtMessage_printserver.setStyleSheet(u"background-color: rgb(174, 199, 232);\n"
+"color: rgb(0, 0, 0);\n"
+"border: 2px solid #62CBC9;\n"
+"border-radius: 5px;")
+        self.txtMessage_printserver.setReadOnly(True)
+        self.btnRotate_2 = QPushButton(self.print_server_aewa)
+        self.btnRotate_2.setObjectName(u"btnRotate_2")
+        self.btnRotate_2.setGeometry(QRect(30, 860, 101, 61))
+        self.btnRotate_2.setStyleSheet(u"QPushButton {\n"
+"    background-color: #62CBC9;\n"
+"	color: #FFFFFF;\n"
+"    border: 2px solid #333333;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 18px;\n"
+"	font-family: nunito;\n"
+"}\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(170, 255, 255);\n"
+"}\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(206, 255, 252);\n"
+"}")
+        self.btn_seleccionar_trabajo = QPushButton(self.print_server_aewa)
+        self.btn_seleccionar_trabajo.setObjectName(u"btn_seleccionar_trabajo")
+        self.btn_seleccionar_trabajo.setGeometry(QRect(20, 230, 125, 125))
+        self.btn_seleccionar_trabajo.setFont(font)
+        self.btn_seleccionar_trabajo.setStyleSheet(u"QPushButton {\n"
+"    background-color: #62CBC9;\n"
+"	color: #FFFFFF;\n"
+"    border: 2px solid #333333;\n"
+"    border-radius: 5px;\n"
+"    padding: 2px;\n"
+"	font-size: 18px;\n"
+"	font-family: nunito;\n"
+"}\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(170, 255, 255);\n"
+"}\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(206, 255, 252);\n"
+"}")
+        self.label_res_vertical = QLabel(self.print_server_aewa)
+        self.label_res_vertical.setObjectName(u"label_res_vertical")
+        self.label_res_vertical.setGeometry(QRect(1600, 140, 170, 40))
+        self.label_res_vertical.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.btn_stop_print = QPushButton(self.print_server_aewa)
+        self.btn_stop_print.setObjectName(u"btn_stop_print")
+        self.btn_stop_print.setGeometry(QRect(1600, 680, 290, 41))
+        self.btn_stop_print.setStyleSheet(u"QPushButton {\n"
+"    background-color: rgb(227, 0, 0);\n"
+"	color: #FFFFFF;\n"
+"    border: 2px solid #333333;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;\n"
+"	font-weight: bold;\n"
+"}\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(170, 255, 255);\n"
+"}\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(206, 255, 252);\n"
+"}")
+        self.btnMirrorY_2 = QPushButton(self.print_server_aewa)
+        self.btnMirrorY_2.setObjectName(u"btnMirrorY_2")
+        self.btnMirrorY_2.setGeometry(QRect(30, 1020, 101, 61))
+        self.btnMirrorY_2.setStyleSheet(u"QPushButton {\n"
+"    background-color: #62CBC9;\n"
+"	color: #FFFFFF;\n"
+"    border: 2px solid #333333;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 18px;\n"
+"	font-family: nunito;\n"
+"}\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(170, 255, 255);\n"
+"}\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(206, 255, 252);\n"
+"}")
+        self.label_tamano_imagen = QLabel(self.print_server_aewa)
+        self.label_tamano_imagen.setObjectName(u"label_tamano_imagen")
+        self.label_tamano_imagen.setGeometry(QRect(20, 420, 111, 41))
+        self.label_tamano_imagen.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.select_velocidad = QComboBox(self.print_server_aewa)
+        self.select_velocidad.setObjectName(u"select_velocidad")
+        self.select_velocidad.setGeometry(QRect(1770, 190, 120, 40))
+        self.select_velocidad.setStyleSheet(u" background-color: #62CBC9;\n"
+"	color: #FFFFFF;\n"
 "    border: 2px solid #333333;\n"
 "    border-radius: 5px;\n"
 "    padding: 10px;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.stackedWidget.addWidget(self.print_server)
+        self.select_pasos = QComboBox(self.print_server_aewa)
+        self.select_pasos.setObjectName(u"select_pasos")
+        self.select_pasos.setGeometry(QRect(1770, 240, 120, 40))
+        self.select_pasos.setStyleSheet(u" background-color: #62CBC9;\n"
+"	color: #FFFFFF;\n"
+"    border: 2px solid #333333;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.label_x_target = QLabel(self.print_server_aewa)
+        self.label_x_target.setObjectName(u"label_x_target")
+        self.label_x_target.setGeometry(QRect(20, 710, 25, 25))
+        self.label_x_target.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.select_res_horizontal = QComboBox(self.print_server_aewa)
+        self.select_res_horizontal.setObjectName(u"select_res_horizontal")
+        self.select_res_horizontal.setGeometry(QRect(1770, 90, 120, 40))
+        self.select_res_horizontal.setStyleSheet(u" background-color: #62CBC9;\n"
+"	color: #FFFFFF;\n"
+"    border: 2px solid #333333;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.btn_start_print = QPushButton(self.print_server_aewa)
+        self.btn_start_print.setObjectName(u"btn_start_print")
+        self.btn_start_print.setGeometry(QRect(1600, 630, 290, 41))
+        self.btn_start_print.setStyleSheet(u"QPushButton {\n"
+"    background-color: #62CBC9;\n"
+"	color: #FFFFFF;\n"
+"    border: 2px solid #333333;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;\n"
+"	font-weight: bold;\n"
+"}\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(170, 255, 255);\n"
+"}\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(206, 255, 252);\n"
+"}")
+        self.texto_variable = QPushButton(self.print_server_aewa)
+        self.texto_variable.setObjectName(u"texto_variable")
+        self.texto_variable.setGeometry(QRect(320, 20, 151, 50))
+        self.texto_variable.setStyleSheet(u"QPushButton {\n"
+"    background-color: #62CBC9;\n"
+"	color: #FFFFFF;\n"
+"    border: 2px solid #333333;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"	font-size: 18px;\n"
+"	font-family: nunito;\n"
+"}\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(170, 255, 255);\n"
+"}\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(206, 255, 252);\n"
+"}")
+        self.btn_nueva_imagen = QPushButton(self.print_server_aewa)
+        self.btn_nueva_imagen.setObjectName(u"btn_nueva_imagen")
+        self.btn_nueva_imagen.setGeometry(QRect(20, 90, 125, 125))
+        self.btn_nueva_imagen.setStyleSheet(u"QPushButton {\n"
+"    background-color: #62CBC9;\n"
+"	color: #FFFFFF;\n"
+"    border: 2px solid #333333;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 18px;\n"
+"	font-family: nunito;\n"
+"}\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(170, 255, 255);\n"
+"}\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(206, 255, 252);\n"
+"}")
+        self.labelInfo_impresion = QLabel(self.print_server_aewa)
+        self.labelInfo_impresion.setObjectName(u"labelInfo_impresion")
+        self.labelInfo_impresion.setGeometry(QRect(1600, 350, 290, 221))
+        self.labelInfo_impresion.setAutoFillBackground(False)
+        self.labelInfo_impresion.setStyleSheet(u"background-color: lightgray;\n"
+"border: 2px solid #62CBC9;\n"
+"border-radius: 5px;")
+        self.labelInfo_impresion.setScaledContents(False)
+        self.label_y_target = QLabel(self.print_server_aewa)
+        self.label_y_target.setObjectName(u"label_y_target")
+        self.label_y_target.setGeometry(QRect(20, 760, 25, 25))
+        self.label_y_target.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.label_pasos = QLabel(self.print_server_aewa)
+        self.label_pasos.setObjectName(u"label_pasos")
+        self.label_pasos.setGeometry(QRect(1600, 240, 120, 40))
+        self.label_pasos.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.pos_y_target_2 = QLineEdit(self.print_server_aewa)
+        self.pos_y_target_2.setObjectName(u"pos_y_target_2")
+        self.pos_y_target_2.setGeometry(QRect(50, 750, 91, 41))
+        self.pos_y_target_2.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
+"color: rgb(0, 0, 0);\n"
+"border: 2px solid #62CBC9;\n"
+"border-radius: 5px;\n"
+"padding: 10px;\n"
+"font-size: 16px;\n"
+"font-family: nunito;")
+        self.label_posicion = QLabel(self.print_server_aewa)
+        self.label_posicion.setObjectName(u"label_posicion")
+        self.label_posicion.setGeometry(QRect(20, 560, 121, 20))
+        self.label_posicion.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.select_res_vertical = QComboBox(self.print_server_aewa)
+        self.select_res_vertical.setObjectName(u"select_res_vertical")
+        self.select_res_vertical.setGeometry(QRect(1770, 140, 120, 40))
+        self.select_res_vertical.setStyleSheet(u" background-color: #62CBC9;\n"
+"	color: #FFFFFF;\n"
+"    border: 2px solid #333333;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.label_y_real = QLabel(self.print_server_aewa)
+        self.label_y_real.setObjectName(u"label_y_real")
+        self.label_y_real.setGeometry(QRect(20, 650, 25, 25))
+        self.label_y_real.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.pos_x_target_2 = QLineEdit(self.print_server_aewa)
+        self.pos_x_target_2.setObjectName(u"pos_x_target_2")
+        self.pos_x_target_2.setGeometry(QRect(50, 700, 91, 41))
+        self.pos_x_target_2.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
+"color: rgb(0, 0, 0);\n"
+"border: 2px solid #62CBC9;\n"
+"border-radius: 5px;\n"
+"padding: 10px;\n"
+"font-size: 16px;\n"
+"font-family: nunito;")
+        self.label_res_horizontal = QLabel(self.print_server_aewa)
+        self.label_res_horizontal.setObjectName(u"label_res_horizontal")
+        self.label_res_horizontal.setGeometry(QRect(1600, 90, 170, 40))
+        self.label_res_horizontal.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.label_x_real = QLabel(self.print_server_aewa)
+        self.label_x_real.setObjectName(u"label_x_real")
+        self.label_x_real.setGeometry(QRect(20, 600, 25, 25))
+        self.label_x_real.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.btnMirrorX_2 = QPushButton(self.print_server_aewa)
+        self.btnMirrorX_2.setObjectName(u"btnMirrorX_2")
+        self.btnMirrorX_2.setGeometry(QRect(30, 940, 101, 61))
+        self.btnMirrorX_2.setStyleSheet(u"QPushButton {\n"
+"    background-color: #62CBC9;\n"
+"	color: #FFFFFF;\n"
+"    border: 2px solid #333333;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 18px;\n"
+"	font-family: nunito;\n"
+"}\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(170, 255, 255);\n"
+"}\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(206, 255, 252);\n"
+"}")
+        self.potencia_nir = QLineEdit(self.print_server_aewa)
+        self.potencia_nir.setObjectName(u"potencia_nir")
+        self.potencia_nir.setGeometry(QRect(1810, 290, 80, 40))
+        self.potencia_nir.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
+"color: rgb(0, 0, 0);\n"
+"border: 2px solid #62CBC9;\n"
+"border-radius: 5px;\n"
+"padding: 10px;\n"
+"font-size: 16px;\n"
+"font-family: nunito;")
+        self.pos_y_real_2 = QLabel(self.print_server_aewa)
+        self.pos_y_real_2.setObjectName(u"pos_y_real_2")
+        self.pos_y_real_2.setGeometry(QRect(50, 644, 91, 41))
+        self.pos_y_real_2.setStyleSheet(u"  background-color: #3F4D4C;\n"
+"color: #62CBC9;\n"
+"    border: 2px solid #62CBC9;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.btnRip_2 = QPushButton(self.print_server_aewa)
+        self.btnRip_2.setObjectName(u"btnRip_2")
+        self.btnRip_2.setGeometry(QRect(1600, 580, 290, 41))
+        self.btnRip_2.setStyleSheet(u"QPushButton {\n"
+"    background-color: #62CBC9;\n"
+"	color: #FFFFFF;\n"
+"    border: 2px solid #333333;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;\n"
+"	font-weight: bold;\n"
+"}\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(170, 255, 255);\n"
+"}\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(206, 255, 252);\n"
+"}")
+        self.label_velocidad = QLabel(self.print_server_aewa)
+        self.label_velocidad.setObjectName(u"label_velocidad")
+        self.label_velocidad.setGeometry(QRect(1600, 190, 161, 40))
+        self.label_velocidad.setStyleSheet(u"color: #62CBC9;;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;")
+        self.btn_curado_nir = QCheckBox(self.print_server_aewa)
+        self.btn_curado_nir.setObjectName(u"btn_curado_nir")
+        self.btn_curado_nir.setGeometry(QRect(1710, 290, 91, 40))
+        self.btn_curado_nir.setStyleSheet(u"QCheckBox::indicator {\n"
+"    width: 50px;\n"
+"    height: 35px;\n"
+"    border-radius: 16px;\n"
+"    background-color: #555555;\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"    background-color: #62CBC9;\n"
+"}")
+        self.test_cabezal = QPushButton(self.print_server_aewa)
+        self.test_cabezal.setObjectName(u"test_cabezal")
+        self.test_cabezal.setGeometry(QRect(160, 20, 125, 50))
+        self.test_cabezal.setStyleSheet(u"QPushButton {\n"
+"    background-color: #62CBC9;\n"
+"	color: #FFFFFF;\n"
+"    border: 2px solid #333333;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"	font-size: 18px;\n"
+"	font-family: nunito;\n"
+"}\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(170, 255, 255);\n"
+"}\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(206, 255, 252);\n"
+"}")
+        self.stackedWidget.addWidget(self.print_server_aewa)
         self.programa = QWidget()
         self.programa.setObjectName(u"programa")
         self.label_10 = QLabel(self.programa)
@@ -1540,7 +1947,7 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.programa)
         self.verticalLayoutWidget_2 = QWidget(self.centralwidget)
         self.verticalLayoutWidget_2.setObjectName(u"verticalLayoutWidget_2")
-        self.verticalLayoutWidget_2.setGeometry(QRect(10, 0, 118, 204))
+        self.verticalLayoutWidget_2.setGeometry(QRect(10, 10, 125, 341))
         self.verticalLayout_2 = QVBoxLayout(self.verticalLayoutWidget_2)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -1607,9 +2014,9 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addWidget(self.bt_pg_programa)
 
-        self.bt_pg_printserver = QPushButton(self.verticalLayoutWidget_2)
-        self.bt_pg_printserver.setObjectName(u"bt_pg_printserver")
-        self.bt_pg_printserver.setStyleSheet(u"QPushButton {\n"
+        self.bt_pg_printserver_gis = QPushButton(self.verticalLayoutWidget_2)
+        self.bt_pg_printserver_gis.setObjectName(u"bt_pg_printserver_gis")
+        self.bt_pg_printserver_gis.setStyleSheet(u"QPushButton {\n"
 "    background-color: #3F4D4C;\n"
 "	color: #62CBC9;\n"
 "    border: 2px solid #333333;\n"
@@ -1626,16 +2033,30 @@ class Ui_MainWindow(object):
 "    background-color: rgb(89, 108, 105);\n"
 "}")
 
-        self.verticalLayout_2.addWidget(self.bt_pg_printserver)
+        self.verticalLayout_2.addWidget(self.bt_pg_printserver_gis)
+
+        self.bt_pg_printserver_aewa = QPushButton(self.verticalLayoutWidget_2)
+        self.bt_pg_printserver_aewa.setObjectName(u"bt_pg_printserver_aewa")
+        self.bt_pg_printserver_aewa.setStyleSheet(u"QPushButton {\n"
+"    background-color: #3F4D4C;\n"
+"	color: #62CBC9;\n"
+"    border: 2px solid #333333;\n"
+"    border-radius: 5px;\n"
+"    padding: 10px;\n"
+"	font-size: 16px;\n"
+"	font-family: nunito;\n"
+"	\n"
+"}\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(74, 90, 88);\n"
+"}\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(89, 108, 105);\n"
+"}")
+
+        self.verticalLayout_2.addWidget(self.bt_pg_printserver_aewa)
 
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QMenuBar(MainWindow)
-        self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1957, 23))
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QStatusBar(MainWindow)
-        self.statusbar.setObjectName(u"statusbar")
-        MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
 
@@ -1679,6 +2100,10 @@ class Ui_MainWindow(object):
         self.label_botella.setText("")
         self.tinta_real_temp.setText("")
         self.tinta_purge.setText("")
+        self.tinta_real_outlet.setText("")
+        self.tinta_real_inlet.setText("")
+        self.tinta_label_inlet.setText(QCoreApplication.translate("MainWindow", u"Inlet P:", None))
+        self.tinta_label_outlet.setText(QCoreApplication.translate("MainWindow", u"Outlet P:", None))
         self.label_28.setText(QCoreApplication.translate("MainWindow", u"Y:", None))
         self.label_29.setText(QCoreApplication.translate("MainWindow", u"X:", None))
         self.lblCoordsText.setText(QCoreApplication.translate("MainWindow", u"Position:", None))
@@ -1705,6 +2130,36 @@ class Ui_MainWindow(object):
         self.lblSizeText.setText(QCoreApplication.translate("MainWindow", u"Size (mm):", None))
         self.label_31.setText(QCoreApplication.translate("MainWindow", u"Y:", None))
         self.btnAbort.setText(QCoreApplication.translate("MainWindow", u"Abort", None))
+        self.tamano_imagen.setText("")
+        self.labelImage_2.setText("")
+        self.pos_x_real_2.setText("")
+        self.label_curado_nir.setText(QCoreApplication.translate("MainWindow", u"Curado NIR", None))
+        self.btnRotate_2.setText(QCoreApplication.translate("MainWindow", u"Rotar", None))
+        self.btn_seleccionar_trabajo.setText(QCoreApplication.translate("MainWindow", u"Seleccionar\n"
+"trabajo", None))
+        self.label_res_vertical.setText(QCoreApplication.translate("MainWindow", u"Resoluci\u00f3n Vertical:", None))
+        self.btn_stop_print.setText(QCoreApplication.translate("MainWindow", u"\u25aa STOP PRINT", None))
+        self.btnMirrorY_2.setText(QCoreApplication.translate("MainWindow", u"Espejo Y", None))
+        self.label_tamano_imagen.setText(QCoreApplication.translate("MainWindow", u"Tama\u00f1o\n"
+"imagen (mm):", None))
+        self.label_x_target.setText(QCoreApplication.translate("MainWindow", u"X:", None))
+        self.btn_start_print.setText(QCoreApplication.translate("MainWindow", u" \u25b6 START PRINT", None))
+        self.texto_variable.setText(QCoreApplication.translate("MainWindow", u"Insertar Texto", None))
+        self.btn_nueva_imagen.setText(QCoreApplication.translate("MainWindow", u"Nueva\n"
+"imagen", None))
+        self.labelInfo_impresion.setText("")
+        self.label_y_target.setText(QCoreApplication.translate("MainWindow", u"Y:", None))
+        self.label_pasos.setText(QCoreApplication.translate("MainWindow", u"Pasos:", None))
+        self.label_posicion.setText(QCoreApplication.translate("MainWindow", u"Posici\u00f3n (mm):", None))
+        self.label_y_real.setText(QCoreApplication.translate("MainWindow", u"Y:", None))
+        self.label_res_horizontal.setText(QCoreApplication.translate("MainWindow", u"Resoluci\u00f3n Horizontal:", None))
+        self.label_x_real.setText(QCoreApplication.translate("MainWindow", u"X:", None))
+        self.btnMirrorX_2.setText(QCoreApplication.translate("MainWindow", u"Espejo X", None))
+        self.pos_y_real_2.setText("")
+        self.btnRip_2.setText(QCoreApplication.translate("MainWindow", u"RENDERIZAR IMAGEN", None))
+        self.label_velocidad.setText(QCoreApplication.translate("MainWindow", u"Velocidad Horizontal:", None))
+        self.btn_curado_nir.setText("")
+        self.test_cabezal.setText(QCoreApplication.translate("MainWindow", u"Test Cabezal", None))
         self.label_10.setText(QCoreApplication.translate("MainWindow", u"Programa", None))
         self.label_11.setText(QCoreApplication.translate("MainWindow", u"Velocidad", None))
         self.label_12.setText(QCoreApplication.translate("MainWindow", u"Aceleracion", None))
@@ -1795,6 +2250,9 @@ class Ui_MainWindow(object):
         self.bt_pg_menu.setText(QCoreApplication.translate("MainWindow", u"Menu", None))
         self.bt_pg_movimientos1.setText(QCoreApplication.translate("MainWindow", u"Movimientos", None))
         self.bt_pg_programa.setText(QCoreApplication.translate("MainWindow", u"Programa", None))
-        self.bt_pg_printserver.setText(QCoreApplication.translate("MainWindow", u"Print Server", None))
+        self.bt_pg_printserver_gis.setText(QCoreApplication.translate("MainWindow", u"Print Server\n"
+"GIS", None))
+        self.bt_pg_printserver_aewa.setText(QCoreApplication.translate("MainWindow", u"Print Server\n"
+"AEWA", None))
     # retranslateUi
 

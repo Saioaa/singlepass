@@ -16,9 +16,9 @@ import re
 import sys
 
 from PySide6.QtCore import QLocale, QSize, Qt, QTimer
-from PySide6.QtGui import QDoubleValidator, QGuiApplication, QIcon, QPixmap
-from PySide6.QtWidgets import (QAbstractButton, QDialog, QLabel, QMainWindow, QVBoxLayout,
-                               QWidget)
+from PySide6.QtGui import QDoubleValidator, QFont, QFontDatabase, QGuiApplication, QIcon, QPixmap
+from PySide6.QtWidgets import (QAbstractButton, QDialog, QLabel, QMainWindow, QMessageBox,
+                               QVBoxLayout, QWidget)
 
 from programa import config
 from programa.d1 import MODO_POSICION
@@ -28,7 +28,7 @@ from programa.gis.cabezal_pmb import TemperaturaCabezal
 from interfaz.pagina_tinta import PaginaTinta
 from interfaz.print_server import MOTIVO_CABEZALES, PrintServer
 from programa.tinta.tinta import Tinta
-from interfaz.pagina_programa import PaginaPrograma
+from interfaz.pagina_programa import TIPO_AEWA, PaginaPrograma
 from programa.secuencia import SecuenciaImpresion
 from interfaz.ui_pantalla_programa import Ui_MainWindow
 
@@ -38,6 +38,22 @@ ICONO_APP      = "M_02.ico"           # en config.CARPETA_IMAGENES: barra de tit
 # Windows agrupa las ventanas en la barra de tareas por este identificador; sin el,
 # una app lanzada con python.exe hereda el icono de Python en lugar del suyo.
 ID_APP_WINDOWS = "Materialight.Singlepass"
+# Fuente de la interfaz: el .ui la pide por hoja de estilo (font-family: nunito).
+# Se cargan los .ttf de config.CARPETA_FUENTES para no depender de que este
+# instalada en el PC.
+EXTENSIONES_FUENTE = (".ttf", ".otf")
+
+# ===== CIERRE CON IMPRESION EN CURSO =====
+AVISO_CERRAR_TITULO = "CERRAR LA APLICACIÓN"
+AVISO_CERRAR_IMPRIMIENDO = ("Hay una impresión en curso: si cierra la aplicación se detendrá.\n\n"
+                            "¿Cerrar la aplicación de todos modos?")
+
+# ===== ACCESO A LAS PAGINAS PRINT SERVER =====
+# Cada pagina solo se abre si en Programa hay algun cabezal activo de su familia:
+# GIS (PMB-C8, PMB-C2, SM-200: lo dicen las boards) o AEWA (APMB4). Si no, su
+# boton queda deshabilitado con este aspecto (se anade a la hoja del .ui).
+ESTILO_BOTON_DESHABILITADO = """
+QPushButton:disabled { background-color: #2E3837; color: #6F7F7D; border-color: #2E3837; }"""
 
 # ===== MODULOS DE LA BARRA (para la persistencia de ajustes) =====
 PRIMER_MODULO = 1
@@ -71,12 +87,26 @@ QLabel#subtitulo { color: #FFF59D; font-size: 18px; }
 # la ventana hereda la hoja de estilo de la principal (fondos azules de los QLabel):
 # la regla "QDialog QLabel" los anula dentro del dialogo
 
-# ===== ESCALADO A LA PANTALLA =====
-# El .ui esta disenado con geometrias absolutas para esta resolucion.
-ANCHO_DISENO_PX = 1960
-ALTO_DISENO_PX  = 1072
+# ===== ESCALADO A LA VENTANA =====
+# El .ui esta disenado con geometrias absolutas; el tamano de diseno es el de la
+# ventana en el .ui (MainWindow -> geometry), asi que si se cambia en el Designer
+# no hay que tocar nada aqui. La interfaz se reescala a la ventana cada vez que
+# cambia de tamano (maximizar, restaurar, arrastrar el borde).
 TOLERANCIA_ESCALA = 0.01
 PATRON_PIXELES = re.compile(r"(\d+)px")
+RETARDO_REESCALADO_MS = 150    # tras el ultimo cambio de tamano de la ventana
+ESCALA_MINIMA = 0.4            # tamano minimo de la ventana respecto al diseno
+
+
+class DisenoWidget:
+    """Valores de diseno de un widget (antes de escalar) y la ultima hoja aplicada."""
+
+    def __init__(self, geometria, hoja, puntos, icono):
+        self.geometria = geometria
+        self.hoja = hoja
+        self.hoja_aplicada = hoja
+        self.puntos = puntos
+        self.icono = icono
 
 # ===== MOVIMIENTOS MANUALES (mm/s, mm/s2) =====
 VELOCIDAD_JOG_LENTA     = 100
@@ -169,8 +199,11 @@ class VentanaPrincipal(QMainWindow):
 
     def __init__(self, motor, mduino, pmb):
         super().__init__()
+        self._cargar_fuentes()   # antes de setupUi: las hojas de estilo del .ui la usan
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self._tamano_diseno = self.size()   # el de MainWindow en el .ui
+        self._diseno = {}
         self._poner_identidad()
 
         validador = QDoubleValidator()
@@ -234,7 +267,11 @@ class VentanaPrincipal(QMainWindow):
         self.ui.bt_pg_menu.clicked.connect(self.ir_pg_menu)
         self.ui.bt_pg_programa.clicked.connect(self.ir_pg_programa)
         self.ui.bt_pg_programa_2.clicked.connect(self.ir_pg_programa)
-        self.ui.bt_pg_printserver.clicked.connect(self.print_server.entrar)
+        self.ui.bt_pg_printserver_gis.clicked.connect(self.print_server.entrar)
+        self.ui.bt_pg_printserver_aewa.clicked.connect(self.ir_pg_printserver_aewa)
+        for boton in (self.ui.bt_pg_printserver_gis, self.ui.bt_pg_printserver_aewa):
+            boton.setStyleSheet(boton.styleSheet() + ESTILO_BOTON_DESHABILITADO)
+        self.pagina_programa.cabezales_cambiados.connect(self._actualizar_accesos_print_server)
 
         # ===== pagina movimientos =====
         self.ui.bt_ir_objetivo.clicked.connect(self.ir_objetivo)
@@ -281,7 +318,29 @@ class VentanaPrincipal(QMainWindow):
         self.timer_latido.start()
 
         self.cargar_ajustes()
+        self._actualizar_accesos_print_server()   # con o sin ajustes guardados
         self.tinta.conectar()
+
+    # ===== fuente =====
+    @staticmethod
+    def _cargar_fuentes():
+        carpeta = config.CARPETA_FUENTES
+        if not os.path.isdir(carpeta):
+            print(f"[UI] Sin carpeta de fuentes {carpeta}: se usa la del sistema")
+            return
+        familias = []
+        for nombre in sorted(os.listdir(carpeta)):
+            if not nombre.lower().endswith(EXTENSIONES_FUENTE):
+                continue
+            indice = QFontDatabase.addApplicationFont(os.path.join(carpeta, nombre))
+            if indice < 0:
+                print(f"[UI] No se ha podido cargar la fuente {nombre}")
+                continue
+            familias.extend(QFontDatabase.applicationFontFamilies(indice))
+        if familias:
+            # tambien para lo que no lleva hoja de estilo (dialogos, mensajes)
+            QGuiApplication.setFont(QFont(familias[0]))
+            print(f"[UI] Fuente cargada: {', '.join(dict.fromkeys(familias))}")
 
     # ===== identidad =====
     def _poner_identidad(self):
@@ -299,35 +358,104 @@ class VentanaPrincipal(QMainWindow):
 
     # ===== escalado =====
     def ajustar_a_pantalla(self):
-        """Escala geometrias y tamanos en px de las hojas de estilo para que el
-        diseno (ANCHO_DISENO_PX x ALTO_DISENO_PX) quepa en la pantalla actual."""
+        """Captura el diseno y escala la interfaz a la pantalla. Despues,
+        _reescalar se aplica solo cada vez que la ventana cambia de tamano."""
         pantalla = QGuiApplication.primaryScreen().availableGeometry()
-        factor = min(pantalla.width() / ANCHO_DISENO_PX, pantalla.height() / ALTO_DISENO_PX)
-        if abs(factor - 1.0) < TOLERANCIA_ESCALA:
-            return
+        self._capturar_diseno()
+        self.setMinimumSize(round(self._tamano_diseno.width() * ESCALA_MINIMA),
+                            round(self._tamano_diseno.height() * ESCALA_MINIMA))
+        self.resize(pantalla.size())
+        self._reescalar()
+        print(f"[UI] Pantalla {pantalla.width()}x{pantalla.height()}, diseno "
+              f"{self._tamano_diseno.width()}x{self._tamano_diseno.height()}")
 
-        def px(valor):
-            return max(1, round(valor * factor))
-
-        for widget in [self.centralWidget()] + self.findChildren(QWidget):
-            g = widget.geometry()
-            widget.setGeometry(px(g.x()), px(g.y()), px(g.width()), px(g.height()))
-            hoja = widget.styleSheet()
-            if hoja:
-                widget.setStyleSheet(PATRON_PIXELES.sub(lambda m: f"{px(int(m.group(1)))}px", hoja))
+    def _capturar_diseno(self):
+        """Guarda, una sola vez, geometria, hoja, fuente e icono de diseno de cada
+        widget (los del .ui y los creados por las paginas)."""
+        self._diseno = {}
+        for widget in self.findChildren(QWidget):
+            if widget is self.centralWidget():
+                continue   # lo coloca QMainWindow
             fuente = widget.font()
-            if fuente.pointSizeF() > 0:
-                fuente.setPointSizeF(fuente.pointSizeF() * factor)
-                widget.setFont(fuente)
-            if isinstance(widget, QAbstractButton) and not widget.icon().isNull():
-                icono = widget.iconSize()
-                widget.setIconSize(QSize(px(icono.width()), px(icono.height())))
+            icono = widget.iconSize() if isinstance(widget, QAbstractButton) \
+                and not widget.icon().isNull() else None
+            self._diseno[widget] = DisenoWidget(widget.geometry(), widget.styleSheet(),
+                                                fuente.pointSizeF(), icono)
+        self._factores = (1.0, 1.0)
+        self._timer_escala = QTimer(self)
+        self._timer_escala.setSingleShot(True)
+        self._timer_escala.setInterval(RETARDO_REESCALADO_MS)
+        self._timer_escala.timeout.connect(self._reescalar)
 
-        self.resize(px(ANCHO_DISENO_PX), px(ALTO_DISENO_PX))
-        print(f"[UI] Interfaz escalada x{factor:.2f} para {pantalla.width()}x{pantalla.height()}")
+    def resizeEvent(self, evento):
+        super().resizeEvent(evento)
+        timer = getattr(self, "_timer_escala", None)
+        if timer is not None:
+            timer.start()   # durante el arrastre del borde solo se escala al final
+
+    def _reescalar(self):
+        """Geometrias: cada eje con su factor (ventana / diseno), para llenar la
+        ventana aunque su proporcion no sea la del diseno. Textos, bordes e
+        iconos: con el menor, para que no se deformen. Siempre desde los valores
+        de diseno, asi no se acumula redondeo. Las hojas que las paginas cambian
+        en marcha (Print parpadeando, botones de tinta...) se conservan: si
+        empiezan por la ultima escalada se reescala solo esa parte; si la han
+        sustituido entera, se reescalan sus px en proporcion al cambio."""
+        if not self._diseno:
+            return
+        ancho_diseno, alto_diseno = self._tamano_diseno.width(), self._tamano_diseno.height()
+        area = self.size()   # sin barra de menus ni de estado: todo es el widget central
+        factor_x = area.width() / ancho_diseno
+        factor_y = area.height() / alto_diseno
+        anterior = min(self._factores)
+        if abs(factor_x - self._factores[0]) < TOLERANCIA_ESCALA \
+                and abs(factor_y - self._factores[1]) < TOLERANCIA_ESCALA:
+            return
+        factor = min(factor_x, factor_y)
+        self._factores = (factor_x, factor_y)
+
+        def px(valor, f=factor):
+            # un 0 se queda en 0 y lo demas no baja de 1 (un borde no desaparece)
+            return 0 if valor == 0 else max(1, round(valor * f))
+
+        def escalar_hoja(hoja, f):
+            return PATRON_PIXELES.sub(lambda m: f"{px(int(m.group(1)), f)}px", hoja)
+
+        for widget, diseno in list(self._diseno.items()):
+            try:
+                g = diseno.geometria
+                widget.setGeometry(px(g.x(), factor_x), px(g.y(), factor_y),
+                                   px(g.width(), factor_x), px(g.height(), factor_y))
+            except RuntimeError:   # widget ya destruido
+                del self._diseno[widget]
+                continue
+            actual = widget.styleSheet()
+            if actual.startswith(diseno.hoja_aplicada):
+                base = escalar_hoja(diseno.hoja, factor)
+                nueva = base + actual[len(diseno.hoja_aplicada):]
+                diseno.hoja_aplicada = base
+            else:
+                nueva = escalar_hoja(actual, factor / anterior)
+            if nueva != actual:
+                widget.setStyleSheet(nueva)
+            if diseno.puntos > 0:
+                fuente = widget.font()
+                fuente.setPointSizeF(diseno.puntos * factor)
+                widget.setFont(fuente)
+            if diseno.icono is not None:
+                widget.setIconSize(QSize(px(diseno.icono.width()), px(diseno.icono.height())))
+        print(f"[UI] Interfaz escalada x{factor_x:.3f} / y{factor_y:.3f} "
+              f"({area.width()}x{area.height()})")
 
     # ===== cierre =====
     def closeEvent(self, evento):
+        if self.secuencia.en_marcha():
+            respuesta = QMessageBox.question(self, AVISO_CERRAR_TITULO, AVISO_CERRAR_IMPRIMIENDO,
+                                             QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if respuesta != QMessageBox.Yes:
+                evento.ignore()
+                return
+            self.print_server.abortar()   # para la secuencia y desarma las boards
         self.guardar_ajustes()
         self.temperatura.cerrar()
         self.tinta.cerrar()
@@ -344,6 +472,16 @@ class VentanaPrincipal(QMainWindow):
         return self.pagina_programa.campo_distancia(i)
 
     # ===== navegacion =====
+    def ir_pg_printserver_aewa(self):
+        self.ui.stackedWidget.setCurrentWidget(self.ui.print_server_aewa)
+
+    def _actualizar_accesos_print_server(self):
+        """Habilita cada boton Print Server segun los cabezales activos en Programa."""
+        tipos = {tipo for tipo, _x in self.pagina_programa.cabezales_activos()}
+        tipos_gis = {tipo for board in self.boards for tipo in board.tipos_modulo}
+        self.ui.bt_pg_printserver_gis.setEnabled(bool(tipos & tipos_gis))
+        self.ui.bt_pg_printserver_aewa.setEnabled(TIPO_AEWA in tipos)
+
     def ir_pg_menu(self):
         self.ui.stackedWidget.setCurrentWidget(self.ui.menu)
 
@@ -384,7 +522,7 @@ class VentanaPrincipal(QMainWindow):
             self.stop_motor()
             self.timer_home.stop()
             self.homing_en_curso = False
-            self.print_server.registrar("[SEGURIDAD] Parada de emergencia: movimientos bloqueados")
+            print("[SEGURIDAD] Parada de emergencia: movimientos bloqueados")   # en pantalla ya esta la ventana
             if self.print_server.esta_lista():
                 self.print_server.abortar()   # la impresion no se reanuda: se empieza de nuevo
             self.ventana_emergencia.mostrar()
@@ -405,7 +543,7 @@ class VentanaPrincipal(QMainWindow):
 
     def _movimiento_permitido(self):
         if self.seta_pulsada:
-            self.print_server.registrar("[SEGURIDAD] Movimiento ignorado: parada de emergencia activa")
+            print("[SEGURIDAD] Movimiento ignorado: parada de emergencia activa")
             return False
         return True
 

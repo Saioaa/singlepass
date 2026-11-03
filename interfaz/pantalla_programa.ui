@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1957</width>
-    <height>1072</height>
+    <width>2048</width>
+    <height>1152</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,10 +20,10 @@
    <widget class="QStackedWidget" name="stackedWidget">
     <property name="geometry">
      <rect>
-      <x>129</x>
+      <x>149</x>
       <y>-1</y>
-      <width>1831</width>
-      <height>1061</height>
+      <width>1901</width>
+      <height>1151</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -601,7 +601,7 @@ border-radius: 5px;</string>
       <property name="geometry">
        <rect>
         <x>1470</x>
-        <y>550</y>
+        <y>560</y>
         <width>251</width>
         <height>30</height>
        </rect>
@@ -627,7 +627,7 @@ text-align: center;</string>
       <property name="geometry">
        <rect>
         <x>1470</x>
-        <y>590</y>
+        <y>600</y>
         <width>251</width>
         <height>276</height>
        </rect>
@@ -764,7 +764,7 @@ font-family: nunito;</string>
       <property name="geometry">
        <rect>
         <x>1470</x>
-        <y>880</y>
+        <y>890</y>
         <width>251</width>
         <height>41</height>
        </rect>
@@ -795,7 +795,7 @@ QPushButton:pressed {
       <property name="geometry">
        <rect>
         <x>1600</x>
-        <y>280</y>
+        <y>300</y>
         <width>100</width>
         <height>100</height>
        </rect>
@@ -808,7 +808,7 @@ QPushButton:pressed {
       <property name="geometry">
        <rect>
         <x>1490</x>
-        <y>280</y>
+        <y>300</y>
         <width>100</width>
         <height>100</height>
        </rect>
@@ -821,7 +821,7 @@ QPushButton:pressed {
       <property name="geometry">
        <rect>
         <x>1540</x>
-        <y>210</y>
+        <y>170</y>
         <width>51</width>
         <height>40</height>
        </rect>
@@ -839,7 +839,7 @@ QPushButton:pressed {
       <property name="geometry">
        <rect>
         <x>1600</x>
-        <y>390</y>
+        <y>410</y>
         <width>100</width>
         <height>100</height>
        </rect>
@@ -854,7 +854,7 @@ QPushButton:pressed {
         <x>1470</x>
         <y>70</y>
         <width>250</width>
-        <height>450</height>
+        <height>461</height>
        </rect>
       </property>
       <property name="text">
@@ -871,7 +871,7 @@ QPushButton:pressed {
       <property name="geometry">
        <rect>
         <x>1590</x>
-        <y>210</y>
+        <y>170</y>
         <width>70</width>
         <height>40</height>
        </rect>
@@ -889,13 +889,85 @@ QPushButton:pressed {
       <property name="geometry">
        <rect>
         <x>1490</x>
-        <y>390</y>
+        <y>410</y>
         <width>100</width>
         <height>100</height>
        </rect>
       </property>
       <property name="text">
        <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="tinta_real_outlet">
+      <property name="geometry">
+       <rect>
+        <x>1580</x>
+        <y>250</y>
+        <width>101</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="tinta_real_inlet">
+      <property name="geometry">
+       <rect>
+        <x>1580</x>
+        <y>210</y>
+        <width>101</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="tinta_label_inlet">
+      <property name="geometry">
+       <rect>
+        <x>1510</x>
+        <y>210</y>
+        <width>71</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>Inlet P:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="tinta_label_outlet">
+      <property name="geometry">
+       <rect>
+        <x>1510</x>
+        <y>250</y>
+        <width>71</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>Outlet P:</string>
       </property>
      </widget>
      <zorder>label_botella</zorder>
@@ -917,8 +989,12 @@ QPushButton:pressed {
      <zorder>tinta_reset</zorder>
      <zorder>tinta_real_temp</zorder>
      <zorder>tinta_purge</zorder>
+     <zorder>tinta_real_outlet</zorder>
+     <zorder>tinta_real_inlet</zorder>
+     <zorder>tinta_label_inlet</zorder>
+     <zorder>tinta_label_outlet</zorder>
     </widget>
-    <widget class="QWidget" name="print_server">
+    <widget class="QWidget" name="print_server_gis">
      <widget class="QLabel" name="label_28">
       <property name="geometry">
        <rect>
@@ -1579,22 +1655,806 @@ QPushButton:pressed {
 	font-family: nunito;</string>
       </property>
      </widget>
-     <widget class="QComboBox" name="systemode_aewa">
+    </widget>
+    <widget class="QWidget" name="print_server_aewa">
+     <widget class="QLabel" name="tamano_imagen">
       <property name="geometry">
        <rect>
-        <x>1000</x>
-        <y>10</y>
-        <width>370</width>
+        <x>20</x>
+        <y>470</y>
+        <width>121</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="labelImage_2">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>90</y>
+        <width>1424</width>
+        <height>1008</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: white;
+border: 2px solid #62CBC9;
+border-radius: 5px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="scaledContents">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="pos_x_real_2">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>594</y>
+        <width>91</width>
         <height>41</height>
        </rect>
       </property>
       <property name="styleSheet">
+       <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_curado_nir">
+      <property name="geometry">
+       <rect>
+        <x>1600</x>
+        <y>290</y>
+        <width>101</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>Curado NIR</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="txtMessage_printserver">
+      <property name="geometry">
+       <rect>
+        <x>1600</x>
+        <y>729</y>
+        <width>290</width>
+        <height>401</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(174, 199, 232);
+color: rgb(0, 0, 0);
+border: 2px solid #62CBC9;
+border-radius: 5px;</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnRotate_2">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>860</y>
+        <width>101</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+	color: #FFFFFF;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 18px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>Rotar</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_seleccionar_trabajo">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>230</y>
+        <width>125</width>
+        <height>125</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>nunito</family>
+        <pointsize>-1</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+	color: #FFFFFF;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 2px;
+	font-size: 18px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>Seleccionar
+trabajo</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_res_vertical">
+      <property name="geometry">
+       <rect>
+        <x>1600</x>
+        <y>140</y>
+        <width>170</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>Resolución Vertical:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_stop_print">
+      <property name="geometry">
+       <rect>
+        <x>1600</x>
+        <y>680</y>
+        <width>290</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: rgb(227, 0, 0);
+	color: #FFFFFF;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+	font-weight: bold;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>▪ STOP PRINT</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnMirrorY_2">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>1020</y>
+        <width>101</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+	color: #FFFFFF;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 18px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>Espejo Y</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_tamano_imagen">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>420</y>
+        <width>111</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>Tamaño
+imagen (mm):</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="select_velocidad">
+      <property name="geometry">
+       <rect>
+        <x>1770</x>
+        <y>190</y>
+        <width>120</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
        <string notr="true"> background-color: #62CBC9;
+	color: #FFFFFF;
     border: 2px solid #333333;
     border-radius: 5px;
     padding: 10px;
 	font-size: 16px;
 	font-family: nunito;</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="select_pasos">
+      <property name="geometry">
+       <rect>
+        <x>1770</x>
+        <y>240</y>
+        <width>120</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"> background-color: #62CBC9;
+	color: #FFFFFF;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_x_target">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>710</y>
+        <width>25</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>X:</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="select_res_horizontal">
+      <property name="geometry">
+       <rect>
+        <x>1770</x>
+        <y>90</y>
+        <width>120</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"> background-color: #62CBC9;
+	color: #FFFFFF;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_start_print">
+      <property name="geometry">
+       <rect>
+        <x>1600</x>
+        <y>630</y>
+        <width>290</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+	color: #FFFFFF;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+	font-weight: bold;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string> ▶ START PRINT</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="texto_variable">
+      <property name="geometry">
+       <rect>
+        <x>320</x>
+        <y>20</y>
+        <width>151</width>
+        <height>50</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+	color: #FFFFFF;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 5px;
+	font-size: 18px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>Insertar Texto</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_nueva_imagen">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>90</y>
+        <width>125</width>
+        <height>125</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+	color: #FFFFFF;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 18px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>Nueva
+imagen</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="labelInfo_impresion">
+      <property name="geometry">
+       <rect>
+        <x>1600</x>
+        <y>350</y>
+        <width>290</width>
+        <height>221</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: lightgray;
+border: 2px solid #62CBC9;
+border-radius: 5px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="scaledContents">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_y_target">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>760</y>
+        <width>25</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>Y:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_pasos">
+      <property name="geometry">
+       <rect>
+        <x>1600</x>
+        <y>240</y>
+        <width>120</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>Pasos:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="pos_y_target_2">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>750</y>
+        <width>91</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);
+border: 2px solid #62CBC9;
+border-radius: 5px;
+padding: 10px;
+font-size: 16px;
+font-family: nunito;</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_posicion">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>560</y>
+        <width>121</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>Posición (mm):</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="select_res_vertical">
+      <property name="geometry">
+       <rect>
+        <x>1770</x>
+        <y>140</y>
+        <width>120</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"> background-color: #62CBC9;
+	color: #FFFFFF;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_y_real">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>650</y>
+        <width>25</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>Y:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="pos_x_target_2">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>700</y>
+        <width>91</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);
+border: 2px solid #62CBC9;
+border-radius: 5px;
+padding: 10px;
+font-size: 16px;
+font-family: nunito;</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_res_horizontal">
+      <property name="geometry">
+       <rect>
+        <x>1600</x>
+        <y>90</y>
+        <width>170</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>Resolución Horizontal:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_x_real">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>600</y>
+        <width>25</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>X:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnMirrorX_2">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>940</y>
+        <width>101</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+	color: #FFFFFF;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 18px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>Espejo X</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="potencia_nir">
+      <property name="geometry">
+       <rect>
+        <x>1810</x>
+        <y>290</y>
+        <width>80</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);
+border: 2px solid #62CBC9;
+border-radius: 5px;
+padding: 10px;
+font-size: 16px;
+font-family: nunito;</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="pos_y_real_2">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>644</y>
+        <width>91</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">  background-color: #3F4D4C;
+color: #62CBC9;
+    border: 2px solid #62CBC9;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnRip_2">
+      <property name="geometry">
+       <rect>
+        <x>1600</x>
+        <y>580</y>
+        <width>290</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+	color: #FFFFFF;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+	font-weight: bold;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>RENDERIZAR IMAGEN</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_velocidad">
+      <property name="geometry">
+       <rect>
+        <x>1600</x>
+        <y>190</y>
+        <width>161</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: #62CBC9;;
+	font-size: 16px;
+	font-family: nunito;</string>
+      </property>
+      <property name="text">
+       <string>Velocidad Horizontal:</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="btn_curado_nir">
+      <property name="geometry">
+       <rect>
+        <x>1710</x>
+        <y>290</y>
+        <width>91</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QCheckBox::indicator {
+    width: 50px;
+    height: 35px;
+    border-radius: 16px;
+    background-color: #555555;
+}
+QCheckBox::indicator:checked {
+    background-color: #62CBC9;
+}</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="test_cabezal">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>20</y>
+        <width>125</width>
+        <height>50</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #62CBC9;
+	color: #FFFFFF;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 5px;
+	font-size: 18px;
+	font-family: nunito;
+}
+QPushButton:hover {
+    background-color: rgb(170, 255, 255);
+}
+QPushButton:pressed {
+    background-color: rgb(206, 255, 252);
+}</string>
+      </property>
+      <property name="text">
+       <string>Test Cabezal</string>
       </property>
      </widget>
     </widget>
@@ -2688,9 +3548,9 @@ border-radius: 5px;</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>0</y>
-      <width>118</width>
-      <height>204</height>
+      <y>10</y>
+      <width>125</width>
+      <height>341</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -2770,7 +3630,7 @@ QPushButton:pressed {
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="bt_pg_printserver">
+      <widget class="QPushButton" name="bt_pg_printserver_gis">
        <property name="styleSheet">
         <string notr="true">QPushButton {
     background-color: #3F4D4C;
@@ -2790,24 +3650,40 @@ QPushButton:pressed {
 }</string>
        </property>
        <property name="text">
-        <string>Print Server</string>
+        <string>Print Server
+GIS</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="bt_pg_printserver_aewa">
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: #3F4D4C;
+	color: #62CBC9;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    padding: 10px;
+	font-size: 16px;
+	font-family: nunito;
+	
+}
+QPushButton:hover {
+    background-color: rgb(74, 90, 88);
+}
+QPushButton:pressed {
+    background-color: rgb(89, 108, 105);
+}</string>
+       </property>
+       <property name="text">
+        <string>Print Server
+AEWA</string>
        </property>
       </widget>
      </item>
     </layout>
    </widget>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1957</width>
-     <height>23</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
  <connections/>
