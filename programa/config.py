@@ -78,6 +78,17 @@ MESA_ALTO_MM   = MESA_ALTO_PX * MM_POR_PULGADA / DPI_MESA                     # 
 # El tamano fisico de la imagen = pixeles / dpi del modo (los dpi del archivo se ignoran).
 DPI_IMAGEN_POR_DEFECTO = 600
 
+# ===== AEWA / APRINT (cabezal Ricoh en APMB4): print_server_aewa.py =====
+# Impresora de APRINT "Singlepass BW" (Ricoh MH5xxx, un cabezal): en Printer
+# Settings -> General la resolucion HORIZONTAL (a lo largo del cabezal, paso de
+# boquilla) es fija y la VERTICAL (sentido del movimiento de la mesa, por el
+# encoder) se elige. En la interfaz se ofrecen las mismas opciones que APRINT.
+RESOLUCIONES_HORIZONTALES_AEWA_DPI = (600,)
+RESOLUCIONES_VERTICALES_AEWA_DPI = (150, 300, 450, 600, 900, 1200, 2400, 3000)
+RESOLUCION_VERTICAL_AEWA_POR_DEFECTO = 600
+# Un solo cabezal en una pasada: sin multipass
+PASOS_AEWA = (1,)
+
 # ===== SISTEMA DE TINTA (IMB, CoAP puerto 5683): tinta.py =====
 IP_TINTA    = "192.168.79.75"
 CANAL_TINTA = 1
