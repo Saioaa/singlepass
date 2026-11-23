@@ -37,6 +37,7 @@ MENSAJE_PRESENTACION = f"{CMD_LAMPARAS}:{PWM_APAGADAS}"
 TAM_BUFFER         = 64    # bytes por lectura
 RETARDO_RECONEXION = 2     # s entre intentos
 TIMEOUT_CONEXION   = 5     # s por intento (Windows tarda ~21 s si no se acota)
+AVISO_CADA_INTENTOS = 50   # sin M-Duino, el log solo recoge 1 de cada N intentos fallidos
 
 
 class ClienteMDuino(QObject):
@@ -95,7 +96,8 @@ class ClienteMDuino(QObject):
                 self._leer(sock)
                 print("[MDUINO] El M-Duino ha cerrado la conexion")
             except OSError as e:
-                if self._activo:
+                if self._activo and (self._intentos == 1
+                                     or self._intentos % AVISO_CADA_INTENTOS == 0):
                     print(f"[MDUINO] Sin conexion (intento {self._intentos}): {e}")
             finally:
                 if sock is not None:

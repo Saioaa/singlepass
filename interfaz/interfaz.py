@@ -27,6 +27,8 @@ from programa.gis.board_epson import BoardEpson
 from programa.gis.cabezal_pmb import TemperaturaCabezal
 from interfaz.pagina_tinta import PaginaTinta
 from interfaz.print_server import MOTIVO_CABEZALES, PrintServer
+from interfaz.print_server_aewa import PrintServerAewa
+from programa.aewa.aprint_propiedades import leer_y_describir
 from programa.tinta.tinta import Tinta
 from interfaz.pagina_programa import TIPO_AEWA, PaginaPrograma
 from programa.secuencia import SecuenciaImpresion
@@ -64,6 +66,7 @@ SIN_TOLERANCIA_REPOSO = 0.0   # con PD por hardware la mesa va siempre a reposo 
 
 # ===== CAMPOS DE TEXTO QUE SE GUARDAN ENTRE SESIONES =====
 CLAVE_AJUSTES_TINTA = "tinta"   # estado y ajustes de la tinta (pagina_tinta.estado())
+CLAVE_AJUSTES_AEWA = "aewa"     # desplegables de Print Server AEWA (print_server_aewa.estado())
 CAMPOS_TEXTO = [
     "objetivo", "vel_objetivo", "aceleracion", "deceleracion",
     "pg_prog_vel_impresion", "pg_prog_acel_impresion", "pg_prog_decel_impresion",
@@ -197,7 +200,7 @@ class VentanaEmergencia(QDialog):
 
 class VentanaPrincipal(QMainWindow):
 
-    def __init__(self, motor, mduino, pmb):
+    def __init__(self, motor, mduino, pmb, aprint):
         super().__init__()
         self._cargar_fuentes()   # antes de setupUi: las hojas de estilo del .ui la usan
         self.ui = Ui_MainWindow()
@@ -213,6 +216,7 @@ class VentanaPrincipal(QMainWindow):
         self.motor = motor
         self.mduino = mduino
         self.pmb = pmb
+        self.aprint = aprint
 
         # ===== paginas y secuencias =====
         # boards de impresion: una por familia de cabezal (board.tipos_modulo)
@@ -260,6 +264,10 @@ class VentanaPrincipal(QMainWindow):
             parent=self)
         self.pagina_programa.cabezales_cambiados.connect(
             lambda: self.print_server.invalidar_render(MOTIVO_CABEZALES))
+        self.print_server_aewa = PrintServerAewa(self.ui, self.aprint,
+                                                 registrar=self.print_server.registrar,
+                                                 parent=self)
+        self.aprint.mensaje.connect(self.print_server.registrar)
 
         # ===== navegacion =====
         self.ui.bt_pg_movimientos1.clicked.connect(self.ir_pg_movimientos)
@@ -268,7 +276,7 @@ class VentanaPrincipal(QMainWindow):
         self.ui.bt_pg_programa.clicked.connect(self.ir_pg_programa)
         self.ui.bt_pg_programa_2.clicked.connect(self.ir_pg_programa)
         self.ui.bt_pg_printserver_gis.clicked.connect(self.print_server.entrar)
-        self.ui.bt_pg_printserver_aewa.clicked.connect(self.ir_pg_printserver_aewa)
+        self.ui.bt_pg_printserver_aewa.clicked.connect(self.print_server_aewa.entrar)
         for boton in (self.ui.bt_pg_printserver_gis, self.ui.bt_pg_printserver_aewa):
             boton.setStyleSheet(boton.styleSheet() + ESTILO_BOTON_DESHABILITADO)
         self.pagina_programa.cabezales_cambiados.connect(self._actualizar_accesos_print_server)
@@ -472,15 +480,16 @@ class VentanaPrincipal(QMainWindow):
         return self.pagina_programa.campo_distancia(i)
 
     # ===== navegacion =====
-    def ir_pg_printserver_aewa(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.print_server_aewa)
-
     def _actualizar_accesos_print_server(self):
         """Habilita cada boton Print Server segun los cabezales activos en Programa."""
         tipos = {tipo for tipo, _x in self.pagina_programa.cabezales_activos()}
         tipos_gis = {tipo for board in self.boards for tipo in board.tipos_modulo}
         self.ui.bt_pg_printserver_gis.setEnabled(bool(tipos & tipos_gis))
-        self.ui.bt_pg_printserver_aewa.setEnabled(TIPO_AEWA in tipos)
+        hay_aewa = TIPO_AEWA in tipos
+        self.ui.bt_pg_printserver_aewa.setEnabled(hay_aewa)
+        if hay_aewa and not self.aprint.conectado:
+            # en segundo plano; al conectar lee y registra los Printer Settings de APRINT
+            self.aprint.conectar(al_conectar=leer_y_describir)
 
     def ir_pg_menu(self):
         self.ui.stackedWidget.setCurrentWidget(self.ui.menu)
@@ -653,7 +662,8 @@ class VentanaPrincipal(QMainWindow):
     def guardar_ajustes(self):
         """Vuelca los campos rellenables a disco."""
         ajustes = {"campos": {}, "modulos": {}, "distancias": {}, "activos": {},
-                   CLAVE_AJUSTES_TINTA: self.pagina_tinta.estado()}
+                   CLAVE_AJUSTES_TINTA: self.pagina_tinta.estado(),
+                   CLAVE_AJUSTES_AEWA: self.print_server_aewa.estado()}
         for nombre in CAMPOS_TEXTO:
             ajustes["campos"][nombre] = getattr(self.ui, nombre).text()
         for i in range(PRIMER_MODULO, ULTIMO_MODULO + 1):
@@ -696,3 +706,4 @@ class VentanaPrincipal(QMainWindow):
             if widget is not None:
                 widget.setChecked(bool(activo))
         self.pagina_tinta.restaurar(ajustes.get(CLAVE_AJUSTES_TINTA))
+        self.print_server_aewa.restaurar(ajustes.get(CLAVE_AJUSTES_AEWA))

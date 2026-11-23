@@ -956,12 +956,6 @@ class Ui_MainWindow(object):
 "    padding: 10px;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.label_curado_nir = QLabel(self.print_server_aewa)
-        self.label_curado_nir.setObjectName(u"label_curado_nir")
-        self.label_curado_nir.setGeometry(QRect(1600, 290, 101, 40))
-        self.label_curado_nir.setStyleSheet(u"color: #62CBC9;;\n"
-"	font-size: 16px;\n"
-"	font-family: nunito;")
         self.txtMessage_printserver = QTextEdit(self.print_server_aewa)
         self.txtMessage_printserver.setObjectName(u"txtMessage_printserver")
         self.txtMessage_printserver.setGeometry(QRect(1600, 729, 290, 401))
@@ -1015,7 +1009,7 @@ class Ui_MainWindow(object):
 "	font-family: nunito;")
         self.btn_stop_print = QPushButton(self.print_server_aewa)
         self.btn_stop_print.setObjectName(u"btn_stop_print")
-        self.btn_stop_print.setGeometry(QRect(1600, 680, 290, 41))
+        self.btn_stop_print.setGeometry(QRect(1600, 630, 290, 41))
         self.btn_stop_print.setStyleSheet(u"QPushButton {\n"
 "    background-color: rgb(227, 0, 0);\n"
 "	color: #FFFFFF;\n"
@@ -1056,26 +1050,6 @@ class Ui_MainWindow(object):
         self.label_tamano_imagen.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
-        self.select_velocidad = QComboBox(self.print_server_aewa)
-        self.select_velocidad.setObjectName(u"select_velocidad")
-        self.select_velocidad.setGeometry(QRect(1770, 190, 120, 40))
-        self.select_velocidad.setStyleSheet(u" background-color: #62CBC9;\n"
-"	color: #FFFFFF;\n"
-"    border: 2px solid #333333;\n"
-"    border-radius: 5px;\n"
-"    padding: 10px;\n"
-"	font-size: 16px;\n"
-"	font-family: nunito;")
-        self.select_pasos = QComboBox(self.print_server_aewa)
-        self.select_pasos.setObjectName(u"select_pasos")
-        self.select_pasos.setGeometry(QRect(1770, 240, 120, 40))
-        self.select_pasos.setStyleSheet(u" background-color: #62CBC9;\n"
-"	color: #FFFFFF;\n"
-"    border: 2px solid #333333;\n"
-"    border-radius: 5px;\n"
-"    padding: 10px;\n"
-"	font-size: 16px;\n"
-"	font-family: nunito;")
         self.label_x_target = QLabel(self.print_server_aewa)
         self.label_x_target.setObjectName(u"label_x_target")
         self.label_x_target.setGeometry(QRect(20, 710, 25, 25))
@@ -1094,7 +1068,7 @@ class Ui_MainWindow(object):
 "	font-family: nunito;")
         self.btn_start_print = QPushButton(self.print_server_aewa)
         self.btn_start_print.setObjectName(u"btn_start_print")
-        self.btn_start_print.setGeometry(QRect(1600, 630, 290, 41))
+        self.btn_start_print.setGeometry(QRect(1600, 570, 290, 41))
         self.btn_start_print.setStyleSheet(u"QPushButton {\n"
 "    background-color: #62CBC9;\n"
 "	color: #FFFFFF;\n"
@@ -1149,7 +1123,7 @@ class Ui_MainWindow(object):
 "}")
         self.labelInfo_impresion = QLabel(self.print_server_aewa)
         self.labelInfo_impresion.setObjectName(u"labelInfo_impresion")
-        self.labelInfo_impresion.setGeometry(QRect(1600, 350, 290, 221))
+        self.labelInfo_impresion.setGeometry(QRect(1600, 210, 290, 241))
         self.labelInfo_impresion.setAutoFillBackground(False)
         self.labelInfo_impresion.setStyleSheet(u"background-color: lightgray;\n"
 "border: 2px solid #62CBC9;\n"
@@ -1159,12 +1133,6 @@ class Ui_MainWindow(object):
         self.label_y_target.setObjectName(u"label_y_target")
         self.label_y_target.setGeometry(QRect(20, 760, 25, 25))
         self.label_y_target.setStyleSheet(u"color: #62CBC9;;\n"
-"	font-size: 16px;\n"
-"	font-family: nunito;")
-        self.label_pasos = QLabel(self.print_server_aewa)
-        self.label_pasos.setObjectName(u"label_pasos")
-        self.label_pasos.setGeometry(QRect(1600, 240, 120, 40))
-        self.label_pasos.setStyleSheet(u"color: #62CBC9;;\n"
 "	font-size: 16px;\n"
 "	font-family: nunito;")
         self.pos_y_target_2 = QLineEdit(self.print_server_aewa)
@@ -1239,16 +1207,6 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
 "}")
-        self.potencia_nir = QLineEdit(self.print_server_aewa)
-        self.potencia_nir.setObjectName(u"potencia_nir")
-        self.potencia_nir.setGeometry(QRect(1810, 290, 80, 40))
-        self.potencia_nir.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
-"color: rgb(0, 0, 0);\n"
-"border: 2px solid #62CBC9;\n"
-"border-radius: 5px;\n"
-"padding: 10px;\n"
-"font-size: 16px;\n"
-"font-family: nunito;")
         self.pos_y_real_2 = QLabel(self.print_server_aewa)
         self.pos_y_real_2.setObjectName(u"pos_y_real_2")
         self.pos_y_real_2.setGeometry(QRect(50, 644, 91, 41))
@@ -1261,7 +1219,7 @@ class Ui_MainWindow(object):
 "	font-family: nunito;")
         self.btnRip_2 = QPushButton(self.print_server_aewa)
         self.btnRip_2.setObjectName(u"btnRip_2")
-        self.btnRip_2.setGeometry(QRect(1600, 580, 290, 41))
+        self.btnRip_2.setGeometry(QRect(1600, 510, 290, 41))
         self.btnRip_2.setStyleSheet(u"QPushButton {\n"
 "    background-color: #62CBC9;\n"
 "	color: #FFFFFF;\n"
@@ -1277,24 +1235,6 @@ class Ui_MainWindow(object):
 "}\n"
 "QPushButton:pressed {\n"
 "    background-color: rgb(206, 255, 252);\n"
-"}")
-        self.label_velocidad = QLabel(self.print_server_aewa)
-        self.label_velocidad.setObjectName(u"label_velocidad")
-        self.label_velocidad.setGeometry(QRect(1600, 190, 161, 40))
-        self.label_velocidad.setStyleSheet(u"color: #62CBC9;;\n"
-"	font-size: 16px;\n"
-"	font-family: nunito;")
-        self.btn_curado_nir = QCheckBox(self.print_server_aewa)
-        self.btn_curado_nir.setObjectName(u"btn_curado_nir")
-        self.btn_curado_nir.setGeometry(QRect(1710, 290, 91, 40))
-        self.btn_curado_nir.setStyleSheet(u"QCheckBox::indicator {\n"
-"    width: 50px;\n"
-"    height: 35px;\n"
-"    border-radius: 16px;\n"
-"    background-color: #555555;\n"
-"}\n"
-"QCheckBox::indicator:checked {\n"
-"    background-color: #62CBC9;\n"
 "}")
         self.test_cabezal = QPushButton(self.print_server_aewa)
         self.test_cabezal.setObjectName(u"test_cabezal")
@@ -2060,7 +2000,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(4)
+        self.stackedWidget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -2133,7 +2073,6 @@ class Ui_MainWindow(object):
         self.tamano_imagen.setText("")
         self.labelImage_2.setText("")
         self.pos_x_real_2.setText("")
-        self.label_curado_nir.setText(QCoreApplication.translate("MainWindow", u"Curado NIR", None))
         self.btnRotate_2.setText(QCoreApplication.translate("MainWindow", u"Rotar", None))
         self.btn_seleccionar_trabajo.setText(QCoreApplication.translate("MainWindow", u"Seleccionar\n"
 "trabajo", None))
@@ -2149,7 +2088,6 @@ class Ui_MainWindow(object):
 "imagen", None))
         self.labelInfo_impresion.setText("")
         self.label_y_target.setText(QCoreApplication.translate("MainWindow", u"Y:", None))
-        self.label_pasos.setText(QCoreApplication.translate("MainWindow", u"Pasos:", None))
         self.label_posicion.setText(QCoreApplication.translate("MainWindow", u"Posici\u00f3n (mm):", None))
         self.label_y_real.setText(QCoreApplication.translate("MainWindow", u"Y:", None))
         self.label_res_horizontal.setText(QCoreApplication.translate("MainWindow", u"Resoluci\u00f3n Horizontal:", None))
@@ -2157,8 +2095,6 @@ class Ui_MainWindow(object):
         self.btnMirrorX_2.setText(QCoreApplication.translate("MainWindow", u"Espejo X", None))
         self.pos_y_real_2.setText("")
         self.btnRip_2.setText(QCoreApplication.translate("MainWindow", u"RENDERIZAR IMAGEN", None))
-        self.label_velocidad.setText(QCoreApplication.translate("MainWindow", u"Velocidad Horizontal:", None))
-        self.btn_curado_nir.setText("")
         self.test_cabezal.setText(QCoreApplication.translate("MainWindow", u"Test Cabezal", None))
         self.label_10.setText(QCoreApplication.translate("MainWindow", u"Programa", None))
         self.label_11.setText(QCoreApplication.translate("MainWindow", u"Velocidad", None))

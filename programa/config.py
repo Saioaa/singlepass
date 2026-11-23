@@ -6,6 +6,7 @@ Unico sitio donde se tocan IPs, limites de carrera y geometria de la barra.
 
 import os
 import sys
+from pathlib import Path
 
 # ===== RUTAS DEL PROGRAMA =====
 # Ejecutando desde el codigo: singlepass/ es la raiz (este fichero esta en programa/).
@@ -29,6 +30,10 @@ RUTA_AJUSTES  = os.path.join(CARPETA_DATOS, "ajustes.json")             # campos
 # ===== VARIADOR D1 (eje X) =====
 IP_MOTOR      = "192.168.79.73"
 PUERTO_MOTOR  = 502
+# Si el D1 no responde al arrancar, la app arranca igual con el eje ausente
+# (movimientos y secuencia rechazados con aviso en el log): para probar la app
+# en un PC sin la maquina (APRINT, print server...). False: la app no arranca.
+ARRANCAR_SIN_MOTOR = True
 LIMITE_MIN_MM = 0
 LIMITE_MAX_MM = 1200
 FACTOR_SI     = 100   # la D1 trabaja en centesimas de milimetro (0x60A8 = 0xFB010000)
@@ -78,7 +83,28 @@ MESA_ALTO_MM   = MESA_ALTO_PX * MM_POR_PULGADA / DPI_MESA                     # 
 # El tamano fisico de la imagen = pixeles / dpi del modo (los dpi del archivo se ignoran).
 DPI_IMAGEN_POR_DEFECTO = 600
 
-# ===== AEWA / APRINT (cabezal Ricoh en APMB4): print_server_aewa.py =====
+# ===== AEWA / APRINT (cabezal Ricoh en APMB4): programa/aewa, print_server_aewa.py =====
+# Protocolo remoto TCP de APRINT (Printer Settings -> Remote). APRINT escucha en
+# la IP de red del ordenador donde corre (la que muestra esa pestana). Se prueba
+# IP_APRINT; si no responde, las IPs de los adaptadores de este ordenador, y en
+# el fichero de log queda un AVISO con la que ha funcionado.
+IP_APRINT = "192.168.1.162"
+PUERTO_APRINT = 1025
+# Arranque de APRINT desde la app: si no responde al conectar y no esta abierto,
+# la app lo abre (minimizado u "oculto": opcion -hidden) y espera a que escuche.
+# RUTA_APRINT: "Destino" del acceso directo de APRINT; None: se busca APRINT*.exe
+# en CARPETAS_BUSQUEDA_APRINT. Si la app lo ha abierto, lo cierra al salir.
+ABRIR_APRINT = True
+RUTA_APRINT = Path(r"C:\Program Files\AEWA\APRINT\bin\APRINT.exe")
+CARPETAS_BUSQUEDA_APRINT = (Path(r"C:\Program Files"), Path(r"C:\Program Files (x86)"),
+                            Path(r"C:\aewa"), Path(r"C:\APRINT"))
+MODO_ARRANQUE_APRINT = "minimizado"
+ESPERA_ARRANQUE_APRINT_S = 60.0
+CERRAR_APRINT_AL_SALIR = True
+# Cabezal Ricoh MH5xxx: 4 filas de boquillas escalonadas que juntas dan la
+# resolucion nativa a lo largo del cabezal (aviso si APRINT tiene filas desactivadas)
+CABEZAL_FILAS = 4
+RESOLUCION_NATIVA_CABEZAL_DPI = 600
 # Impresora de APRINT "Singlepass BW" (Ricoh MH5xxx, un cabezal): en Printer
 # Settings -> General la resolucion HORIZONTAL (a lo largo del cabezal, paso de
 # boquilla) es fija y la VERTICAL (sentido del movimiento de la mesa, por el
@@ -86,8 +112,8 @@ DPI_IMAGEN_POR_DEFECTO = 600
 RESOLUCIONES_HORIZONTALES_AEWA_DPI = (600,)
 RESOLUCIONES_VERTICALES_AEWA_DPI = (150, 300, 450, 600, 900, 1200, 2400, 3000)
 RESOLUCION_VERTICAL_AEWA_POR_DEFECTO = 600
-# Un solo cabezal en una pasada: sin multipass
-PASOS_AEWA = (1,)
+# Un solo cabezal en una pasada: sin multipass (pasos = 1 siempre)
+PASOS_AEWA = 1
 
 # ===== SISTEMA DE TINTA (IMB, CoAP puerto 5683): tinta.py =====
 IP_TINTA    = "192.168.79.75"

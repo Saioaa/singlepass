@@ -346,3 +346,44 @@ class MotorD1:
             self.socket.close()
         except (AttributeError, OSError):
             pass
+
+
+class MotorNoConectado(Exception):
+    """Orden a un eje cuyo variador no esta conectado."""
+
+
+class MotorAusente:
+    """Sustituto de MotorD1 cuando el D1 no responde al arrancar
+    (config.ARRANCAR_SIN_MOTOR): misma interfaz, pero cualquier orden o lectura
+    lanza MotorNoConectado, que la interfaz muestra en el log. Permite usar el
+    resto de la app (print server, APRINT, tinta) en un PC sin la maquina."""
+
+    MOTIVO = "variador D1 no conectado"
+
+    def __init__(self, ip, puerto, limite_min, limite_max, factor_si):
+        self.ip = ip
+        self.puerto = puerto
+        self.limite_min = limite_min
+        self.limite_max = limite_max
+        self.factor_si = factor_si
+
+    def _rechazar(self, *args, **kwargs):
+        raise MotorNoConectado(self.MOTIVO)
+
+    # ordenes y lecturas: rechazadas
+    set_modo = leer_estado = resetear_fallo = leer_posicion = _rechazar
+    habilitar = deshabilitar = set_velocidad = set_aceleracion = set_deceleracion = _rechazar
+    mover_a = esperar_fin_movimiento = mover_manual = parar = reanudar = home = _rechazar
+
+    # consultas que no deben disparar avisos en bucle
+    def hay_fallo(self):
+        return False
+
+    def movimiento_terminado(self):
+        return True
+
+    def homing_terminado(self):
+        return False
+
+    def close(self):
+        pass
