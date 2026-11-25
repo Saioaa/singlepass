@@ -105,6 +105,15 @@ CERRAR_APRINT_AL_SALIR = True
 # resolucion nativa a lo largo del cabezal (aviso si APRINT tiene filas desactivadas)
 CABEZAL_FILAS = 4
 RESOLUCION_NATIVA_CABEZAL_DPI = 600
+# Job de APRINT ("ji"): posiciones en pixeles a esta resolucion
+APRINT_DPI_POSICION = 600
+# Y de la mesa (mm) en la que empieza el cabezal (su primera boquilla): la Y de la
+# imagen en el job es la de la mesa menos esta. PROVISIONAL: medir al montar la board.
+Y_CABEZAL_AEWA_MM = 0.0
+# La mesa avanza hacia +X y el cabezal esta delante: el borde x + ancho de la imagen
+# pasa primero, asi que en el job (X = sentido de impresion) la imagen va espejada en X.
+# PROVISIONAL: comprobar con la primera impresion; si sale al reves, False.
+INVERTIR_X_AEWA = True
 # Impresora de APRINT "Singlepass BW" (Ricoh MH5xxx, un cabezal): en Printer
 # Settings -> General la resolucion HORIZONTAL (a lo largo del cabezal, paso de
 # boquilla) es fija y la VERTICAL (sentido del movimiento de la mesa, por el
