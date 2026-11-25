@@ -1,25 +1,33 @@
 # -*- coding: utf-8 -*-
-"""Pagina Print Server: imagen, colocacion en la mesa, modos, ripeo y armado
-de todas las boards de impresion activas en la pagina Programa.
+"""Paginas Print Server: imagen, colocacion en la mesa, modos, ripeo y armado
+de las boards de impresion activas en la pagina Programa.
 
-No habla ningun protocolo: cada board (board_pmb.py, epson.py...) implementa
-la interfaz de board.py. La pagina reparte el mismo Trabajo a cada board
-activa con la posicion de su cabezal en la barra, y el boton Print refleja
-el estado conjunto: verde solo cuando todas estan armadas.
+No habla ningun protocolo: cada board (gis/board_pmb.py, gis/epson.py,
+aewa/board_aewa.py) implementa la interfaz de gis/board.py. La pagina reparte
+el mismo Trabajo a cada board activa con la posicion de su cabezal en la barra,
+y el boton Print refleja el estado conjunto: verde solo cuando todas estan
+armadas.
 
-Widgets del .ui:
-    pagina:  print_server (o PMB8, nombre antiguo)
-    modos:   btnUpdateMode (pide a todas las activas) y un combo por board,
-             segun COMBOS_MODO; un combo se habilita solo si su board esta activa
-    imagen:  btnNewjob, btnRotate, btnMirrorX, btnMirrorY, btn_clear, labelImage (-> MesaImpresion),
-             lblSizeValue, pos_x_real/pos_y_real, pos_x_target/pos_y_target
-    trabajo: btnRip (ripear en todas), btnSelect (carpeta), btnPrint (armar y arrancar
-             la secuencia de impresion), btnAbort (parar la secuencia y desarmar)
-    previews: rip1..rip4
+Hay dos paginas con la misma logica y distintos widgets (WIDGETS_GIS y
+WIDGETS_AEWA): la GIS gobierna PMB-C8/C2 y SM-200, la AEWA el APMB4 (APRINT,
+print_server_aewa.py). Cada una es una instancia de PrintServer con sus boards.
+
+Papeles de los widgets (ver los dos diccionarios):
+    pagina, registro (QTextEdit de log de la pagina)
+    modos:   btn_modos (pide a todas las activas) y un combo por board, segun
+             combos_modo; un combo se habilita solo si su board esta activa
+    imagen:  btn_nueva, btn_rotar, btn_espejo_x, btn_espejo_y, btn_limpiar,
+             mesa (QLabel -> MesaImpresion), tamano, pos_x_real/pos_y_real,
+             pos_x/pos_y (objetivo)
+    trabajo: btn_render (ripear en todas), btn_seleccionar (carpeta), btn_print
+             (armar y arrancar la secuencia), btn_abortar (parar y desarmar)
+    previews: lista de QLabel (puede estar vacia)
+Un papel con None no existe en esa pagina.
 """
 
 import os
 import time
+from types import SimpleNamespace
 
 from PySide6.QtCore import QLocale, QObject, QStandardPaths, Qt, QTimer
 from PySide6.QtGui import QColor, QDoubleValidator, QImageReader, QPainter, QPixmap, QTransform
@@ -32,14 +40,39 @@ from programa.gis.board import (ESTADO_ARMANDO, ESTADO_LISTO, ESTADO_RENDER_LIST
 from interfaz.mesa import MesaImpresion
 
 # ===== WIDGETS =====
-NOMBRES_PAGINA = ("print_server_gis", "print_server")   # objectName de la pagina (el primero que exista)
-# combos de modo: board.nombre -> (widget del .ui, texto que muestra mientras no tiene modos)
-COMBOS_MODO = {
-    "PMB":   ("systemode",       "PMB"),
-    "EPSON": ("systemode_epson", "SM-200"),
-    "AEWA":  ("systemode_aewa",  "APMB4"),
+# papel -> objectName en el .ui (None: esa pagina no lo tiene)
+WIDGETS_GIS = {
+    "pagina": "print_server_gis", "registro": "txtMessage",
+    "btn_modos": "btnUpdateMode",
+    "btn_nueva": "btnNewjob", "btn_rotar": "btnRotate", "btn_espejo_x": "btnMirrorX",
+    "btn_espejo_y": "btnMirrorY", "btn_limpiar": "btn_clear",
+    "mesa": "labelImage", "tamano": "lblSizeValue",
+    "pos_x_real": "pos_x_real", "pos_y_real": "pos_y_real",
+    "pos_x": "pos_x_target", "pos_y": "pos_y_target",
+    "btn_render": "btnRip", "btn_seleccionar": "btnSelect",
+    "btn_print": "btnPrint", "btn_abortar": "btnAbort",
+    "previews": ("rip1", "rip2", "rip3", "rip4"),
+    # combos de modo: board.nombre -> (widget, texto mientras no tiene modos)
+    "combos_modo": {"PMB": ("systemode", "PMB"), "EPSON": ("systemode_epson", "SM-200")},
 }
+WIDGETS_AEWA = {
+    "pagina": "print_server_aewa", "registro": "txtMessage_printserver",
+    "btn_modos": None,
+    "btn_nueva": "btn_nueva_imagen", "btn_rotar": "btnRotate_2", "btn_espejo_x": "btnMirrorX_2",
+    "btn_espejo_y": "btnMirrorY_2", "btn_limpiar": None,
+    "mesa": "labelImage_2", "tamano": "tamano_imagen",
+    "pos_x_real": "pos_x_real_2", "pos_y_real": "pos_y_real_2",
+    "pos_x": "pos_x_target_2", "pos_y": "pos_y_target_2",
+    "btn_render": "btnRip_2", "btn_seleccionar": "btn_seleccionar_trabajo",
+    "btn_print": "btn_start_print", "btn_abortar": "btn_stop_print",
+    "previews": (),
+    "combos_modo": {},
+}
+# todas las cajas de log de la app: cualquier pagina Print Server escribe en todas
 NOMBRES_REGISTRO = ("txtMessage", "txtMessage_2", "txtMessage_3", "txtMessage_printserver")
+# tipos de modulo que tienen board en alguna pagina (lo rellena cada PrintServer al crearse):
+# un tipo activo en Programa sin board en ninguna pagina se avisa; los de otra pagina no
+TIPOS_CON_BOARD = set()
 
 # ===== IMAGEN A IMPRIMIR =====
 # El tamano fisico sale de los pixeles de la imagen y de la resolucion del MODO de
@@ -84,6 +117,8 @@ VENTANA_DUPLICADOS_S = 2.0    # un mensaje identico al anterior dentro de esta v
 TEXTO_PRINT   = "Print"
 TEXTO_IMPRIMIENDO = "Printing"
 TEXTO_LISTO   = "Ready\nto\nPrint"
+# la pagina AEWA tiene botones anchos con su propio texto
+TEXTOS_PRINT_AEWA = (" \u25b6 START PRINT", "\u25b6 PRINTING", "\u25b6 READY TO PRINT")
 COLOR_AVISO   = "#F39C12"     # naranja: hay render, falta armar
 COLOR_LISTO   = "#27AE60"     # verde: todas las boards armadas
 PERIODO_PARPADEO_MS = 500
@@ -92,13 +127,17 @@ PERIODO_PARPADEO_MS = 500
 class PrintServer(QObject):
 
     def __init__(self, ui, boards, cabezales_activos, posicion_eje, iniciar_programa,
-                 parar_programa, programa_en_marcha, parent=None):
-        """iniciar_programa: callable -> bool, arranca la secuencia (pagina Programa).
+                 parar_programa, programa_en_marcha, widgets=WIDGETS_GIS,
+                 textos_print=(TEXTO_PRINT, TEXTO_IMPRIMIENDO, TEXTO_LISTO), parent=None):
+        """boards: las que gobierna esta pagina. widgets: WIDGETS_GIS o WIDGETS_AEWA.
+        iniciar_programa: callable -> bool, arranca la secuencia (pagina Programa).
         parar_programa: callable, la para y desarma las boards.
         programa_en_marcha: callable -> bool."""
         super().__init__(parent)
         QImageReader.setAllocationLimit(LIMITE_MEMORIA_IMAGEN_MB)   # global para QPixmap/QImage
         self.ui = ui
+        self.w = self._resolver_widgets(ui, widgets)
+        self.texto_print, self.texto_imprimiendo, self.texto_listo = textos_print
         self.boards = list(boards)                      # todas las boards conocidas
         self._cabezales_activos = cabezales_activos     # callable -> [(tipo_modulo, x_mm), ...]
         self._iniciar_programa = iniciar_programa
@@ -107,6 +146,7 @@ class PrintServer(QObject):
         self._arranque_pendiente = False                # Print pulsado: arrancar al quedar armadas
         self._posicion_eje = posicion_eje               # callable -> mm | None
         self._board_por_tipo = {tipo: b for b in self.boards for tipo in b.tipos_modulo}
+        TIPOS_CON_BOARD.update(self._board_por_tipo)
 
         self.dpi_imagen = None       # (dpi_x, dpi_y) con los que se mide la imagen cargada
         self._dpi_modo = {}          # board.nombre -> (dpi_x, dpi_y) del modo seleccionado
@@ -121,13 +161,13 @@ class PrintServer(QObject):
         self._posicion_render = None   # (x_mm, y_mm) de la imagen en el ultimo Render
         self._previews_cargadas = False   # ya hay planos del trabajo actual en los recuadros
 
-        self.pagina = next(getattr(self.ui, n) for n in NOMBRES_PAGINA if hasattr(self.ui, n))
+        self.pagina = self.w.pagina
         self._registros = [getattr(self.ui, n) for n in NOMBRES_REGISTRO if hasattr(self.ui, n)]
         for registro in self._registros:
             registro.setReadOnly(True)
 
         # boton Print: estado conjunto
-        self._estilo_print_base = self.ui.btnPrint.styleSheet()
+        self._estilo_print_base = self.w.btn_print.styleSheet()
         self._parpadeo_encendido = False
         self.timer_parpadeo = QTimer(self)
         self.timer_parpadeo.setInterval(PERIODO_PARPADEO_MS)
@@ -136,22 +176,22 @@ class PrintServer(QObject):
 
         # mesa de impresion en lugar del QLabel del disenador
         self.mesa = MesaImpresion(config.MESA_ANCHO_MM, config.MESA_ALTO_MM, self.pagina)
-        self.mesa.setGeometry(self.ui.labelImage.geometry())
-        self.mesa.setStyleSheet(self.ui.labelImage.styleSheet())
-        self.ui.labelImage.hide()
+        self.mesa.setGeometry(self.w.mesa.geometry())
+        self.mesa.setStyleSheet(self.w.mesa.styleSheet())
+        self.w.mesa.hide()
         self.mesa.posicion_cambiada.connect(self.actualizar_posicion)
 
         validador = QDoubleValidator()
         validador.setLocale(QLocale(QLocale.English))
-        self.ui.pos_x_target.setValidator(validador)
-        self.ui.pos_y_target.setValidator(validador)
-        self.ui.pos_x_target.editingFinished.connect(self.ir_a_posicion)
-        self.ui.pos_y_target.editingFinished.connect(self.ir_a_posicion)
+        self.w.pos_x.setValidator(validador)
+        self.w.pos_y.setValidator(validador)
+        self.w.pos_x.editingFinished.connect(self.ir_a_posicion)
+        self.w.pos_y.editingFinished.connect(self.ir_a_posicion)
 
         # combos de modo: nombre de la board como texto mientras no tengan modos;
         # deshabilitados hasta que su board este activa en Programa
         self._combos = {}
-        for nombre_board, (nombre_widget, etiqueta) in COMBOS_MODO.items():
+        for nombre_board, (nombre_widget, etiqueta) in widgets["combos_modo"].items():
             combo = getattr(self.ui, nombre_widget, None)
             if combo is not None:
                 combo.setPlaceholderText(etiqueta)
@@ -169,17 +209,32 @@ class PrintServer(QObject):
                 combo.currentTextChanged.connect(lambda modo, b=board: self._modo_seleccionado(b, modo))
 
         # botones
-        self.ui.btnUpdateMode.clicked.connect(self.cargar_modos)
-        self.ui.btnSelect.clicked.connect(self.seleccionar_trabajo)
-        self.ui.btnPrint.clicked.connect(self.imprimir)
-        self.ui.btnAbort.clicked.connect(self.abortar)
-        self.ui.btnNewjob.clicked.connect(self.cargar_imagen)
-        self.ui.btnRotate.clicked.connect(self.rotar_imagen)
-        self.ui.btnMirrorX.clicked.connect(self.espejar_x)
-        self.ui.btnMirrorY.clicked.connect(self.espejar_y)
-        self.ui.btnRip.clicked.connect(self.generar_trabajo)
-        self.ui.btn_clear.clicked.connect(self.limpiar_imagen)
-        self._recuadros_preview = [self.ui.rip1, self.ui.rip2, self.ui.rip3, self.ui.rip4]
+        if self.w.btn_modos is not None:
+            self.w.btn_modos.clicked.connect(self.cargar_modos)
+        self.w.btn_seleccionar.clicked.connect(self.seleccionar_trabajo)
+        self.w.btn_print.clicked.connect(self.imprimir)
+        self.w.btn_abortar.clicked.connect(self.abortar)
+        self.w.btn_nueva.clicked.connect(self.cargar_imagen)
+        self.w.btn_rotar.clicked.connect(self.rotar_imagen)
+        self.w.btn_espejo_x.clicked.connect(self.espejar_x)
+        self.w.btn_espejo_y.clicked.connect(self.espejar_y)
+        self.w.btn_render.clicked.connect(self.generar_trabajo)
+        if self.w.btn_limpiar is not None:
+            self.w.btn_limpiar.clicked.connect(self.limpiar_imagen)
+        self._recuadros_preview = list(self.w.previews)
+
+    @staticmethod
+    def _resolver_widgets(ui, widgets):
+        """Diccionario papel -> objectName a un espacio de nombres papel -> widget."""
+        resueltos = {}
+        for papel, nombre in widgets.items():
+            if papel == "combos_modo":
+                continue
+            if papel == "previews":
+                resueltos[papel] = [getattr(ui, n) for n in nombre if hasattr(ui, n)]
+            else:
+                resueltos[papel] = getattr(ui, nombre) if nombre else None
+        return SimpleNamespace(**resueltos)
 
     # ===== utilidades =====
     def registrar(self, texto):
@@ -200,13 +255,14 @@ class PrintServer(QObject):
 
     # ===== boards activas =====
     def boards_activas(self):
-        """[(board, x_cabezal_mm), ...] de los cabezales activos en Programa que tienen board.
-        Avisa de los tipos sin board conocida."""
+        """[(board, x_cabezal_mm), ...] de los cabezales activos en Programa que tienen board
+        en esta pagina. Avisa de los tipos sin board en ninguna pagina."""
         activas = []
         for tipo, x_mm in self._cabezales_activos():
             board = self._board_por_tipo.get(tipo)
             if board is None:
-                self.registrar(f"[PRINT SERVER] El modulo {tipo} no tiene board asociada todavia")
+                if tipo not in TIPOS_CON_BOARD:
+                    self.registrar(f"[PRINT SERVER] El modulo {tipo} no tiene board asociada todavia")
                 continue
             if board not in [b for b, _ in activas]:
                 activas.append((board, x_mm))
@@ -278,8 +334,8 @@ class PrintServer(QObject):
 
     # ===== posicion en la mesa =====
     def actualizar_posicion(self, x_mm, y_mm):
-        self.ui.pos_x_real.setText(f"{x_mm:.{DECIMALES_POSICION}f}")
-        self.ui.pos_y_real.setText(f"{y_mm:.{DECIMALES_POSICION}f}")
+        self.w.pos_x_real.setText(f"{x_mm:.{DECIMALES_POSICION}f}")
+        self.w.pos_y_real.setText(f"{y_mm:.{DECIMALES_POSICION}f}")
         if self._posicion_render is not None and (x_mm, y_mm) != self._posicion_render:
             self.invalidar_render(MOTIVO_IMAGEN_MOVIDA)
 
@@ -289,10 +345,10 @@ class PrintServer(QObject):
             return
         x_mm, y_mm = posicion
         try:
-            if self.ui.pos_x_target.text():
-                x_mm = float(self.ui.pos_x_target.text())
-            if self.ui.pos_y_target.text():
-                y_mm = float(self.ui.pos_y_target.text())
+            if self.w.pos_x.text():
+                x_mm = float(self.w.pos_x.text())
+            if self.w.pos_y.text():
+                y_mm = float(self.w.pos_y.text())
         except ValueError:
             return
         self.mesa.mover_imagen(x_mm, y_mm)
@@ -313,7 +369,7 @@ class PrintServer(QObject):
         self.ancho_imagen_mm = pixmap.width() * MM_POR_PULGADA / dpi_x
         self.alto_imagen_mm = pixmap.height() * MM_POR_PULGADA / dpi_y
         self.mesa.mostrar_imagen(pixmap, self.ancho_imagen_mm, self.alto_imagen_mm, x_mm, y_mm)
-        self.ui.lblSizeValue.setText(f"{self.ancho_imagen_mm:.1f} x {self.alto_imagen_mm:.1f} mm")
+        self.w.tamano.setText(f"{self.ancho_imagen_mm:.1f} x {self.alto_imagen_mm:.1f} mm")
 
     def cargar_imagen(self):
         ruta, _ = QFileDialog.getOpenFileName(self.mesa.window(), "Seleccionar imagen",
@@ -387,9 +443,9 @@ class PrintServer(QObject):
         self.espejo_x = False
         self.espejo_y = False
         self.mesa.limpiar()
-        self.ui.lblSizeValue.clear()
-        self.ui.pos_x_real.clear()
-        self.ui.pos_y_real.clear()
+        self.w.tamano.clear()
+        self.w.pos_x_real.clear()
+        self.w.pos_y_real.clear()
         self.limpiar_previews()
         for board in self.boards:
             board.descartar()
@@ -497,12 +553,12 @@ class PrintServer(QObject):
             if estado == ESTADO_LISTO and self._arranque_pendiente:
                 self._arrancar_programa()
 
-    def _pintar_print(self, color=None, texto=TEXTO_PRINT):
+    def _pintar_print(self, color=None, texto=None):
         hoja = self._estilo_print_base
         if color is not None:
             hoja += f"\nQPushButton {{ background-color: {color}; }}"
-        self.ui.btnPrint.setStyleSheet(hoja)
-        self.ui.btnPrint.setText(texto)
+        self.w.btn_print.setStyleSheet(hoja)
+        self.w.btn_print.setText(self.texto_print if texto is None else texto)
 
     def _parpadear(self):
         self._parpadeo_encendido = not self._parpadeo_encendido
@@ -516,9 +572,9 @@ class PrintServer(QObject):
             self.timer_parpadeo.start()
         elif self.estado == ESTADO_LISTO:
             if self._programa_en_marcha():
-                self._pintar_print(COLOR_LISTO, TEXTO_IMPRIMIENDO)
+                self._pintar_print(COLOR_LISTO, self.texto_imprimiendo)
             else:
-                self._pintar_print(COLOR_LISTO, TEXTO_LISTO)   # armadas pero sin arrancar: Print reintenta
+                self._pintar_print(COLOR_LISTO, self.texto_listo)   # armadas pero sin arrancar: Print reintenta
         else:
             self._pintar_print()
 
@@ -527,6 +583,8 @@ class PrintServer(QObject):
         """Planos de la primera board activa que los tenga, a escala de la mesa y con
         el desplazamiento X del trabajo. El alto del render ya es el de la mesa.
         Devuelve True si se ha cargado alguno."""
+        if not self._recuadros_preview:
+            return False   # esta pagina no tiene previews
         self.limpiar_previews()
         for board, _x in self.boards_activas():
             planos = board.planos_render()

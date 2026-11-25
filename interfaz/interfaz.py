@@ -29,6 +29,7 @@ from interfaz.pagina_tinta import PaginaTinta
 from interfaz.print_server import MOTIVO_CABEZALES, PrintServer
 from interfaz.print_server_aewa import PrintServerAewa
 from programa.aewa.aprint_propiedades import leer_y_describir
+from programa.aewa.board_aewa import BoardAewa
 from programa.tinta.tinta import Tinta
 from interfaz.pagina_programa import TIPO_AEWA, PaginaPrograma
 from programa.secuencia import SecuenciaImpresion
@@ -219,26 +220,31 @@ class VentanaPrincipal(QMainWindow):
         self.aprint = aprint
 
         # ===== paginas y secuencias =====
-        # boards de impresion: una por familia de cabezal (board.tipos_modulo)
+        # boards de impresion: una por familia de cabezal (board.tipos_modulo). Las GIS
+        # en la pagina Print Server GIS; la APMB4 (APRINT) en la pagina Print Server AEWA.
         self.boards = [BoardPMB(self.pmb, parent=self), BoardEpson(parent=self)]
-        self.print_server = PrintServer(self.ui, self.boards,
-                                        cabezales_activos=lambda: self.pagina_programa.cabezales_activos(),
-                                        posicion_eje=lambda: self.posicion_mm,
-                                        iniciar_programa=lambda: self.pagina_programa.start(),
-                                        parar_programa=lambda: self.pagina_programa.stop(),
-                                        programa_en_marcha=lambda: self.secuencia.en_marcha(),
-                                        parent=self)
+        self.board_aewa = BoardAewa(self.aprint, parent=self)
+        comun = dict(cabezales_activos=lambda: self.pagina_programa.cabezales_activos(),
+                     posicion_eje=lambda: self.posicion_mm,
+                     iniciar_programa=lambda: self.pagina_programa.start(),
+                     parar_programa=lambda: self.pagina_programa.stop(),
+                     programa_en_marcha=lambda: self.secuencia.en_marcha())
+        self.print_server = PrintServer(self.ui, self.boards, parent=self, **comun)
+        self.print_server_aewa = PrintServerAewa(self.ui, self.board_aewa, parent=self, **comun)
+        self.paginas_print_server = (self.print_server, self.print_server_aewa)
+        self.aprint.mensaje.connect(self.print_server.registrar)
         print_go_extra = self.print_server.print_go_software if config.PRINT_GO_TAMBIEN_POR_SOFTWARE else None
         tolerancia_reposo = (config.TOLERANCIA_REPOSO_MM if config.PRINT_GO_TAMBIEN_POR_SOFTWARE
                              else SIN_TOLERANCIA_REPOSO)
         self.secuencia = SecuenciaImpresion(self.motor, self.mduino,
-                                            self.print_server.esta_lista,
+                                            self._boards_listas,
                                             config.POSICION_REPOSO_MM,
                                             print_go_extra=print_go_extra,
                                             tolerancia_reposo=tolerancia_reposo, parent=self)
         if config.PRINT_GO_TAMBIEN_POR_SOFTWARE:
             print("[CONFIG] PROVISIONAL: print go tambien por software (P,SPG)")
-        self.secuencia.terminada.connect(self.print_server.programa_terminado)
+        for pagina in self.paginas_print_server:
+            self.secuencia.terminada.connect(pagina.programa_terminado)
         self.mduino.seta_cambiada.connect(self.secuencia.set_seta)
         self.mduino.seta_cambiada.connect(self.seta_cambiada)
         self.seta_pulsada = False
@@ -256,18 +262,13 @@ class VentanaPrincipal(QMainWindow):
 
         self.pagina_programa = PaginaPrograma(
             self.ui, self.secuencia, self.mduino,
-            boards_listas=self.print_server.esta_lista,
-            abortar_boards=self.print_server.abortar_boards,
-            geometria_imagen=self.print_server.geometria_imagen,
+            boards_listas=self._boards_listas,
+            abortar_boards=self._abortar_boards,
+            geometria_imagen=self._geometria_imagen,
             posicion_real=lambda: self.posicion_mm,
             registrar=self.print_server.registrar,
             parent=self)
-        self.pagina_programa.cabezales_cambiados.connect(
-            lambda: self.print_server.invalidar_render(MOTIVO_CABEZALES))
-        self.print_server_aewa = PrintServerAewa(self.ui, self.aprint,
-                                                 registrar=self.print_server.registrar,
-                                                 parent=self)
-        self.aprint.mensaje.connect(self.print_server.registrar)
+        self.pagina_programa.cabezales_cambiados.connect(self._invalidar_renders)
 
         # ===== navegacion =====
         self.ui.bt_pg_movimientos1.clicked.connect(self.ir_pg_movimientos)
@@ -327,6 +328,7 @@ class VentanaPrincipal(QMainWindow):
 
         self.cargar_ajustes()
         self._actualizar_accesos_print_server()   # con o sin ajustes guardados
+        self.ui.stackedWidget.setCurrentWidget(self.ui.programa)   # pagina inicial, sea cual sea la del .ui
         self.tinta.conectar()
 
     # ===== fuente =====
@@ -480,6 +482,28 @@ class VentanaPrincipal(QMainWindow):
         return self.pagina_programa.campo_distancia(i)
 
     # ===== navegacion =====
+    # ===== las dos paginas Print Server a la vez =====
+    def _boards_listas(self):
+        """Hay alguna board activa y todas las activas (GIS y AEWA) estan armadas."""
+        activas = [b for pagina in self.paginas_print_server for b, _x in pagina.boards_activas()]
+        return bool(activas) and all(b.esta_lista() for b in activas)
+
+    def _abortar_boards(self):
+        for pagina in self.paginas_print_server:
+            pagina.abortar_boards()
+
+    def _geometria_imagen(self):
+        """(x_mm, ancho_mm) de la primera pagina con imagen, o None."""
+        for pagina in self.paginas_print_server:
+            geometria = pagina.geometria_imagen()
+            if geometria is not None:
+                return geometria
+        return None
+
+    def _invalidar_renders(self):
+        for pagina in self.paginas_print_server:
+            pagina.invalidar_render(MOTIVO_CABEZALES)
+
     def _actualizar_accesos_print_server(self):
         """Habilita cada boton Print Server segun los cabezales activos en Programa."""
         tipos = {tipo for tipo, _x in self.pagina_programa.cabezales_activos()}
@@ -532,8 +556,9 @@ class VentanaPrincipal(QMainWindow):
             self.timer_home.stop()
             self.homing_en_curso = False
             print("[SEGURIDAD] Parada de emergencia: movimientos bloqueados")   # en pantalla ya esta la ventana
-            if self.print_server.esta_lista():
-                self.print_server.abortar()   # la impresion no se reanuda: se empieza de nuevo
+            for pagina in self.paginas_print_server:
+                if pagina.esta_lista():
+                    pagina.abortar()   # la impresion no se reanuda: se empieza de nuevo
             self.ventana_emergencia.mostrar()
         else:
             self.ventana_emergencia.ocultar()
