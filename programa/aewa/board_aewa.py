@@ -2,14 +2,17 @@
 """Board APMB4 (cabezal Ricoh de Aewa) gobernada por APRINT: interfaz Board de
 programa/gis/board.py sobre el protocolo remoto (aprint_comunicacion).
 
-  preparar: crea la carpeta del trabajo (RIPOutput) con el PDF (la pagina AEWA
-            carga PDF; un mapa de bits se convertiria a un PDF del tamano fisico
-            exacto, pixeles / dpi del modo, porque APRINT escala los mapas de bits
-            por los dpi grabados en el archivo) y prepara el job en APRINT:
-            "pd" cierra el dialogo, "jc" cierra el job, "pp" resoluciones y sin
-            multipass, "ji" inserta el PDF con el offset X (distancia desde el
-            PULSE hasta la imagen, como el XOffset del PMB: el "blanco por
-            delante" de MBD-F-500) y "jv" guarda el .ajb en la carpeta.
+  preparar: crea la carpeta del trabajo (RIPOutput) con una copia del archivo
+            (PDF, o el PNG del test de cabezal: APRINT lo escala por los dpi
+            grabados en el archivo, 600) y prepara el job en APRINT: "pd" cierra
+            el dialogo, "jc" cierra el job, "pp" resoluciones y sin multipass,
+            "ji" inserta el archivo y "jv" guarda el .ajb en la carpeta.
+            Ejes del job (impresora "Singlepass BW"): X a lo largo del cabezal
+            (0..config.ANCHO_CABEZAL_AEWA_MM), Y el avance de la mesa. La imagen
+            de la mesa (X = avance) va girada config.GIRO_JOB_AEWA; su Y en la
+            mesa pasa a la X del job y el offset hasta el cabezal (distancia del
+            cabezal - PULSE - imagen, como el XOffset del PMB: el "blanco por
+            delante" de MBD-F-500) a la Y del job.
   armar:    "pd" abre el dialogo de impresion y "ps" arranca: con Printing mode
             "Single pass - External trigger" APRINT queda esperando el pulso
             del M-Duino (una franja = todo el trabajo).
@@ -27,8 +30,7 @@ import threading
 import time
 from datetime import datetime
 
-from PySide6.QtCore import QMarginsF, QSizeF, Signal
-from PySide6.QtGui import QImage, QPageLayout, QPageSize, QPainter, QPdfWriter
+from PySide6.QtCore import Signal
 
 from programa import config
 from programa.aewa.aprint_comunicacion import (OPCION_RESERVADA, TODAS_LAS_IMPRESORAS, ErrorAprint,
@@ -46,7 +48,6 @@ PD_CERRAR = 0
 JC_SIN_GUARDAR = 0
 SIN_ESCALAR = 0
 EXTENSION_JOB = ".ajb"
-EXTENSION_PDF = ".pdf"
 PREFIJO_CARPETA = "aewa"
 FORMATO_MARCA = "%Y%m%d_%H%M%S"
 TAM_ESTADO_PI = 2              # "pi": 2 bytes, un bit por impresora (1 = imprimiendo)
@@ -67,21 +68,6 @@ def giro_aprint(rotacion_horaria):
 def mm_a_pixeles(mm):
     """Posicion de "ji" (X o Y) en pixeles a config.APRINT_DPI_POSICION."""
     return round(mm / config.MM_POR_PULGADA * config.APRINT_DPI_POSICION)
-
-
-def imagen_a_pdf(ruta_imagen, ruta_pdf, ancho_mm, alto_mm, dpi):
-    """PDF de una pagina del tamano fisico dado con la imagen a toda pagina.
-    Debe llamarse desde el hilo de Qt (QPainter)."""
-    imagen = QImage(ruta_imagen)
-    if imagen.isNull():
-        raise ValueError(f"no se puede leer la imagen {ruta_imagen}")
-    escritor = QPdfWriter(ruta_pdf)
-    escritor.setResolution(dpi)
-    escritor.setPageLayout(QPageLayout(QPageSize(QSizeF(ancho_mm, alto_mm), QPageSize.Millimeter),
-                                       QPageLayout.Portrait, QMarginsF(0, 0, 0, 0)))
-    pintor = QPainter(escritor)
-    pintor.drawImage(escritor.pageLayout().paintRectPixels(dpi), imagen)
-    pintor.end()
 
 
 class BoardAewa(Board):
@@ -139,46 +125,50 @@ class BoardAewa(Board):
                            f"{offset_x_mm:.{DECIMALES_MM}f} mm): aleja el reposo o acerca la "
                            "imagen al 0 de la mesa")
             return False
-        y_mm = trabajo.y_mm - config.Y_CABEZAL_AEWA_MM
-        if y_mm < 0:
-            self.registrar(f"La imagen queda {-y_mm:.{DECIMALES_MM}f} mm por encima del cabezal "
-                           f"(Y del cabezal en la mesa: {config.Y_CABEZAL_AEWA_MM} mm)")
+        # a lo largo del cabezal: la Y de la mesa pasa a la X del job
+        x_job_mm = trabajo.y_mm - config.Y_CABEZAL_AEWA_MM
+        if x_job_mm < 0:
+            self.registrar(f"La imagen queda {-x_job_mm:.{DECIMALES_MM}f} mm por encima del "
+                           f"cabezal (el cabezal empieza en Y = {config.Y_CABEZAL_AEWA_MM} mm)")
             return False
+        if x_job_mm + trabajo.alto_mm > config.ANCHO_CABEZAL_AEWA_MM:
+            self.registrar(f"La imagen sobresale del cabezal por abajo: ocupa de Y "
+                           f"{trabajo.y_mm:.{DECIMALES_MM}f} a "
+                           f"{trabajo.y_mm + trabajo.alto_mm:.{DECIMALES_MM}f} mm y el cabezal "
+                           f"cubre de {config.Y_CABEZAL_AEWA_MM} a "
+                           f"{config.Y_CABEZAL_AEWA_MM + config.ANCHO_CABEZAL_AEWA_MM:.{DECIMALES_MM}f} mm")
+            return False
+        y_job_mm = offset_x_mm
         self.registrar(f"Imagen en mesa: X={trabajo.x_mm:.{DECIMALES_MM}f} mm, "
                        f"Y={trabajo.y_mm:.{DECIMALES_MM}f} mm; cabezal a "
-                       f"{x_cabezal_mm:.{DECIMALES_MM}f} mm -> offset X = "
+                       f"{x_cabezal_mm:.{DECIMALES_MM}f} mm -> offset = "
                        f"{offset_x_mm:.{DECIMALES_MM}f} mm")
 
         nombre = os.path.splitext(os.path.basename(trabajo.ruta_imagen))[0]
+        extension = os.path.splitext(trabajo.ruta_imagen)[1].lower()
         marca = datetime.now().strftime(FORMATO_MARCA)
         carpeta = os.path.join(vpi.CARPETA_SALIDA, f"{marca}_{PREFIJO_CARPETA}_{nombre}")
-        ruta_pdf = os.path.join(carpeta, nombre + EXTENSION_PDF)
+        ruta_archivo = os.path.join(carpeta, nombre + extension)
         ruta_job = os.path.join(carpeta, nombre + EXTENSION_JOB)
         try:
             os.makedirs(carpeta, exist_ok=True)
-            if trabajo.ruta_imagen.lower().endswith(EXTENSION_PDF):
-                shutil.copyfile(trabajo.ruta_imagen, ruta_pdf)   # ya es PDF: tal cual
-            else:
-                # el tamano fisico de la imagen en la mesa ya esta en mm (pixeles / dpi del modo)
-                imagen_a_pdf(trabajo.ruta_imagen, ruta_pdf, trabajo.ancho_mm, trabajo.alto_mm,
-                             max(self.res_horizontal, self.res_vertical))
-        except (OSError, ValueError) as e:
+            shutil.copyfile(trabajo.ruta_imagen, ruta_archivo)
+        except OSError as e:
             self.registrar(f"No se ha podido preparar el trabajo: {e}")
             return False
-        self.registrar(f"Trabajo generado: {ruta_pdf}")
+        self.registrar(f"Trabajo generado: {ruta_archivo}")
 
-        giro = giro_aprint(trabajo.rotacion)
-        # la mesa avanza hacia +X y el cabezal esta delante: el borde x + ancho de la
-        # imagen pasa primero bajo el cabezal, es decir, en el job de APRINT (X = sentido
-        # de impresion) la imagen va espejada en X respecto a la mesa
-        espejo_x = trabajo.espejo_x != config.INVERTIR_X_AEWA
+        # orientacion: la de la pagina mas la del job (X de la mesa = avance = Y del job)
+        giro = giro_aprint((trabajo.rotacion + config.GIRO_JOB_AEWA) % GRADOS_VUELTA)
+        espejo_x = trabajo.espejo_x != config.ESPEJO_JOB_X_AEWA
+        espejo_y = trabajo.espejo_y != config.ESPEJO_JOB_Y_AEWA
         opciones = CODIGO_GIRO[giro] << DESPLAZAMIENTO_GIRO
         if espejo_x:
             opciones |= BIT_ESPEJO_X
-        if trabajo.espejo_y:
+        if espejo_y:
             opciones |= BIT_ESPEJO_Y
-        x_px = mm_a_pixeles(offset_x_mm)
-        y_px = mm_a_pixeles(y_mm)
+        x_px = mm_a_pixeles(x_job_mm)
+        y_px = mm_a_pixeles(y_job_mm)
         self.carpeta_trabajo = carpeta
         self._ruta_job = ruta_job
         self._geometria = (trabajo.x_mm, trabajo.ancho_mm)
@@ -199,7 +189,7 @@ class BoardAewa(Board):
                     c.escribir_parametro(PARAM_DPI_VERTICAL, self.res_vertical * ESCALA_MILES)
                     c.escribir_parametro(PARAM_MODO_MULTIPASS, MODO_MULTIPASS_NINGUNO)
                     c.comando("ji", u16(OPCION_RESERVADA) + u16(opciones) + i32(x_px) + i32(y_px)
-                              + u32(SIN_ESCALAR) + u32(SIN_ESCALAR) + texto(ruta_pdf))
+                              + u32(SIN_ESCALAR) + u32(SIN_ESCALAR) + texto(ruta_archivo))
                     c.comando("jv", u16(OPCION_RESERVADA) + texto(ruta_job))
                     leidos = (c.leer_parametro(PARAM_DPI_HORIZONTAL) / ESCALA_MILES,
                               c.leer_parametro(PARAM_DPI_VERTICAL) / ESCALA_MILES)
@@ -207,11 +197,11 @@ class BoardAewa(Board):
                 lineas.append(f"Error al preparar el job en APRINT: {c.describir(e)}")
                 self._hecho.emit("preparar", False, lineas)
                 return
-            lineas.append(f"Job {os.path.basename(ruta_job)}: offset X {offset_x_mm:.{DECIMALES_MM}f}"
-                          f" mm = {x_px} px, Y {y_mm:.{DECIMALES_MM}f} mm = {y_px} px a "
-                          f"{config.APRINT_DPI_POSICION} dpi; giro APRINT {giro}, espejo X "
-                          f"{espejo_x}, espejo Y {trabajo.espejo_y}; APRINT a "
-                          f"{leidos[0]:g} x {leidos[1]:g} dpi (H x V)")
+            lineas.append(f"Job {os.path.basename(ruta_job)}: X (cabezal) "
+                          f"{x_job_mm:.{DECIMALES_MM}f} mm = {x_px} px, Y (avance, offset) "
+                          f"{y_job_mm:.{DECIMALES_MM}f} mm = {y_px} px a {config.APRINT_DPI_POSICION}"
+                          f" dpi; giro APRINT {giro}, espejo X {espejo_x}, espejo Y {espejo_y}; "
+                          f"APRINT a {leidos[0]:g} x {leidos[1]:g} dpi (H x V)")
             if leidos != (self.res_horizontal, self.res_vertical):
                 lineas.append(f"AVISO: se pidieron {self.res_horizontal} x {self.res_vertical} dpi")
             self._hecho.emit("preparar", True, lineas)

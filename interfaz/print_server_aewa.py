@@ -14,7 +14,11 @@ lo propio de esta pagina:
     mesa, el offset hasta el cabezal, la velocidad de Programa (y la frecuencia
     de disparo que supone) y los Printer Settings leidos de APRINT, con avisos.
     Se refresca con cada cambio (senal cambiado de PrintServer) y al conectar.
-  - test_cabezal y texto_variable: pendientes (se traeran de MBD-F-500).
+  - test_cabezal: pone el PNG del test (config.RUTA_TEST_CABEZAL, 1280 filas =
+    boquillas a 600 dpi) a 600 x 600 dpi en la posicion fija de la mesa y lo
+    renderiza; se imprime con START PRINT como cualquier trabajo.
+  - texto_variable: pendiente (se traera de MBD-F-500 cuando este comprobada
+    la orientacion del job).
 
 Una sola pasada y la velocidad la fija la pagina Programa: sin desplegables de
 pasos ni de velocidad.
@@ -35,6 +39,7 @@ from interfaz.print_server import (MOTIVO_MODO_CAMBIADO, TEXTOS_PRINT_AEWA, WIDG
 
 SUFIJO_DPI = "dpi"
 FILTRO_PDF = "PDF (*.pdf)"
+EXTENSION_PDF = ".pdf"
 PAGINA_IMPRESION = 0
 PUNTOS_POR_PULGADA = 72
 MM_POR_PUNTO = config.MM_POR_PULGADA / PUNTOS_POR_PULGADA
@@ -109,16 +114,32 @@ class PrintServerAewa(PrintServer):
         self._aplicar_resolucion()
         self.refrescar_info()
 
-        # ===== pendientes =====
-        ui.test_cabezal.clicked.connect(lambda: self.registrar(TEXTO_PENDIENTE.format("test de cabezal")))
+        ui.test_cabezal.clicked.connect(self.test_cabezal)
+        # ===== pendiente =====
         ui.texto_variable.clicked.connect(lambda: self.registrar(TEXTO_PENDIENTE.format("insertar texto")))
 
-    # ===== imagen (PDF) =====
+    # ===== imagen (PDF; el test de cabezal es un PNG) =====
     def _abrir_archivo(self, ruta):
+        if not ruta.lower().endswith(EXTENSION_PDF):
+            return super()._abrir_archivo(ruta)   # mapa de bits: pixeles / dpi del modo
         pixmap, ancho_mm, alto_mm, paginas = leer_pdf(ruta)
         if paginas > 1:
             self.registrar(f"[PRINT SERVER] AVISO: el PDF tiene {paginas} paginas, se usa la primera")
         return pixmap, (ancho_mm, alto_mm)
+
+    # ===== test de cabezal =====
+    def test_cabezal(self):
+        """Trabajo de test del cabezal: PNG de la app, resolucion y posicion fijas, y render."""
+        if not os.path.isfile(config.RUTA_TEST_CABEZAL):
+            self.registrar(f"[TEST] Falta la imagen del test de cabezal: {config.RUTA_TEST_CABEZAL}")
+            return
+        self._seleccionar(self.ui.select_res_horizontal, config.TEST_CABEZAL_RES_HORIZONTAL_DPI)
+        self._seleccionar(self.ui.select_res_vertical, config.TEST_CABEZAL_RES_VERTICAL_DPI)
+        if not self.cargar_archivo(config.RUTA_TEST_CABEZAL, config.TEST_CABEZAL_X_MM,
+                                   config.TEST_CABEZAL_Y_MM):
+            return
+        self.registrar("[TEST] Test de cabezal en la mesa: renderizando")
+        self.generar_trabajo()
 
     # ===== recuadro de informacion =====
     def refrescar_info(self, *_):
@@ -147,9 +168,14 @@ class PrintServerAewa(PrintServer):
                 _board, x_cabezal_mm = activas[0]
                 offset_mm = calcular_offset_x(x_cabezal_mm, x_mm, self.ancho_imagen_mm)
                 lineas.append(f"Cabezal APMB4 a {x_cabezal_mm:.{DECIMALES_MM}f} mm{SEPARADOR}"
-                              f"offset X {offset_mm:.{DECIMALES_MM}f} mm")
+                              f"offset {offset_mm:.{DECIMALES_MM}f} mm{SEPARADOR}cubre Y "
+                              f"{config.Y_CABEZAL_AEWA_MM:g} a "
+                              f"{config.Y_CABEZAL_AEWA_MM + config.ANCHO_CABEZAL_AEWA_MM:.{DECIMALES_MM}f} mm")
                 if offset_mm < 0:
                     lineas.append("AVISO: la imagen queda bajo el cabezal antes del print go")
+                if y_mm < config.Y_CABEZAL_AEWA_MM or \
+                        y_mm + self.alto_imagen_mm > config.Y_CABEZAL_AEWA_MM + config.ANCHO_CABEZAL_AEWA_MM:
+                    lineas.append("AVISO: la imagen sobresale del cabezal en Y")
             else:
                 lineas.append("AVISO: ningún APMB4 activo en Programa")
 

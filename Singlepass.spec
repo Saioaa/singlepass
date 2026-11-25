@@ -4,7 +4,7 @@
 Desde la carpeta de main.py (la de este fichero):
     python -m PyInstaller --noconfirm --clean Singlepass.spec
 
-Recursos: imagenes, fuentes y template.vpi van dentro del paquete, en
+Recursos: imagenes, fuentes, template.vpi y el test de cabezal van dentro del paquete, en
 dist/Singlepass/_internal/recursos, que es donde los busca programa/config.py
 (sys._MEIPASS) con la app empaquetada. Lo que la app escribe (ajustes.json,
 RIPOutput, Logging) va a <usuario>\\MATERIALIGHT y lo crea la propia app: no se
@@ -23,9 +23,10 @@ CARPETA_RECURSOS = CARPETA / "recursos"
 ICONO = CARPETA_RECURSOS / "imagenes" / "M_02.ico"
 PLANTILLA_VPI = CARPETA_RECURSOS / "template.vpi"
 CARPETA_FUENTES = CARPETA_RECURSOS / "fuentes"
+TEST_CABEZAL = CARPETA_RECURSOS / "test_cabezal" / "test_cabezal.png"
 
 # Recursos imprescindibles: si falta alguno, el empaquetado se detiene aqui
-RECURSOS_OBLIGATORIOS = (ICONO, PLANTILLA_VPI)
+RECURSOS_OBLIGATORIOS = (ICONO, PLANTILLA_VPI, TEST_CABEZAL)
 faltan = [str(r) for r in RECURSOS_OBLIGATORIOS if not r.is_file()]
 if not any(CARPETA_FUENTES.glob("*.ttf")):
     faltan.append(f"{CARPETA_FUENTES} (ningun .ttf: la fuente Nunito)")
@@ -40,6 +41,7 @@ a = Analysis(
         (str(CARPETA_RECURSOS / "imagenes"), "recursos/imagenes"),
         (str(CARPETA_FUENTES), "recursos/fuentes"),
         (str(PLANTILLA_VPI), "recursos"),
+        (str(TEST_CABEZAL), "recursos/test_cabezal"),
     ],
     # Todos los modulos de programa/ e interfaz/ entran explicitamente, aunque el
     # analisis de imports no los detecte (p. ej. "from programa import registro").

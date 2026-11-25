@@ -107,13 +107,34 @@ CABEZAL_FILAS = 4
 RESOLUCION_NATIVA_CABEZAL_DPI = 600
 # Job de APRINT ("ji"): posiciones en pixeles a esta resolucion
 APRINT_DPI_POSICION = 600
-# Y de la mesa (mm) en la que empieza el cabezal (su primera boquilla): la Y de la
-# imagen en el job es la de la mesa menos esta. PROVISIONAL: medir al montar la board.
+# Ejes del job en la impresora "Singlepass BW": X = a lo largo del cabezal (ancho
+# util ANCHO_CABEZAL_AEWA_MM, la "mesa" que muestra APRINT), Y = sentido de avance
+# de la mesa (el blanco por delante = offset hasta el cabezal va en Y). La pagina
+# de APRINT (Printer Settings -> General) debe ser mas larga que el mayor offset
+# + imagen posible (distancia del cabezal en la barra).
+ANCHO_CABEZAL_AEWA_MM = 54.1867
+# Y de la mesa (mm) en la que empieza el cabezal (su primera boquilla): la X de la
+# imagen en el job es su Y en la mesa menos esta. PROVISIONAL: medir al montar la board.
 Y_CABEZAL_AEWA_MM = 0.0
-# La mesa avanza hacia +X y el cabezal esta delante: el borde x + ancho de la imagen
-# pasa primero, asi que en el job (X = sentido de impresion) la imagen va espejada en X.
-# PROVISIONAL: comprobar con la primera impresion; si sale al reves, False.
-INVERTIR_X_AEWA = True
+# Orientacion de la imagen en el job respecto a la mesa (X de la mesa = avance, Y =
+# a lo largo del cabezal): giro horario que se suma al de la pagina y espejos que
+# se aplican ademas de los de la pagina. Con 270 el borde x + ancho (el que pasa
+# primero bajo el cabezal) queda arriba (Y = offset) y la Y de la mesa va hacia +X.
+# PROVISIONAL: comprobar con el PDF del codigo de barras; corregir aqui si sale
+# girado o espejado.
+GIRO_JOB_AEWA = 270
+ESPEJO_JOB_X_AEWA = False
+ESPEJO_JOB_Y_AEWA = False
+
+# ===== TEST DE CABEZAL (boton test_cabezal de Print Server AEWA) =====
+# PNG de 1 bit hecho pixel a pixel (1280 filas = una por boquilla, a 600 dpi), de
+# la app MBD-F-500; va con la app en recursos/test_cabezal. Se imprime a 600 x 600
+# dpi para que cada pixel sea una gota, en esta posicion de la mesa.
+RUTA_TEST_CABEZAL = os.path.join(CARPETA_RECURSOS, "test_cabezal", "test_cabezal.png")
+TEST_CABEZAL_X_MM = 0.0
+TEST_CABEZAL_Y_MM = 0.0
+TEST_CABEZAL_RES_HORIZONTAL_DPI = 600
+TEST_CABEZAL_RES_VERTICAL_DPI = 600
 # Impresora de APRINT "Singlepass BW" (Ricoh MH5xxx, un cabezal): en Printer
 # Settings -> General la resolucion HORIZONTAL (a lo largo del cabezal, paso de
 # boquilla) es fija y la VERTICAL (sentido del movimiento de la mesa, por el

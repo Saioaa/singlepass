@@ -404,13 +404,16 @@ class PrintServer(QObject):
     def cargar_imagen(self):
         ruta, _ = QFileDialog.getOpenFileName(self.mesa.window(), self.TITULO_ARCHIVO,
                                               CARPETA_INICIAL_IMAGENES, self.FILTRO_ARCHIVOS)
-        if not ruta:
-            return
+        if ruta:
+            self.cargar_archivo(ruta)
+
+    def cargar_archivo(self, ruta, x_mm=POSICION_INICIAL_X_MM, y_mm=POSICION_INICIAL_Y_MM):
+        """Pone el archivo en la mesa en esa posicion, sin girar ni espejar. True si se ha cargado."""
         try:
             pixmap, tamano_fijo_mm = self._abrir_archivo(ruta)
         except ValueError as e:
             self.registrar(f"[PRINT SERVER] No se ha podido abrir {os.path.basename(ruta)}: {e}")
-            return
+            return False
         if self.hay_render():
             self.invalidar_render(MOTIVO_IMAGEN_NUEVA)
         self.ruta_imagen = os.path.normpath(ruta)
@@ -419,16 +422,17 @@ class PrintServer(QObject):
         self.rotacion_imagen = 0
         self.espejo_x = False
         self.espejo_y = False
-        self._mostrar_pixmap(pixmap, POSICION_INICIAL_X_MM, POSICION_INICIAL_Y_MM)
+        self._mostrar_pixmap(pixmap, x_mm, y_mm)
         if tamano_fijo_mm is not None:
             self.registrar(f"[PRINT SERVER] {os.path.basename(self.ruta_imagen)}: "
                            f"{self.ancho_imagen_mm:.2f} x {self.alto_imagen_mm:.2f} mm")
-            return
+            return True
         origen = "del modo" if any(b.nombre in self._dpi_modo for b, _ in self.boards_activas()) \
             else "por defecto, sin modo cargado"
         self.registrar(f"[PRINT SERVER] Imagen: {pixmap.width()} x {pixmap.height()} px a "
                        f"{self.dpi_imagen[0]} x {self.dpi_imagen[1]} dpi ({origen}) "
                        f"= {self.ancho_imagen_mm:.2f} x {self.alto_imagen_mm:.2f} mm")
+        return True
 
     def _refrescar_vista(self):
         if self._pixmap_base is None:
