@@ -240,6 +240,10 @@ class PaginaPrograma(QObject):
         valor = int(_leer_float(campo, por_defecto=0))
         return max(POTENCIA_MIN, min(POTENCIA_MAX, valor))
 
+    def velocidad_impresion(self):
+        """mm/s del campo de velocidad de impresion, o None si no es un numero."""
+        return _leer_float(self.ui.pg_prog_vel_impresion)
+
     def leer_parametros(self):
         """ParametrosPrograma listo para la secuencia. Lanza ValueError si falta algo."""
         pasadas = int(_leer_float(self.ui.pg_prog_cant_pasadas_curado, por_defecto=0))

@@ -2,10 +2,10 @@
 """Board APMB4 (cabezal Ricoh de Aewa) gobernada por APRINT: interfaz Board de
 programa/gis/board.py sobre el protocolo remoto (aprint_comunicacion).
 
-  preparar: crea la carpeta del trabajo (RIPOutput), convierte la imagen a un
-            PDF del tamano fisico exacto (pixeles / dpi del modo, como las
-            boards GIS: APRINT escala los mapas de bits por los dpi grabados en
-            el archivo, el PDF evita esa dependencia) y prepara el job en APRINT:
+  preparar: crea la carpeta del trabajo (RIPOutput) con el PDF (la pagina AEWA
+            carga PDF; un mapa de bits se convertiria a un PDF del tamano fisico
+            exacto, pixeles / dpi del modo, porque APRINT escala los mapas de bits
+            por los dpi grabados en el archivo) y prepara el job en APRINT:
             "pd" cierra el dialogo, "jc" cierra el job, "pp" resoluciones y sin
             multipass, "ji" inserta el PDF con el offset X (distancia desde el
             PULSE hasta la imagen, como el XOffset del PMB: el "blanco por
@@ -21,6 +21,7 @@ por senal al hilo de Qt. Sin modos: la resolucion la fija la pagina
 """
 
 import os
+import shutil
 import struct
 import threading
 import time
@@ -155,9 +156,12 @@ class BoardAewa(Board):
         ruta_job = os.path.join(carpeta, nombre + EXTENSION_JOB)
         try:
             os.makedirs(carpeta, exist_ok=True)
-            # el tamano fisico de la imagen en la mesa ya esta en mm (pixeles / dpi del modo)
-            imagen_a_pdf(trabajo.ruta_imagen, ruta_pdf, trabajo.ancho_mm, trabajo.alto_mm,
-                         max(self.res_horizontal, self.res_vertical))
+            if trabajo.ruta_imagen.lower().endswith(EXTENSION_PDF):
+                shutil.copyfile(trabajo.ruta_imagen, ruta_pdf)   # ya es PDF: tal cual
+            else:
+                # el tamano fisico de la imagen en la mesa ya esta en mm (pixeles / dpi del modo)
+                imagen_a_pdf(trabajo.ruta_imagen, ruta_pdf, trabajo.ancho_mm, trabajo.alto_mm,
+                             max(self.res_horizontal, self.res_vertical))
         except (OSError, ValueError) as e:
             self.registrar(f"No se ha podido preparar el trabajo: {e}")
             return False

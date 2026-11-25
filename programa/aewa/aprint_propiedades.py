@@ -47,7 +47,8 @@ ENCODER_REAL = 0
 # Parametro 40 (pestana Motion, "Printing mode"): como se dispara cada franja.
 # No tiene que ver con el multipass (parametro 100, pestana Multipass): la guia
 # lo llama "single pass" porque cada disparo imprime una franja.
-NOMBRES_MODO_IMPRESION = {0: "externo por franja", 1: "interno por franja",
+MODO_IMPRESION_EXTERNO = 0      # Single pass - External trigger (el pulso del M-Duino)
+NOMBRES_MODO_IMPRESION = {MODO_IMPRESION_EXTERNO: "externo por franja", 1: "interno por franja",
                           2: "continuo"}
 NOMBRES_MODO_MULTIPASS = {MODO_MULTIPASS_NINGUNO: "ninguno", MODO_MULTIPASS_COSIDO: "cosido",
                           MODO_MULTIPASS_PASADAS: "multiples pasadas"}

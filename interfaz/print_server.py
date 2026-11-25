@@ -29,7 +29,7 @@ import os
 import time
 from types import SimpleNamespace
 
-from PySide6.QtCore import QLocale, QObject, QStandardPaths, Qt, QTimer
+from PySide6.QtCore import QLocale, QObject, QStandardPaths, Qt, QTimer, Signal
 from PySide6.QtGui import QColor, QDoubleValidator, QImageReader, QPainter, QPixmap, QTransform
 from PySide6.QtWidgets import QFileDialog
 
@@ -105,6 +105,7 @@ COLORES_PLANOS = ("#00AEEF", "#EC008C", "#FFF100", "#000000")   # CMYK, orden de
 # en las boards, se vacian las previews y Print deja de parpadear hasta el siguiente
 # Render. Durante una impresion no se toca nada.
 MOTIVO_IMAGEN_MOVIDA  = "imagen movida"
+MOTIVO_IMAGEN_NUEVA   = "nueva imagen"
 MOTIVO_IMAGEN_GIRADA  = "imagen girada o espejada"
 MOTIVO_MODO_CAMBIADO  = "modo de impresion cambiado"
 MOTIVO_CABEZALES      = "cabezales o modulos cambiados en Programa"
@@ -125,6 +126,12 @@ PERIODO_PARPADEO_MS = 500
 
 
 class PrintServer(QObject):
+
+    # dialogo de Nueva imagen (la pagina AEWA carga PDF: print_server_aewa.py)
+    FILTRO_ARCHIVOS = FILTRO_IMAGENES
+    TITULO_ARCHIVO = "Seleccionar imagen"
+
+    cambiado = Signal()   # imagen, posicion, tamano, render o estado de las boards han cambiado
 
     def __init__(self, ui, boards, cabezales_activos, posicion_eje, iniciar_programa,
                  parar_programa, programa_en_marcha, widgets=WIDGETS_GIS,
@@ -176,6 +183,8 @@ class PrintServer(QObject):
 
         # mesa de impresion en lugar del QLabel del disenador
         self.mesa = MesaImpresion(config.MESA_ANCHO_MM, config.MESA_ALTO_MM, self.pagina)
+        self._pixmap_base = None       # imagen tal como se abrio (sin girar ni espejar)
+        self.tamano_fijo_mm = None     # (ancho, alto) de un archivo con tamano fisico (PDF)
         self.mesa.setGeometry(self.w.mesa.geometry())
         self.mesa.setStyleSheet(self.w.mesa.styleSheet())
         self.w.mesa.hide()
@@ -319,6 +328,10 @@ class PrintServer(QObject):
         """Resolucion del modo seleccionado: con ella se mide la imagen en la mesa."""
         self._dpi_modo[board.nombre] = (dpi_x, dpi_y)
         self.registrar(f"[{board.nombre}] Modo activo: {dpi_x} x {dpi_y} dpi")
+        if self.tamano_fijo_mm is not None:
+            self.dpi_imagen = self._dpi_actual()
+            self.cambiado.emit()
+            return   # el PDF mide lo mismo a cualquier resolucion
         if self.ruta_imagen is not None and self._dpi_actual() != self.dpi_imagen:
             self._refrescar_vista()   # misma imagen, nuevo tamano fisico
             self.registrar(f"[PRINT SERVER] Imagen medida a {self.dpi_imagen[0]} x {self.dpi_imagen[1]} dpi: "
@@ -338,6 +351,7 @@ class PrintServer(QObject):
         self.w.pos_y_real.setText(f"{y_mm:.{DECIMALES_POSICION}f}")
         if self._posicion_render is not None and (x_mm, y_mm) != self._posicion_render:
             self.invalidar_render(MOTIVO_IMAGEN_MOVIDA)
+        self.cambiado.emit()
 
     def ir_a_posicion(self):
         posicion = self.mesa.posicion_imagen_mm()
@@ -363,28 +377,53 @@ class PrintServer(QObject):
     # ===== imagen =====
     def _mostrar_pixmap(self, pixmap, x_mm=None, y_mm=None):
         self.dpi_imagen = self._dpi_actual()
-        dpi_x, dpi_y = self.dpi_imagen
-        if self.rotacion_imagen % (GRADOS_VUELTA // 2) == GIRO_PERPENDICULAR:
-            dpi_x, dpi_y = dpi_y, dpi_x   # el pixmap girado tiene los ejes intercambiados
-        self.ancho_imagen_mm = pixmap.width() * MM_POR_PULGADA / dpi_x
-        self.alto_imagen_mm = pixmap.height() * MM_POR_PULGADA / dpi_y
+        girada = self.rotacion_imagen % (GRADOS_VUELTA // 2) == GIRO_PERPENDICULAR
+        if self.tamano_fijo_mm is not None:
+            # archivo con tamano fisico (PDF): no depende de los dpi del modo
+            ancho_mm, alto_mm = self.tamano_fijo_mm
+            self.ancho_imagen_mm, self.alto_imagen_mm = (alto_mm, ancho_mm) if girada \
+                else (ancho_mm, alto_mm)
+        else:
+            dpi_x, dpi_y = self.dpi_imagen
+            if girada:
+                dpi_x, dpi_y = dpi_y, dpi_x   # el pixmap girado tiene los ejes intercambiados
+            self.ancho_imagen_mm = pixmap.width() * MM_POR_PULGADA / dpi_x
+            self.alto_imagen_mm = pixmap.height() * MM_POR_PULGADA / dpi_y
         self.mesa.mostrar_imagen(pixmap, self.ancho_imagen_mm, self.alto_imagen_mm, x_mm, y_mm)
         self.w.tamano.setText(f"{self.ancho_imagen_mm:.1f} x {self.alto_imagen_mm:.1f} mm")
+        self.cambiado.emit()
 
-    def cargar_imagen(self):
-        ruta, _ = QFileDialog.getOpenFileName(self.mesa.window(), "Seleccionar imagen",
-                                              CARPETA_INICIAL_IMAGENES, FILTRO_IMAGENES)
-        if not ruta:
-            return
+    def _abrir_archivo(self, ruta):
+        """(pixmap, (ancho_mm, alto_mm) o None si el tamano sale de los dpi del modo).
+        Lanza ValueError si no se puede abrir. Las paginas lo redefinen (PDF)."""
         pixmap = QPixmap(ruta)
         if pixmap.isNull():
-            self.registrar(f"[PRINT SERVER] No se ha podido abrir: {ruta}")
+            raise ValueError("formato no reconocido")
+        return pixmap, None
+
+    def cargar_imagen(self):
+        ruta, _ = QFileDialog.getOpenFileName(self.mesa.window(), self.TITULO_ARCHIVO,
+                                              CARPETA_INICIAL_IMAGENES, self.FILTRO_ARCHIVOS)
+        if not ruta:
             return
+        try:
+            pixmap, tamano_fijo_mm = self._abrir_archivo(ruta)
+        except ValueError as e:
+            self.registrar(f"[PRINT SERVER] No se ha podido abrir {os.path.basename(ruta)}: {e}")
+            return
+        if self.hay_render():
+            self.invalidar_render(MOTIVO_IMAGEN_NUEVA)
         self.ruta_imagen = os.path.normpath(ruta)
+        self._pixmap_base = pixmap
+        self.tamano_fijo_mm = tamano_fijo_mm
         self.rotacion_imagen = 0
         self.espejo_x = False
         self.espejo_y = False
         self._mostrar_pixmap(pixmap, POSICION_INICIAL_X_MM, POSICION_INICIAL_Y_MM)
+        if tamano_fijo_mm is not None:
+            self.registrar(f"[PRINT SERVER] {os.path.basename(self.ruta_imagen)}: "
+                           f"{self.ancho_imagen_mm:.2f} x {self.alto_imagen_mm:.2f} mm")
+            return
         origen = "del modo" if any(b.nombre in self._dpi_modo for b, _ in self.boards_activas()) \
             else "por defecto, sin modo cargado"
         self.registrar(f"[PRINT SERVER] Imagen: {pixmap.width()} x {pixmap.height()} px a "
@@ -392,12 +431,12 @@ class PrintServer(QObject):
                        f"= {self.ancho_imagen_mm:.2f} x {self.alto_imagen_mm:.2f} mm")
 
     def _refrescar_vista(self):
-        if self.ruta_imagen is None:
+        if self._pixmap_base is None:
             return
         transformacion = QTransform()
         transformacion.rotate(self.rotacion_imagen)
         transformacion.scale(-1 if self.espejo_x else 1, -1 if self.espejo_y else 1)
-        self._mostrar_pixmap(QPixmap(self.ruta_imagen).transformed(transformacion, Qt.SmoothTransformation))
+        self._mostrar_pixmap(self._pixmap_base.transformed(transformacion, Qt.SmoothTransformation))
 
     def rotar_imagen(self):
         self.invalidar_render(MOTIVO_IMAGEN_GIRADA)
@@ -432,10 +471,13 @@ class PrintServer(QObject):
         self.limpiar_previews()
         self._previews_cargadas = False
         self.registrar(f"[PRINT SERVER] Render descartado ({motivo}): pulsa Render para aplicar el cambio")
+        self.cambiado.emit()
 
     def limpiar_imagen(self):
         self._posicion_render = None
         self.ruta_imagen = None
+        self._pixmap_base = None
+        self.tamano_fijo_mm = None
         self.dpi_imagen = None
         self.ancho_imagen_mm = None
         self.alto_imagen_mm = None
@@ -450,6 +492,7 @@ class PrintServer(QObject):
         for board in self.boards:
             board.descartar()
         self.registrar("[PRINT SERVER] Imagen descartada")
+        self.cambiado.emit()
 
     # ===== trabajo =====
     def _trabajo(self):
@@ -535,6 +578,7 @@ class PrintServer(QObject):
         """Cada board avisa cuando tiene el RIP (render_listo) o queda armada; la primera
         que lo tenga pone las previews. Si una board pierde su trabajo (impreso, cancelado,
         error), las previews se rehacen con las que aun lo tengan, o se vacian."""
+        self.cambiado.emit()
         if estado == ESTADO_SIN_TRABAJO:
             self._previews_cargadas = self.cargar_previews(avisar=False)
         elif not self._previews_cargadas and estado in (ESTADO_RENDER_LISTO, ESTADO_LISTO):

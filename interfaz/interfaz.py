@@ -230,8 +230,8 @@ class VentanaPrincipal(QMainWindow):
                      parar_programa=lambda: self.pagina_programa.stop(),
                      programa_en_marcha=lambda: self.secuencia.en_marcha())
         self.print_server = PrintServer(self.ui, self.boards, parent=self, **comun)
-        self.print_server_aewa = PrintServerAewa(self.ui, self.board_aewa, parent=self, **comun)
-        self.paginas_print_server = (self.print_server, self.print_server_aewa)
+        self.print_server_aewa = None      # se crea tras la pagina Programa (su recuadro la consulta)
+        self.paginas_print_server = (self.print_server,)
         self.aprint.mensaje.connect(self.print_server.registrar)
         print_go_extra = self.print_server.print_go_software if config.PRINT_GO_TAMBIEN_POR_SOFTWARE else None
         tolerancia_reposo = (config.TOLERANCIA_REPOSO_MM if config.PRINT_GO_TAMBIEN_POR_SOFTWARE
@@ -243,8 +243,7 @@ class VentanaPrincipal(QMainWindow):
                                             tolerancia_reposo=tolerancia_reposo, parent=self)
         if config.PRINT_GO_TAMBIEN_POR_SOFTWARE:
             print("[CONFIG] PROVISIONAL: print go tambien por software (P,SPG)")
-        for pagina in self.paginas_print_server:
-            self.secuencia.terminada.connect(pagina.programa_terminado)
+        self.secuencia.terminada.connect(self.print_server.programa_terminado)
         self.mduino.seta_cambiada.connect(self.secuencia.set_seta)
         self.mduino.seta_cambiada.connect(self.seta_cambiada)
         self.seta_pulsada = False
@@ -268,7 +267,14 @@ class VentanaPrincipal(QMainWindow):
             posicion_real=lambda: self.posicion_mm,
             registrar=self.print_server.registrar,
             parent=self)
+        # pagina Print Server AEWA: su recuadro de informacion lee la pagina Programa
+        self.print_server_aewa = PrintServerAewa(
+            self.ui, self.board_aewa, parent=self,
+            velocidad_impresion=self.pagina_programa.velocidad_impresion, **comun)
+        self.paginas_print_server = (self.print_server, self.print_server_aewa)
+        self.secuencia.terminada.connect(self.print_server_aewa.programa_terminado)
         self.pagina_programa.cabezales_cambiados.connect(self._invalidar_renders)
+        self.ui.pg_prog_vel_impresion.textChanged.connect(self.print_server_aewa.refrescar_info)
 
         # ===== navegacion =====
         self.ui.bt_pg_movimientos1.clicked.connect(self.ir_pg_movimientos)
@@ -503,6 +509,7 @@ class VentanaPrincipal(QMainWindow):
     def _invalidar_renders(self):
         for pagina in self.paginas_print_server:
             pagina.invalidar_render(MOTIVO_CABEZALES)
+        self.print_server_aewa.refrescar_info()   # cabezal APMB4 y su distancia
 
     def _actualizar_accesos_print_server(self):
         """Habilita cada boton Print Server segun los cabezales activos en Programa."""
