@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """Vista de la mesa de impresion a escala.
 
-La escena trabaja en milimetros: 1 unidad de escena = 1 mm. La mesa se dibuja
-en blanco a la mayor escala que cabe en el recuadro, centrada; lo que sobra
-del recuadro (la proporcion del recuadro no es la de la mesa) se pinta del
-color del fondo de la pagina, asi los bordes de la mesa se ven y la imagen
-cargada, arrastrable con el raton, llega hasta ellos.
+La escena trabaja en milimetros: 1 unidad de escena = 1 mm. La vista toma,
+dentro del recuadro que le da la pagina (o el reescalado de la ventana), el
+mayor rectangulo con la proporcion exacta de la mesa, centrado, y la mesa lo
+llena entero: su borde es el borde de la mesa y la imagen cargada, arrastrable
+con el raton, llega hasta el. Si por redondeo sobra algun pixel se pinta del
+color del fondo de la pagina.
 
 Uso:
     self.mesa = MesaImpresion(ancho_mm, alto_mm, parent=self.ui.PMB8)
@@ -247,6 +248,7 @@ class MesaImpresion(QGraphicsView):
         self.item = None
         self.texto = None
 
+        self._ajustando_geometria = False
         self.setScene(QGraphicsScene(self.mesa_mm, self))
         self.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -274,7 +276,30 @@ class MesaImpresion(QGraphicsView):
 
     def resizeEvent(self, evento):
         super().resizeEvent(evento)
+        if not self._ajustando_geometria:
+            self._encajar_recuadro()
         self._ajustar()
+
+    def _encajar_recuadro(self):
+        """Reduce la geometria al mayor rectangulo con la proporcion de la mesa
+        que cabe en la que tiene, centrado (el borde de la vista cuenta aparte)."""
+        borde = self.frameWidth()
+        marco = self.geometry()
+        interior_ancho = marco.width() - 2 * borde
+        interior_alto = marco.height() - 2 * borde
+        if interior_ancho <= 0 or interior_alto <= 0:
+            return
+        escala = min(interior_ancho / self.mesa_mm.width(), interior_alto / self.mesa_mm.height())
+        ancho = round(self.mesa_mm.width() * escala) + 2 * borde
+        alto = round(self.mesa_mm.height() * escala) + 2 * borde
+        if (ancho, alto) == (marco.width(), marco.height()):
+            return
+        self._ajustando_geometria = True
+        try:
+            self.setGeometry(marco.x() + (marco.width() - ancho) // 2,
+                             marco.y() + (marco.height() - alto) // 2, ancho, alto)
+        finally:
+            self._ajustando_geometria = False
 
     def showEvent(self, evento):
         super().showEvent(evento)
