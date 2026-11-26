@@ -36,6 +36,7 @@ class Trabajo:
     rotacion: int = 0
     espejo_x: bool = False
     espejo_y: bool = False
+    texto: object = None     # texto del trabajo (aewa/texto_trabajo.TextoTrabajo) o None
 
 
 def calcular_offset_x(x_cabezal_mm, x_imagen_mm, ancho_imagen_mm):

@@ -244,6 +244,12 @@ class PaginaPrograma(QObject):
         """mm/s del campo de velocidad de impresion, o None si no es un numero."""
         return _leer_float(self.ui.pg_prog_vel_impresion)
 
+    def valores_curado(self):
+        """(pasadas de curado, potencia NIR %, potencia secador %) tal como estan en los campos."""
+        return (int(_leer_float(self.ui.pg_prog_cant_pasadas_curado, por_defecto=0)),
+                _leer_float(self.ui.pg_prog_potencia_NIR, por_defecto=0.0),
+                _leer_float(self.ui.pg_prog_potencia_secador, por_defecto=0.0))
+
     def leer_parametros(self):
         """ParametrosPrograma listo para la secuencia. Lanza ValueError si falta algo."""
         pasadas = int(_leer_float(self.ui.pg_prog_cant_pasadas_curado, por_defecto=0))

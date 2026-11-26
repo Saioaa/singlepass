@@ -31,7 +31,7 @@
 </string>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="menu">
      <property name="styleSheet">
@@ -1250,7 +1250,7 @@ QPushButton:pressed {rgb(229, 13, 35)
         <x>190</x>
         <y>70</y>
         <width>1246</width>
-        <height>882</height>
+        <height>902</height>
        </rect>
       </property>
       <property name="autoFillBackground">
@@ -1505,8 +1505,8 @@ QPushButton:pressed {
      <widget class="QTextEdit" name="txtMessage">
       <property name="geometry">
        <rect>
-        <x>250</x>
-        <y>980</y>
+        <x>70</x>
+        <y>990</y>
         <width>1131</width>
         <height>151</height>
        </rect>
@@ -1685,7 +1685,7 @@ color: #62CBC9;
         <x>160</x>
         <y>90</y>
         <width>1424</width>
-        <height>1008</height>
+        <height>1031</height>
        </rect>
       </property>
       <property name="autoFillBackground">

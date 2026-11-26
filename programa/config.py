@@ -135,6 +135,16 @@ TEST_CABEZAL_X_MM = 0.0
 TEST_CABEZAL_Y_MM = 0.0
 TEST_CABEZAL_RES_HORIZONTAL_DPI = 600
 TEST_CABEZAL_RES_VERTICAL_DPI = 600
+
+# ===== INSERTAR TEXTO (boton texto_variable de Print Server AEWA) =====
+# Texto en un PDF vectorial propio, segundo objeto del job (programa/aewa/texto_trabajo.py)
+TEXTO_FUENTE = "Nunito"           # familia de las fuentes de CARPETA_FUENTES
+TEXTO_COLOR = "#000000"
+TEXTO_PUNTOS_INICIAL = 16.0       # al insertarlo; despues se cambia con las esquinas
+TEXTO_PUNTOS_MIN = 4.0
+TEXTO_PUNTOS_MAX = 500.0
+TEXTO_SEPARACION_MM = 5.0         # al insertarlo, debajo de la imagen
+NOMBRE_PDF_TEXTO = "texto.pdf"    # en la carpeta del trabajo
 # Impresora de APRINT "Singlepass BW" (Ricoh MH5xxx, un cabezal): en Printer
 # Settings -> General la resolucion HORIZONTAL (a lo largo del cabezal, paso de
 # boquilla) es fija y la VERTICAL (sentido del movimiento de la mesa, por el

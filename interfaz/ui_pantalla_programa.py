@@ -730,7 +730,7 @@ class Ui_MainWindow(object):
 "}")
         self.labelImage = QLabel(self.print_server_gis)
         self.labelImage.setObjectName(u"labelImage")
-        self.labelImage.setGeometry(QRect(190, 70, 1246, 882))
+        self.labelImage.setGeometry(QRect(190, 70, 1246, 902))
         self.labelImage.setAutoFillBackground(False)
         self.labelImage.setStyleSheet(u"background-color: white;\n"
 "border: 2px solid #62CBC9;\n"
@@ -854,7 +854,7 @@ class Ui_MainWindow(object):
 "}")
         self.txtMessage = QTextEdit(self.print_server_gis)
         self.txtMessage.setObjectName(u"txtMessage")
-        self.txtMessage.setGeometry(QRect(250, 980, 1131, 151))
+        self.txtMessage.setGeometry(QRect(70, 990, 1131, 151))
         self.txtMessage.setStyleSheet(u"background-color: rgb(174, 199, 232);\n"
 "color: rgb(0, 0, 0);\n"
 "border: 2px solid #62CBC9;\n"
@@ -940,7 +940,7 @@ class Ui_MainWindow(object):
 "	font-family: nunito;")
         self.labelImage_2 = QLabel(self.print_server_aewa)
         self.labelImage_2.setObjectName(u"labelImage_2")
-        self.labelImage_2.setGeometry(QRect(160, 90, 1424, 1008))
+        self.labelImage_2.setGeometry(QRect(160, 90, 1424, 1031))
         self.labelImage_2.setAutoFillBackground(False)
         self.labelImage_2.setStyleSheet(u"background-color: white;\n"
 "border: 2px solid #62CBC9;\n"
@@ -2000,7 +2000,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(3)
+        self.stackedWidget.setCurrentIndex(4)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

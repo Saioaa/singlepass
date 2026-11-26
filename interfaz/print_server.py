@@ -106,6 +106,7 @@ COLORES_PLANOS = ("#00AEEF", "#EC008C", "#FFF100", "#000000")   # CMYK, orden de
 # Render. Durante una impresion no se toca nada.
 MOTIVO_IMAGEN_MOVIDA  = "imagen movida"
 MOTIVO_IMAGEN_NUEVA   = "nueva imagen"
+MOTIVO_TEXTO          = "texto"
 MOTIVO_IMAGEN_GIRADA  = "imagen girada o espejada"
 MOTIVO_MODO_CAMBIADO  = "modo de impresion cambiado"
 MOTIVO_CABEZALES      = "cabezales o modulos cambiados en Programa"
@@ -503,7 +504,12 @@ class PrintServer(QObject):
         x_mm, y_mm = self.mesa.posicion_imagen_mm()
         return Trabajo(ruta_imagen=self.ruta_imagen, ancho_mm=self.ancho_imagen_mm,
                        alto_mm=self.alto_imagen_mm, x_mm=x_mm, y_mm=y_mm,
-                       rotacion=self.rotacion_imagen, espejo_x=self.espejo_x, espejo_y=self.espejo_y)
+                       rotacion=self.rotacion_imagen, espejo_x=self.espejo_x, espejo_y=self.espejo_y,
+                       texto=self._texto_trabajo())
+
+    def _texto_trabajo(self):
+        """Texto que acompana a la imagen (lo redefine la pagina AEWA); None sin texto."""
+        return None
 
     def generar_trabajo(self):
         """Ripea el trabajo en todas las boards activas, cada una con su cabezal."""

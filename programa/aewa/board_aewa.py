@@ -12,7 +12,9 @@ programa/gis/board.py sobre el protocolo remoto (aprint_comunicacion).
             de la mesa (X = avance) va girada config.GIRO_JOB_AEWA; su Y en la
             mesa pasa a la X del job y el offset hasta el cabezal (distancia del
             cabezal - PULSE - imagen, como el XOffset del PMB: el "blanco por
-            delante" de MBD-F-500) a la Y del job.
+            delante" de MBD-F-500) a la Y del job. Si el trabajo lleva texto
+            (texto_trabajo.TextoTrabajo), su PDF se genera en la carpeta y se
+            inserta como segundo objeto, colocado y girado igual que la imagen.
   armar:    "pd" abre el dialogo de impresion y "ps" arranca: con Printing mode
             "Single pass - External trigger" APRINT queda esperando el pulso
             del M-Duino (una franja = todo el trabajo).
@@ -37,6 +39,7 @@ from programa.aewa.aprint_comunicacion import (OPCION_RESERVADA, TODAS_LAS_IMPRE
                                                i32, texto, u16, u32)
 from programa.aewa.aprint_propiedades import (MODO_MULTIPASS_NINGUNO, PARAM_DPI_HORIZONTAL,
                                               PARAM_DPI_VERTICAL, PARAM_MODO_MULTIPASS)
+from programa.aewa.texto_trabajo import generar_pdf
 from programa.gis import vpi
 from programa.gis.board import (ESTADO_ARMANDO, ESTADO_LISTO, ESTADO_RENDER_LISTO,
                                 ESTADO_SIN_TRABAJO, Board, calcular_offset_x)
@@ -119,30 +122,33 @@ class BoardAewa(Board):
             self.registrar("APRINT no conectado")
             self.conectar()
             return False
-        offset_x_mm = calcular_offset_x(x_cabezal_mm, trabajo.x_mm, trabajo.ancho_mm)
+        # recuadro que imprime: la imagen o, con texto, el que engloba imagen y texto
+        x_min_mm, x_max_mm = trabajo.x_mm, trabajo.x_mm + trabajo.ancho_mm
+        texto_trabajo = trabajo.texto
+        if texto_trabajo is not None:
+            x_min_mm = min(x_min_mm, texto_trabajo.x_mm)
+            x_max_mm = max(x_max_mm, texto_trabajo.x_mm + texto_trabajo.ancho_mm)
+        offset_x_mm = calcular_offset_x(x_cabezal_mm, x_min_mm, x_max_mm - x_min_mm)
         if offset_x_mm < 0:
             self.registrar(f"La imagen ya esta bajo el cabezal en reposo (offset X = "
                            f"{offset_x_mm:.{DECIMALES_MM}f} mm): aleja el reposo o acerca la "
                            "imagen al 0 de la mesa")
             return False
-        # a lo largo del cabezal: la Y de la mesa pasa a la X del job
+        # a lo largo del cabezal: la Y de la mesa pasa a la X del job. Lo que quede fuera
+        # del ancho del cabezal no se imprime (APRINT lo recorta): solo se avisa
         x_job_mm = trabajo.y_mm - config.Y_CABEZAL_AEWA_MM
-        if x_job_mm < 0:
-            self.registrar(f"La imagen queda {-x_job_mm:.{DECIMALES_MM}f} mm por encima del "
-                           f"cabezal (el cabezal empieza en Y = {config.Y_CABEZAL_AEWA_MM} mm)")
-            return False
-        if x_job_mm + trabajo.alto_mm > config.ANCHO_CABEZAL_AEWA_MM:
-            self.registrar(f"La imagen sobresale del cabezal por abajo: ocupa de Y "
-                           f"{trabajo.y_mm:.{DECIMALES_MM}f} a "
-                           f"{trabajo.y_mm + trabajo.alto_mm:.{DECIMALES_MM}f} mm y el cabezal "
-                           f"cubre de {config.Y_CABEZAL_AEWA_MM} a "
-                           f"{config.Y_CABEZAL_AEWA_MM + config.ANCHO_CABEZAL_AEWA_MM:.{DECIMALES_MM}f} mm")
-            return False
+        y_fin_cabezal_mm = config.Y_CABEZAL_AEWA_MM + config.ANCHO_CABEZAL_AEWA_MM
+        if x_job_mm < 0 or trabajo.y_mm + trabajo.alto_mm > y_fin_cabezal_mm:
+            self.registrar(f"AVISO: la imagen ocupa de Y {trabajo.y_mm:.{DECIMALES_MM}f} a "
+                           f"{trabajo.y_mm + trabajo.alto_mm:.{DECIMALES_MM}f} mm y el cabezal cubre "
+                           f"de {config.Y_CABEZAL_AEWA_MM:g} a {y_fin_cabezal_mm:.{DECIMALES_MM}f} mm: "
+                           "solo se imprime la parte que cae bajo el cabezal")
         y_job_mm = offset_x_mm
         self.registrar(f"Imagen en mesa: X={trabajo.x_mm:.{DECIMALES_MM}f} mm, "
                        f"Y={trabajo.y_mm:.{DECIMALES_MM}f} mm; cabezal a "
                        f"{x_cabezal_mm:.{DECIMALES_MM}f} mm -> offset = "
-                       f"{offset_x_mm:.{DECIMALES_MM}f} mm")
+                       f"{offset_x_mm:.{DECIMALES_MM}f} mm"
+                       + ("" if texto_trabajo is None else " (hasta el borde mas lejano de imagen o texto)"))
 
         nombre = os.path.splitext(os.path.basename(trabajo.ruta_imagen))[0]
         extension = os.path.splitext(trabajo.ruta_imagen)[1].lower()
@@ -150,9 +156,13 @@ class BoardAewa(Board):
         carpeta = os.path.join(vpi.CARPETA_SALIDA, f"{marca}_{PREFIJO_CARPETA}_{nombre}")
         ruta_archivo = os.path.join(carpeta, nombre + extension)
         ruta_job = os.path.join(carpeta, nombre + EXTENSION_JOB)
+        ruta_texto = None
         try:
             os.makedirs(carpeta, exist_ok=True)
             shutil.copyfile(trabajo.ruta_imagen, ruta_archivo)
+            if texto_trabajo is not None:
+                ruta_texto = os.path.join(carpeta, config.NOMBRE_PDF_TEXTO)
+                generar_pdf(ruta_texto, texto_trabajo.lineas, texto_trabajo.puntos)
         except OSError as e:
             self.registrar(f"No se ha podido preparar el trabajo: {e}")
             return False
@@ -167,8 +177,21 @@ class BoardAewa(Board):
             opciones |= BIT_ESPEJO_X
         if espejo_y:
             opciones |= BIT_ESPEJO_Y
+        # cada objeto se coloca por su propio borde lejano (el que pasa primero bajo el
+        # cabezal): Y del job = offset del conjunto + (x_max del conjunto - su x + ancho)
+        y_imagen_mm = y_job_mm + (x_max_mm - (trabajo.x_mm + trabajo.ancho_mm))
         x_px = mm_a_pixeles(x_job_mm)
-        y_px = mm_a_pixeles(y_job_mm)
+        y_px = mm_a_pixeles(y_imagen_mm)
+        if texto_trabajo is not None:
+            # el texto va sin giros de pagina: solo la orientacion del job
+            giro_texto = giro_aprint(config.GIRO_JOB_AEWA)
+            opciones_texto = CODIGO_GIRO[giro_texto] << DESPLAZAMIENTO_GIRO
+            if config.ESPEJO_JOB_X_AEWA:
+                opciones_texto |= BIT_ESPEJO_X
+            if config.ESPEJO_JOB_Y_AEWA:
+                opciones_texto |= BIT_ESPEJO_Y
+            texto_x_px = mm_a_pixeles(texto_trabajo.y_mm - config.Y_CABEZAL_AEWA_MM)
+            texto_y_px = mm_a_pixeles(y_job_mm + (x_max_mm - (texto_trabajo.x_mm + texto_trabajo.ancho_mm)))
         self.carpeta_trabajo = carpeta
         self._ruta_job = ruta_job
         self._geometria = (trabajo.x_mm, trabajo.ancho_mm)
@@ -190,6 +213,10 @@ class BoardAewa(Board):
                     c.escribir_parametro(PARAM_MODO_MULTIPASS, MODO_MULTIPASS_NINGUNO)
                     c.comando("ji", u16(OPCION_RESERVADA) + u16(opciones) + i32(x_px) + i32(y_px)
                               + u32(SIN_ESCALAR) + u32(SIN_ESCALAR) + texto(ruta_archivo))
+                    if ruta_texto is not None:
+                        c.comando("ji", u16(OPCION_RESERVADA) + u16(opciones_texto)
+                                  + i32(texto_x_px) + i32(texto_y_px) + u32(SIN_ESCALAR)
+                                  + u32(SIN_ESCALAR) + texto(ruta_texto))
                     c.comando("jv", u16(OPCION_RESERVADA) + texto(ruta_job))
                     leidos = (c.leer_parametro(PARAM_DPI_HORIZONTAL) / ESCALA_MILES,
                               c.leer_parametro(PARAM_DPI_VERTICAL) / ESCALA_MILES)
@@ -199,9 +226,13 @@ class BoardAewa(Board):
                 return
             lineas.append(f"Job {os.path.basename(ruta_job)}: X (cabezal) "
                           f"{x_job_mm:.{DECIMALES_MM}f} mm = {x_px} px, Y (avance, offset) "
-                          f"{y_job_mm:.{DECIMALES_MM}f} mm = {y_px} px a {config.APRINT_DPI_POSICION}"
+                          f"{y_imagen_mm:.{DECIMALES_MM}f} mm = {y_px} px a {config.APRINT_DPI_POSICION}"
                           f" dpi; giro APRINT {giro}, espejo X {espejo_x}, espejo Y {espejo_y}; "
                           f"APRINT a {leidos[0]:g} x {leidos[1]:g} dpi (H x V)")
+            if ruta_texto is not None:
+                lineas.append(f"Texto {config.NOMBRE_PDF_TEXTO}: X {texto_x_px} px, Y {texto_y_px} px, "
+                              f"{texto_trabajo.puntos:g} pt, {texto_trabajo.ancho_mm:.{DECIMALES_MM}f} x "
+                              f"{texto_trabajo.alto_mm:.{DECIMALES_MM}f} mm")
             if leidos != (self.res_horizontal, self.res_vertical):
                 lineas.append(f"AVISO: se pidieron {self.res_horizontal} x {self.res_vertical} dpi")
             self._hecho.emit("preparar", True, lineas)

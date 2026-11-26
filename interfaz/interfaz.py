@@ -270,11 +270,14 @@ class VentanaPrincipal(QMainWindow):
         # pagina Print Server AEWA: su recuadro de informacion lee la pagina Programa
         self.print_server_aewa = PrintServerAewa(
             self.ui, self.board_aewa, parent=self,
-            velocidad_impresion=self.pagina_programa.velocidad_impresion, **comun)
+            velocidad_impresion=self.pagina_programa.velocidad_impresion,
+            valores_curado=self.pagina_programa.valores_curado, **comun)
         self.paginas_print_server = (self.print_server, self.print_server_aewa)
         self.secuencia.terminada.connect(self.print_server_aewa.programa_terminado)
         self.pagina_programa.cabezales_cambiados.connect(self._invalidar_renders)
-        self.ui.pg_prog_vel_impresion.textChanged.connect(self.print_server_aewa.refrescar_info)
+        for campo in (self.ui.pg_prog_vel_impresion, self.ui.pg_prog_cant_pasadas_curado,
+                      self.ui.pg_prog_potencia_NIR, self.ui.pg_prog_potencia_secador):
+            campo.textChanged.connect(self.print_server_aewa.parametros_programa_cambiados)
 
         # ===== navegacion =====
         self.ui.bt_pg_movimientos1.clicked.connect(self.ir_pg_movimientos)

@@ -17,8 +17,12 @@ lo propio de esta pagina:
   - test_cabezal: pone el PNG del test (config.RUTA_TEST_CABEZAL, 1280 filas =
     boquillas a 600 dpi) a 600 x 600 dpi en la posicion fija de la mesa y lo
     renderiza; se imprime con START PRINT como cualquier trabajo.
-  - texto_variable: pendiente (se traera de MBD-F-500 cuando este comprobada
-    la orientacion del job).
+  - texto_variable: "Insertar Texto" (texto_variable.py): texto libre y
+    parametros (resolucion, velocidad, curado) como recuadro en la mesa,
+    arrastrable y escalable por las esquinas (Supr lo quita). Va al job como
+    PDF propio (programa/aewa/texto_trabajo.py), segundo objeto, con la misma
+    orientacion que la imagen. Mover, redimensionar o editar el texto invalida
+    el render; con parametros marcados, el texto sigue a los valores actuales.
 
 Una sola pasada y la velocidad la fija la pagina Programa: sin desplegables de
 pasos ni de velocidad.
@@ -33,9 +37,11 @@ from PySide6.QtPdf import QPdfDocument
 from programa import config
 from programa.aewa.aprint_propiedades import (MODO_IMPRESION_EXTERNO, NOMBRES_MODO_IMPRESION,
                                               aviso_filas, _version)
+from programa.aewa.texto_trabajo import TextoTrabajo, componer_lineas, fuente_disponible, trazado_mm
 from programa.gis.board import ESTADO_LISTO, ESTADO_SIN_TRABAJO, calcular_offset_x
-from interfaz.print_server import (MOTIVO_MODO_CAMBIADO, TEXTOS_PRINT_AEWA, WIDGETS_AEWA,
-                                   PrintServer)
+from interfaz.print_server import (MOTIVO_MODO_CAMBIADO, MOTIVO_TEXTO, TEXTOS_PRINT_AEWA,
+                                   WIDGETS_AEWA, PrintServer)
+from interfaz.texto_variable import ACEPTAR, QUITAR, VentanaTexto
 
 SUFIJO_DPI = "dpi"
 FILTRO_PDF = "PDF (*.pdf)"
@@ -52,9 +58,10 @@ DECIMALES_MM = 2
 MICRAS_POR_MM = 1000
 HZ_POR_KHZ = 1000
 SEPARADOR = "  \u00b7  "
+SEPARADOR_LINEAS_LOG = " | "
+TOLERANCIA_TEXTO = 0.01      # mm o pt: por debajo no cuenta como cambio
 CLAVE_RES_HORIZONTAL = "res_horizontal"
 CLAVE_RES_VERTICAL = "res_vertical"
-TEXTO_PENDIENTE = "[AEWA] Pendiente: {}"
 
 
 def leer_pdf(ruta):
@@ -85,13 +92,24 @@ class PrintServerAewa(PrintServer):
     TITULO_ARCHIVO = "Nueva imagen (PDF)"
 
     def __init__(self, ui, board, cabezales_activos, posicion_eje, iniciar_programa,
-                 parar_programa, programa_en_marcha, velocidad_impresion, parent=None):
-        """velocidad_impresion: callable -> mm/s de la pagina Programa, o None."""
+                 parar_programa, programa_en_marcha, velocidad_impresion, valores_curado,
+                 parent=None):
+        """velocidad_impresion: callable -> mm/s de la pagina Programa, o None.
+        valores_curado: callable -> (pasadas, potencia NIR, potencia secador)."""
         super().__init__(ui, [board], cabezales_activos, posicion_eje, iniciar_programa,
                          parar_programa, programa_en_marcha, widgets=WIDGETS_AEWA,
                          textos_print=TEXTOS_PRINT_AEWA, parent=parent)
         self.board = board
         self._velocidad_impresion = velocidad_impresion
+        self._valores_curado = valores_curado
+
+        # ===== texto =====
+        self._texto = None                      # TextoTrabajo o None
+        self._texto_render = None               # (x, y, puntos, lineas) del ultimo render
+        self.ventana_texto = VentanaTexto(self.mesa.window())
+        self.mesa.texto_cambiado.connect(self._texto_cambiado)
+        self.mesa.texto_borrado.connect(self._borrar_texto)
+        ui.texto_variable.clicked.connect(self.insertar_texto)
 
         # ===== recuadro de informacion =====
         info = ui.labelInfo_impresion
@@ -115,8 +133,6 @@ class PrintServerAewa(PrintServer):
         self.refrescar_info()
 
         ui.test_cabezal.clicked.connect(self.test_cabezal)
-        # ===== pendiente =====
-        ui.texto_variable.clicked.connect(lambda: self.registrar(TEXTO_PENDIENTE.format("insertar texto")))
 
     # ===== imagen (PDF; el test de cabezal es un PNG) =====
     def _abrir_archivo(self, ruta):
@@ -138,8 +154,119 @@ class PrintServerAewa(PrintServer):
         if not self.cargar_archivo(config.RUTA_TEST_CABEZAL, config.TEST_CABEZAL_X_MM,
                                    config.TEST_CABEZAL_Y_MM):
             return
+        self._quitar_texto()               # el test va sin texto
         self.registrar("[TEST] Test de cabezal en la mesa: renderizando")
         self.generar_trabajo()
+
+    # ===== texto =====
+    def _valores_texto(self):
+        pasadas, potencia_nir, potencia_secador = self._valores_curado()
+        return {"res_horizontal": self.res_horizontal(), "res_vertical": self.res_vertical(),
+                "velocidad": self._velocidad_impresion(), "pasadas_curado": pasadas,
+                "potencia_nir": potencia_nir, "potencia_secador": potencia_secador}
+
+    def insertar_texto(self):
+        actual = self._texto
+        accion, contenido, parametros = self.ventana_texto.editar(
+            actual.contenido if actual else "", actual.parametros if actual else [],
+            self._valores_texto(), actual is not None)
+        if accion == QUITAR:
+            self._quitar_texto()
+            self.registrar("[TEXTO] Quitado")
+            return
+        if accion != ACEPTAR:
+            return
+        lineas = componer_lineas(contenido, parametros, self._valores_texto())
+        x_mm = y_mm = None                 # al editarlo conserva posicion y tamano
+        if actual is None:
+            self._texto = TextoTrabajo(contenido=contenido, parametros=parametros, lineas=lineas)
+            x_mm, y_mm = self._posicion_inicial_texto()
+        else:
+            actual.contenido, actual.parametros, actual.lineas = contenido, parametros, lineas
+        self._mostrar_texto(x_mm, y_mm)
+        self._invalidar_por_texto()
+        self.registrar(f"[TEXTO] {SEPARADOR_LINEAS_LOG.join(lineas)} ({self._texto.puntos:g} pt): "
+                       "ajusta el tamaño con las esquinas")
+        if not fuente_disponible():
+            self.registrar(f"[TEXTO] AVISO: no está la fuente {config.TEXTO_FUENTE}, se usa otra")
+
+    def _posicion_inicial_texto(self):
+        """Debajo de la imagen (la mesa lo recorta si no cabe), o en el origen."""
+        geometria = self.mesa.posicion_imagen_mm()
+        if geometria is None or self.alto_imagen_mm is None:
+            return 0.0, 0.0
+        x_mm, y_mm = geometria
+        return x_mm, y_mm + self.alto_imagen_mm + config.TEXTO_SEPARACION_MM
+
+    def _mostrar_texto(self, x_mm=None, y_mm=None):
+        t = self._texto
+        trazado, ancho_mm, alto_mm = trazado_mm(t.lineas, t.puntos)
+        self.mesa.mostrar_texto(trazado, ancho_mm, alto_mm, t.puntos, x_mm, y_mm)
+
+    def _texto_cambiado(self, x_mm, y_mm, puntos):
+        """La mesa avisa al ponerlo, moverlo o redimensionarlo."""
+        if self._texto is None:
+            return
+        _, _, ancho_mm, alto_mm, _ = self.mesa.geometria_texto()
+        t = self._texto
+        t.x_mm, t.y_mm, t.puntos, t.ancho_mm, t.alto_mm = x_mm, y_mm, puntos, ancho_mm, alto_mm
+        self._invalidar_por_texto()
+        self.refrescar_info()
+
+    def _invalidar_por_texto(self):
+        """Render descartado si el texto ya no es el renderizado."""
+        if not self.hay_render():
+            return
+        t = self._texto
+        actual = None if t is None else (t.x_mm, t.y_mm, t.puntos, tuple(t.lineas))
+        render = self._texto_render
+        if actual is None or render is None:
+            igual = actual is render
+        else:
+            igual = (actual[3] == render[3] and all(abs(a - b) <= TOLERANCIA_TEXTO
+                                                     for a, b in zip(actual[:3], render[:3])))
+        if not igual:
+            self.invalidar_render(MOTIVO_TEXTO)
+
+    def _borrar_texto(self):
+        """Supr sobre el texto en la mesa."""
+        if self._texto is None or self._programa_en_marcha():
+            return
+        self._quitar_texto()
+        self.registrar("[TEXTO] Quitado")
+
+    def _quitar_texto(self):
+        if self._texto is None:
+            return
+        self._texto = None
+        self.mesa.quitar_texto()
+        self._invalidar_por_texto()
+        self.refrescar_info()
+
+    def _actualizar_texto(self):
+        """Con parametros marcados, el texto sigue a los valores actuales."""
+        t = self._texto
+        if t is None or not t.parametros or self._programa_en_marcha():
+            return
+        lineas = componer_lineas(t.contenido, t.parametros, self._valores_texto())
+        if lineas == t.lineas:
+            return
+        t.lineas = lineas
+        self._mostrar_texto()
+        self._invalidar_por_texto()
+        print(f"[TEXTO] Actualizado: {SEPARADOR_LINEAS_LOG.join(lineas)}")
+
+    def _texto_trabajo(self):
+        if self._texto is None or not self.mesa.tiene_texto():
+            self._texto_render = None
+            return None
+        t = self._texto
+        self._texto_render = (t.x_mm, t.y_mm, t.puntos, tuple(t.lineas))
+        return t
+
+    def limpiar_imagen(self):
+        super().limpiar_imagen()
+        self._quitar_texto()
 
     # ===== recuadro de informacion =====
     def refrescar_info(self, *_):
@@ -156,6 +283,11 @@ class PrintServerAewa(PrintServer):
                 trabajo = f"{nombre}  [SIN RENDERIZAR]"
         lineas.append(f"Trabajo: {trabajo}")
         lineas.append(f"Resolución: {self.res_horizontal()} x {self.res_vertical()} dpi (H x V)")
+        if self._texto is not None and self.mesa.tiene_texto():
+            t = self._texto
+            lineas.append(f"Texto: {SEPARADOR_LINEAS_LOG.join(t.lineas)}{SEPARADOR}{t.puntos:g} pt"
+                          f"{SEPARADOR}{t.ancho_mm:.{DECIMALES_MM}f} x {t.alto_mm:.{DECIMALES_MM}f} mm "
+                          f"en X {t.x_mm:.{DECIMALES_MM}f}{SEPARADOR}Y {t.y_mm:.{DECIMALES_MM}f} mm")
 
         geometria = self.mesa.posicion_imagen_mm()
         if geometria is not None and self.ancho_imagen_mm is not None:
@@ -221,6 +353,12 @@ class PrintServerAewa(PrintServer):
     def _resolucion_cambiada(self, _indice):
         self.invalidar_render(MOTIVO_MODO_CAMBIADO)
         self._aplicar_resolucion()
+        self._actualizar_texto()
+        self.refrescar_info()
+
+    def parametros_programa_cambiados(self):
+        """Velocidad o curado de Programa editados: texto con parametros e info."""
+        self._actualizar_texto()
         self.refrescar_info()
 
     def _aplicar_resolucion(self):
