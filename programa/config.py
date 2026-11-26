@@ -123,7 +123,7 @@ Y_CABEZAL_AEWA_MM = 0.0
 # PROVISIONAL: comprobar con el PDF del codigo de barras; corregir aqui si sale
 # girado o espejado.
 GIRO_JOB_AEWA = 270
-ESPEJO_JOB_X_AEWA = True
+ESPEJO_JOB_X_AEWA = False
 ESPEJO_JOB_Y_AEWA = False
 
 # ===== TEST DE CABEZAL (boton test_cabezal de Print Server AEWA) =====
